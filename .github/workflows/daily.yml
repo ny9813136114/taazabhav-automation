@@ -29,7 +29,7 @@ jobs:
 
       - name: Restore YouTube credentials
         run: |
-                    echo "${{ secrets.YT_TOKEN_PICKLE_B64 }}" | base64 -d -i > token.pickle
+          echo "${{ secrets.YT_TOKEN_PICKLE_B64 }}" | base64 -d -i > token.pickle
           echo "${{ secrets.YT_CLIENT_SECRET_B64 }}" | base64 -d -i > client_secret.json
 
       - name: Run pipeline
