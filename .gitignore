@@ -1,0 +1,6 @@
+venv/ 
+token.pickle 
+client_secret.json 
+.env 
+*.mp4 
+*.mp3 
