@@ -1,0 +1,50 @@
+name: Daily TaazaBhav Upload
+
+on:
+  schedule:
+    - cron: "30 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Restore YouTube credentials
+        run: |
+          echo "${{ secrets.YT_TOKEN_PICKLE_B64 }}" | base64 -d > token.pickle
+          echo "${{ secrets.YT_CLIENT_SECRET_B64 }}" | base64 -d > client_secret.json
+
+      - name: Run pipeline
+        env:
+          DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
+          YT_STATE: "Uttar Pradesh"
+          YT_COMMODITY: "Onion"
+          YT_LANG: "hi"
+        run: python main.py
+
+      - name: Commit price history
+        run: |
+          git config user.name "TaazaBhav Bot"
+          git config user.email "bot@taazabhav.com"
+          git add data/history/
+          git diff --staged --quiet || git commit -m "Update price history"
+          git pull --rebase
+          git push
