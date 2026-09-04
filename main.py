@@ -17,6 +17,29 @@ TARGETS = [
     {"state": "Punjab", "commodity": "Potato", "lang": "hi"},
 ]
 
+# ---- Content-format variety: rotates day to day so the channel doesn't look
+# like the same templated video every single day (also helps with YouTube's
+# repetitive/inauthentic-content policy risk on a fully-automated channel).
+# Four formats, all built on the exact same narration/captions/timing --
+# only the visuals differ, so this stays 100% automated with no extra
+# manual work per format:
+#   ticker     -- original data-table price card + "other mandis" list
+#   trend      -- adds one Bull vs Bear day-over-day segment at the end
+#                 (falls back to ticker automatically if no price history
+#                 is available yet for that target)
+#   countdown  -- same 3 narrated markets shown as a #1/#2/#3 rank reveal
+#   spotlight  -- same 3 narrated markets shown as a min/max/modal range gauge
+# Every day of the year lands on the same format across all 5 videos, picked
+# deterministically so every scheduled run that day (each is a separate
+# GitHub Actions job) agrees on which format to use without needing to
+# share state between them.
+FORMAT_ROTATION = ["ticker", "trend", "countdown", "spotlight"]
+
+
+def _todays_format():
+    day_of_year = datetime.now().timetuple().tm_yday
+    return FORMAT_ROTATION[day_of_year % len(FORMAT_ROTATION)]
+
 
 def run_pipeline(state, commodity, lang="hi"):
     print(f"\n=== Processing {commodity} - {state} ===")
@@ -36,6 +59,8 @@ def run_pipeline(state, commodity, lang="hi"):
     print(script)
 
     today_str = datetime.now().strftime("%d %b %Y")
+    format_mode = _todays_format()
+    print(f"Format today: {format_mode}")
 
     safe_name = f"{state}_{commodity}".replace(" ", "_")
     audio_path = f"output_{safe_name}.mp3"
@@ -48,6 +73,9 @@ def run_pipeline(state, commodity, lang="hi"):
         output_path=video_path, date_str=today_str,
         intro_caption=captions["intro"],
         market_captions=captions["markets"],
+        format_mode=format_mode,
+        trend_data=captions["trend_data"],
+        trend_caption=captions["trend"],
     )
     generate_thumbnail(commodity, state, records, today_str, out_path=thumb_path)
 
