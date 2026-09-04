@@ -197,7 +197,9 @@ def draw_caption(base, text, W=1080, H=1920, font_size=34, max_lines=3, y0=None)
 
 
 # ---------------------------------------------------------------------------
-# Legacy layouts (unchanged) -- still used by make_thumbnail.py
+# Legacy layout -- kept for reference only, nothing in the current pipeline
+# calls this anymore (make_thumbnail.py uses the Fusion-style render_thumbnail
+# below).
 # ---------------------------------------------------------------------------
 
 def render_vertical_card(commodity, state, records, date_str, max_markets=6):
@@ -239,26 +241,59 @@ def render_vertical_card(commodity, state, records, date_str, max_markets=6):
     return img
 
 
+# ---------------------------------------------------------------------------
+# Fusion-style thumbnail (1280x720) -- matches the same palette/fonts/icon
+# style used across all the video segments instead of the old flat design.
+# Built to still read clearly at small feed/search sizes: one big flat icon,
+# one big commodity name, one big price -- nothing smaller/secondary that
+# would turn to mush when YouTube shrinks it.
+# ---------------------------------------------------------------------------
+
 def render_thumbnail(commodity, state, records, date_str):
-    """1280x720 compact, high-contrast thumbnail."""
-    width, height = 1280, 720
-    img = Image.new("RGB", (width, height), color=BG_COLOR)
-    draw = ImageDraw.Draw(img)
-    pad = 60
+    W, H = 1280, 720
+    style = _style_for(commodity)
+    base = Image.new("RGBA", (W, H), (*style["bg"], 255))
+    pad = 50
 
-    draw.rectangle([pad, 40, pad + 420, 115], fill=ACCENT_RED)
-    draw.text((pad + 20, 55), f"आज  {date_str}", fill=WHITE, font=_font(BOLD_FONT, 34))
+    rings = _decorative_rings(W, H, int(W * 0.88), int(H * 0.2))
+    base.alpha_composite(rings, (0, 0))
 
-    draw.text((pad, 160), f"{commodity.upper()} MANDI BHAV", fill=WHITE, font=_font(BOLD_FONT, 66))
-    draw.text((pad, 250), f"{state} APMC Mandi", fill=GREY, font=_font(REGULAR_FONT, 40))
+    brand = _rounded_badge("TAAZABHAV", _font(BALOO_BOLD, 30), CREAM, DARK, pad_x=20, pad_y=12, angle=-3)
+    base.alpha_composite(brand, (pad, 34))
+    date_badge = _rounded_badge(date_str.upper(), _font(BALOO_BOLD, 24), DARK, CREAM, pad_x=18, pad_y=11, border=3)
+    base.alpha_composite(date_badge, (W - pad - date_badge.width, 38))
+
+    icon_size = 260
+    icon = _flat_icon(icon_size, style["icon"], style["accent"])
+    icon_x = pad
+    icon_y = (H - icon_size) // 2 + 20
+    base.alpha_composite(icon, (icon_x, icon_y))
+
+    d = ImageDraw.Draw(base)
+    name_font = _font(BALOO_BOLD, 92)
+    name_x = icon_x + icon_size + 16
+    d.text((name_x, icon_y + 4), commodity, fill=(*DARK, 255), font=name_font)
+    sub_font = _font(WORK_SANS_MEDIUM, 36)
+    d.text((name_x, icon_y + 112), f"{state} Mandi Bhav", fill=(91, 38, 0, 255), font=sub_font)
 
     top_price = _top_price(records)
-    draw.text((pad + 30, 375), f"Rs. {top_price}/Quintal", fill=GOLD, font=_font(BOLD_FONT, 90))
+    price_font = _font(BALOO_BOLD, 108)
+    label_font = _font(BALOO_BOLD, 30)
+    price_text = f"Rs. {top_price}"
+    ptw = d.textlength(price_text, font=price_font)
+    card_w = int(max(ptw, 440) + 90)
+    card_h = 220
+    card = Image.new("RGBA", (card_w, card_h), (0, 0, 0, 0))
+    cd = ImageDraw.Draw(card)
+    cd.rounded_rectangle([0, 0, card_w - 1, card_h - 1], radius=34, fill=(*DARK, 255))
+    cd.text((36, 22), "AAJ KA BHAV", fill=(*style["label"], 255), font=label_font)
+    cd.text((36, 62), price_text, fill=(*CREAM, 255), font=price_font)
+    card = card.rotate(-2, expand=True, resample=Image.BICUBIC)
+    card_x = W - pad - card.width
+    card_y = H - pad - card.height
+    base.alpha_composite(card, (card_x, card_y))
 
-    draw.text((pad, 560), "Aaj Ka Sabse Achha Bhav", fill=ACCENT_GREEN, font=_font(BOLD_FONT, 40))
-    draw.text((width - pad - 340, height - 80), "TaazaBhav.com", fill=ACCENT_GREEN, font=_font(BOLD_FONT, 40))
-
-    return img
+    return _boost_saturation(base.convert("RGB"))
 
 
 # ---------------------------------------------------------------------------
