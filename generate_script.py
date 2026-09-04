@@ -109,17 +109,20 @@ LANG_TEMPLATES = {
 }
 
 
-def build_script(records, state, commodity, lang="hi", yesterday_prices=None):
+def _build_parts(records, state, commodity, lang="hi", yesterday_prices=None):
+    """Builds the individual narration segments (intro / market lines / trend /
+    outro) exactly once. Both build_script() (the audio narration) and
+    build_script_and_captions() (narration + matching on-screen captions)
+    call this, so the spoken words and the captions can never drift apart --
+    the caption for a segment is always the literal sentence being spoken."""
     tpl = LANG_TEMPLATES.get(lang, LANG_TEMPLATES["hi"])
     today = date.today().strftime("%d %B %Y")
 
-    lines = [
-        tpl["intro"].format(date=today, state=state, commodity=commodity),
-        "",
-    ]
+    intro = tpl["intro"].format(date=today, state=state, commodity=commodity)
 
+    market_lines = []
     for r in records[:3]:
-        lines.append(tpl["line"].format(
+        market_lines.append(tpl["line"].format(
             market=r.get("market", "").strip(),
             commodity=commodity,
             min=r.get("min_price", "N/A"),
@@ -127,23 +130,69 @@ def build_script(records, state, commodity, lang="hi", yesterday_prices=None):
             modal=r.get("modal_price", "N/A"),
         ))
 
+    trend = None
+    trend_data = None  # raw {direction, pct} for the Bull vs Bear visual segment
     if yesterday_prices and records:
         top = records[0]
-        trend = compute_trend(
+        trend_result = compute_trend(
             yesterday_prices, top.get("market", "").strip(),
             top.get("modal_price"),
         )
-        if trend:
-            direction, pct = trend
-            lines.append("")
-            lines.append(tpl["trend"].format(
+        if trend_result:
+            direction, pct = trend_result
+            trend = tpl["trend"].format(
                 market=top.get("market", "").strip(),
                 commodity=commodity,
                 pct=pct,
                 trend=tpl["trend_word"][direction],
                 modal=top.get("modal_price", "N/A"),
-            ))
+            )
+            trend_data = {"direction": direction, "pct": pct}
 
+    outro = tpl["outro"]
+    return intro, market_lines, trend, trend_data, outro
+
+
+def build_script(records, state, commodity, lang="hi", yesterday_prices=None):
+    """Unchanged from before: one script string, for make_audio.py."""
+    intro, market_lines, trend, trend_data, outro = _build_parts(records, state, commodity, lang, yesterday_prices)
+    lines = [intro, ""]
+    lines.extend(market_lines)
+    if trend:
+        lines.append("")
+        lines.append(trend)
     lines.append("")
-    lines.append(tpl["outro"])
+    lines.append(outro)
     return "\n".join(lines)
+
+
+def build_script_and_captions(records, state, commodity, lang="hi", yesterday_prices=None):
+    """Same narration text as build_script() (so make_audio.py doesn't
+    change at all), PLUS the individual pieces split out for use as
+    on-screen captions in make_video.py -- so the captions always say
+    exactly what the voice is saying, word for word.
+
+    Returns (script_text, captions) where captions is:
+        {"intro": str, "markets": [str, ...], "trend": str or None,
+         "trend_data": {"direction": "up"/"down"/"flat", "pct": float} or None}
+    trend_data carries the raw numbers (not the sentence) for the Bull vs
+    Bear visual segment in make_video.py -- it's None whenever there's no
+    day-over-day comparison available (e.g. first day, no price history yet).
+    """
+    intro, market_lines, trend, trend_data, outro = _build_parts(records, state, commodity, lang, yesterday_prices)
+    lines = [intro, ""]
+    lines.extend(market_lines)
+    if trend:
+        lines.append("")
+        lines.append(trend)
+    lines.append("")
+    lines.append(outro)
+    script_text = "\n".join(lines)
+
+    captions = {
+        "intro": intro,
+        "markets": market_lines,
+        "trend": trend,
+        "trend_data": trend_data,
+    }
+    return script_text, captions
