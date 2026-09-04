@@ -2,7 +2,11 @@ name: Daily TaazaBhav Upload
 
 on:
   schedule:
-    - cron: "30 1 * * *"
+    - cron: "30 1 * * *"  # 07:00 IST -- Uttar Pradesh, Onion
+    - cron: "20 2 * * *"  # 07:50 IST -- Maharashtra, Onion
+    - cron: "10 3 * * *"  # 08:40 IST -- West Bengal, Potato
+    - cron: "0 4 * * *"   # 09:30 IST -- Karnataka, Tomato
+    - cron: "50 4 * * *"  # 10:20 IST -- Punjab, Potato
   workflow_dispatch:
 
 permissions:
@@ -32,11 +36,46 @@ jobs:
           echo "${{ secrets.YT_TOKEN_PICKLE_B64 }}" | base64 -d -i > token.pickle
           echo "${{ secrets.YT_CLIENT_SECRET_B64 }}" | base64 -d -i > client_secret.json
 
+      # Each of the 5 cron schedules above fires this same workflow at a
+      # different time. github.event.schedule tells us exactly which one
+      # fired, so we can process just that one state/commodity per run --
+      # this is what actually spreads the 5 uploads across the morning
+      # instead of firing them all back-to-back in one run.
+      #
+      # A manual "Run workflow" click (workflow_dispatch) has no schedule,
+      # so it falls through to the default case below -- main.py then runs
+      # every target in TARGETS in one go, same as testing locally.
+      - name: Pick today's target from the schedule that fired
+        run: |
+          case "${{ github.event.schedule }}" in
+            "30 1 * * *")
+              echo "YT_STATE=Uttar Pradesh" >> "$GITHUB_ENV"
+              echo "YT_COMMODITY=Onion" >> "$GITHUB_ENV"
+              ;;
+            "20 2 * * *")
+              echo "YT_STATE=Maharashtra" >> "$GITHUB_ENV"
+              echo "YT_COMMODITY=Onion" >> "$GITHUB_ENV"
+              ;;
+            "10 3 * * *")
+              echo "YT_STATE=West Bengal" >> "$GITHUB_ENV"
+              echo "YT_COMMODITY=Potato" >> "$GITHUB_ENV"
+              ;;
+            "0 4 * * *")
+              echo "YT_STATE=Karnataka" >> "$GITHUB_ENV"
+              echo "YT_COMMODITY=Tomato" >> "$GITHUB_ENV"
+              ;;
+            "50 4 * * *")
+              echo "YT_STATE=Punjab" >> "$GITHUB_ENV"
+              echo "YT_COMMODITY=Potato" >> "$GITHUB_ENV"
+              ;;
+            *)
+              echo "Manual run -- no single target set, main.py will process every TARGETS entry."
+              ;;
+          esac
+
       - name: Run pipeline
         env:
           DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
-          YT_STATE: "Uttar Pradesh"
-          YT_COMMODITY: "Onion"
           YT_LANG: "hi"
         run: python main.py
 
