@@ -104,8 +104,23 @@ def run_pipeline(state, commodity, lang="hi"):
         "APMC price", "kisan mandi rate", "TaazaBhav", "shorts"
     ]
 
+    # Auto-posted immediately after upload for engagement/SEO. NOTE: the
+    # YouTube Data API has no "pin comment" endpoint at all (only
+    # list/insert/update/delete/setModerationStatus exist on Comments), so
+    # this can't be auto-pinned -- it just posts the comment. Pin it
+    # manually in YouTube Studio if you want it pinned (one tap per video).
+    comment_text = (
+        f"Aaj ({today_str}) {state} ke mandiyon mein {commodity} ka poora bhav:\n\n"
+        f"{market_lines}\n\n"
+        f"Ye update roz subah 6 baje se pehle milega. Channel subscribe karein "
+        f"taaki koi din miss na ho."
+    )
+
     try:
-        video_id = upload_video(video_path, title, description, tags, thumbnail_path=thumb_path)
+        video_id = upload_video(
+            video_path, title, description, tags,
+            thumbnail_path=thumb_path, comment_text=comment_text,
+        )
         print(f"Done! https://youtu.be/{video_id}")
         save_today_prices(state, commodity, records)
     except Exception as e:
