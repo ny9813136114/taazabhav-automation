@@ -31,8 +31,7 @@ def fetch_prices(state="Uttar Pradesh", commodity="Onion", limit=15):
         if r.get("state", "").strip().lower() == state.strip().lower()
     ]
 
-    if not state_records:
-        return all_records[:limit]
+  
 
     return state_records[:limit]
 
