@@ -118,7 +118,7 @@ def build_script(records, state, commodity, lang="hi", yesterday_prices=None):
         "",
     ]
 
-    for r in records[:8]:
+    for r in records[:3]:
         lines.append(tpl["line"].format(
             market=r.get("market", "").strip(),
             commodity=commodity,

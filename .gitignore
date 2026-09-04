@@ -4,3 +4,10 @@ client_secret.json
 .env 
 *.mp4 
 *.mp3 
+token_b64.txt
+client_b64.txt
+check.txt
+thumb.jpg
+preview.mp3
+preview.mp4
+preview_thumb.jpg
