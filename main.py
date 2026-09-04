@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from fetch_prices import fetch_prices
-from generate_script import build_script
+from generate_script import build_script_and_captions
 from make_audio import make_audio
 from make_video import make_video
 from make_thumbnail import generate_thumbnail
@@ -14,7 +14,7 @@ TARGETS = [
     {"state": "Maharashtra", "commodity": "Onion", "lang": "hi"},
     {"state": "West Bengal", "commodity": "Potato", "lang": "hi"},
     {"state": "Karnataka", "commodity": "Tomato", "lang": "hi"},
-    {"state": "Punjab", "commodity": "Wheat", "lang": "hi"},
+    {"state": "Punjab", "commodity": "Potato", "lang": "hi"},
 ]
 
 
@@ -28,7 +28,11 @@ def run_pipeline(state, commodity, lang="hi"):
         print(f"No mandi data found for {commodity} in {state} today. Skipping.")
         return
 
-    script = build_script(records, state, commodity, lang=lang, yesterday_prices=yesterday_prices)
+    # build_script_and_captions() returns the exact same narration text as the
+    # old build_script() did (make_audio.py doesn't change at all), PLUS the
+    # individual sentences split out so they can be burned in as on-screen
+    # captions -- captions always say exactly what the voice is saying.
+    script, captions = build_script_and_captions(records, state, commodity, lang=lang, yesterday_prices=yesterday_prices)
     print(script)
 
     today_str = datetime.now().strftime("%d %b %Y")
@@ -39,7 +43,12 @@ def run_pipeline(state, commodity, lang="hi"):
     thumb_path = f"thumb_{safe_name}.jpg"
 
     make_audio(script, out_path=audio_path, lang=lang)
-    make_video(audio_path, records, state, commodity, lang, output_path=video_path, date_str=today_str)
+    make_video(
+        audio_path, records, state, commodity, lang,
+        output_path=video_path, date_str=today_str,
+        intro_caption=captions["intro"],
+        market_captions=captions["markets"],
+    )
     generate_thumbnail(commodity, state, records, today_str, out_path=thumb_path)
 
     title = f"#Shorts {commodity} Bhav Today {today_str} | {state} Mandi Price Update"
@@ -80,6 +89,21 @@ def run_pipeline(state, commodity, lang="hi"):
 
 
 def main():
+    # GitHub Actions sets YT_STATE/YT_COMMODITY for a single scheduled run
+    # (one state/commodity per cron trigger, staggered through the morning).
+    # Running locally (python main.py) leaves these unset, so it falls back
+    # to processing every target in TARGETS in one go -- same as before.
+    single_state = os.environ.get("YT_STATE")
+    single_commodity = os.environ.get("YT_COMMODITY")
+    single_lang = os.environ.get("YT_LANG", "hi")
+
+    if single_state and single_commodity:
+        try:
+            run_pipeline(single_state, single_commodity, single_lang)
+        except Exception as e:
+            print(f"Error processing {single_commodity} - {single_state}: {e}")
+        return
+
     for target in TARGETS:
         try:
             run_pipeline(target["state"], target["commodity"], target.get("lang", "hi"))
