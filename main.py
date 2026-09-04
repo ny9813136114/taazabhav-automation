@@ -8,60 +8,83 @@ from make_thumbnail import generate_thumbnail
 from upload_youtube import upload_video
 from price_history import load_yesterday_prices, save_today_prices
 
-STATE = os.environ.get("YT_STATE", "Uttar Pradesh")
-COMMODITY = os.environ.get("YT_COMMODITY", "Onion")
-LANG = os.environ.get("YT_LANG", "hi")
+# ---- States/commodities to cover in each daily run (items with real daily demand) ----
+TARGETS = [
+    {"state": "Uttar Pradesh", "commodity": "Onion", "lang": "hi"},
+    {"state": "Maharashtra", "commodity": "Onion", "lang": "hi"},
+    {"state": "West Bengal", "commodity": "Potato", "lang": "hi"},
+    {"state": "Karnataka", "commodity": "Tomato", "lang": "hi"},
+    {"state": "Punjab", "commodity": "Wheat", "lang": "hi"},
+]
 
 
-def main():
-    yesterday_prices = load_yesterday_prices(STATE, COMMODITY)
-    records = fetch_prices(state=STATE, commodity=COMMODITY)
+def run_pipeline(state, commodity, lang="hi"):
+    print(f"\n=== Processing {commodity} - {state} ===")
+
+    yesterday_prices = load_yesterday_prices(state, commodity)
+    records = fetch_prices(state=state, commodity=commodity)
 
     if not records:
-        print("No mandi data found today (mandi holiday?). Skipping.")
+        print(f"No mandi data found for {commodity} in {state} today. Skipping.")
         return
 
-    script = build_script(records, STATE, COMMODITY, lang=LANG, yesterday_prices=yesterday_prices)
+    script = build_script(records, state, commodity, lang=lang, yesterday_prices=yesterday_prices)
     print(script)
 
     today_str = datetime.now().strftime("%d %b %Y")
 
-    make_audio(script, out_path="output.mp3", lang=LANG)
-    make_video("output.mp3", records, STATE, COMMODITY, LANG, output_path="output.mp4", date_str=today_str)
-    generate_thumbnail(COMMODITY, STATE, records, today_str, out_path="thumb.jpg")
+    safe_name = f"{state}_{commodity}".replace(" ", "_")
+    audio_path = f"output_{safe_name}.mp3"
+    video_path = f"output_{safe_name}.mp4"
+    thumb_path = f"thumb_{safe_name}.jpg"
 
-    # ---- SEO-optimized title ----
-    title = f"#Shorts {COMMODITY} Bhav Today {today_str} | {STATE} Mandi Price Update"
+    make_audio(script, out_path=audio_path, lang=lang)
+    make_video(audio_path, records, state, commodity, lang, output_path=video_path, date_str=today_str)
+    generate_thumbnail(commodity, state, records, today_str, out_path=thumb_path)
 
-    # ---- SEO-optimized description ----
-    top_markets = records[:5] if records else []
+    title = f"#Shorts {commodity} Bhav Today {today_str} | {state} Mandi Price Update"
+
+    top_markets = records[:5]
     market_lines = "\n".join(
         f"- {r.get('market')}: Rs.{r.get('modal_price')}/quintal"
         for r in top_markets
     )
 
     description = (
-        f"{COMMODITY} Mandi Bhav Today ({today_str}) - {STATE}\n\n"
-        f"Aaj {STATE} ke mandiyon mein {COMMODITY} ka taaza bhav:\n\n"
+        f"{commodity} Mandi Bhav Today ({today_str}) - {state}\n\n"
+        f"Aaj {state} ke mandiyon mein {commodity} ka taaza bhav:\n\n"
         f"{market_lines}\n\n"
-        f"Ye video roz automatically {STATE} ke APMC mandis ke official data.gov.in data se banti hai. "
+        f"Ye video roz automatically {state} ke APMC mandis ke official data.gov.in data se banti hai. "
         f"Kisan aur vyapari roz ka sahi bhav yahan dekh sakte hain.\n\n"
         f"Subscribe karo TaazaBhav ko roz ka mandi bhav paane ke liye!\n\n"
-        f"#mandibhav #{COMMODITY.lower()}price #{STATE.lower().replace(' ', '')}mandi #shorts"
+        f"#mandibhav #{commodity.lower()}price #{state.lower().replace(' ', '')}mandi #shorts"
     )
 
-    # ---- SEO tags ----
     tags = [
-        "mandi bhav", "mandi bhav today", f"{COMMODITY.lower()} price today",
-        f"{COMMODITY.lower()} ka bhav", f"{STATE.lower()} mandi rate",
-        f"{STATE.lower()} mandi bhav", "aaj ka mandi bhav", "agriculture price india",
+        "mandi bhav", "mandi bhav today", f"{commodity.lower()} price today",
+        f"{commodity.lower()} ka bhav", f"{state.lower()} mandi rate",
+        f"{state.lower()} mandi bhav", "aaj ka mandi bhav", "agriculture price india",
         "APMC price", "kisan mandi rate", "TaazaBhav", "shorts"
     ]
 
-    video_id = upload_video("output.mp4", title, description, tags, thumbnail_path="thumb.jpg")
-    print(f"Done! https://youtu.be/{video_id}")
+    try:
+        video_id = upload_video(video_path, title, description, tags, thumbnail_path=thumb_path)
+        print(f"Done! https://youtu.be/{video_id}")
+        save_today_prices(state, commodity, records)
+    except Exception as e:
+        print(f"Upload failed for {commodity} - {state}: {e}")
 
-    save_today_prices(STATE, COMMODITY, records)
+    for f in [audio_path, video_path, thumb_path]:
+        if os.path.exists(f):
+            os.remove(f)
+
+
+def main():
+    for target in TARGETS:
+        try:
+            run_pipeline(target["state"], target["commodity"], target.get("lang", "hi"))
+        except Exception as e:
+            print(f"Error processing {target}: {e}")
 
 
 if __name__ == "__main__":
