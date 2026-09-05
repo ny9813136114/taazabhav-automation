@@ -8,6 +8,7 @@ from make_video import make_video
 from make_thumbnail import generate_thumbnail
 from upload_youtube import upload_video
 from price_history import load_yesterday_prices, save_today_prices
+from notify import send_telegram_alert
 
 # ---- States/commodities to cover in each daily run (items with real daily demand) ----
 TARGETS = [
@@ -127,6 +128,7 @@ def run_pipeline(state, commodity, lang="hi"):
     except Exception as e:
         print(f"Upload failed for {commodity} - {state}: {e}")
         traceback.print_exc()
+        send_telegram_alert(f"TaazaBhav ALERT: upload failed for {commodity} - {state}\n\n{e}")
 
     for f in [audio_path, video_path, thumb_path]:
         if os.path.exists(f):
@@ -148,6 +150,9 @@ def main():
         except Exception as e:
             print(f"Error processing {single_commodity} - {single_state}: {e}")
             traceback.print_exc()
+            send_telegram_alert(
+                f"TaazaBhav ALERT: {single_commodity} - {single_state} run crashed\n\n{e}"
+            )
         return
 
     for target in TARGETS:
@@ -156,6 +161,9 @@ def main():
         except Exception as e:
             print(f"Error processing {target}: {e}")
             traceback.print_exc()
+            send_telegram_alert(
+                f"TaazaBhav ALERT: {target['commodity']} - {target['state']} run crashed\n\n{e}"
+            )
 
 
 if __name__ == "__main__":
