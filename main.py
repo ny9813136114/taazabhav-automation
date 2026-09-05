@@ -9,7 +9,6 @@ from make_thumbnail import generate_thumbnail
 from upload_youtube import upload_video
 from price_history import load_yesterday_prices, save_today_prices
 from notify import send_telegram_alert
-
 # ---- States/commodities to cover in each daily run (items with real daily demand) ----
 TARGETS = [
     {"state": "Uttar Pradesh", "commodity": "Onion", "lang": "hi"},
@@ -18,7 +17,6 @@ TARGETS = [
     {"state": "Karnataka", "commodity": "Tomato", "lang": "hi"},
     {"state": "Punjab", "commodity": "Potato", "lang": "hi"},
 ]
-
 # ---- Content-format variety: rotates day to day so the channel doesn't look
 # like the same templated video every single day (also helps with YouTube's
 # repetitive/inauthentic-content policy risk on a fully-automated channel).
@@ -36,39 +34,29 @@ TARGETS = [
 # GitHub Actions job) agrees on which format to use without needing to
 # share state between them.
 FORMAT_ROTATION = ["ticker", "trend", "countdown", "spotlight"]
-
-
 def _todays_format():
     day_of_year = datetime.now().timetuple().tm_yday
     return FORMAT_ROTATION[day_of_year % len(FORMAT_ROTATION)]
-
-
 def run_pipeline(state, commodity, lang="hi"):
     print(f"\n=== Processing {commodity} - {state} ===")
-
     yesterday_prices = load_yesterday_prices(state, commodity)
     records = fetch_prices(state=state, commodity=commodity)
-
     if not records:
         print(f"No mandi data found for {commodity} in {state} today. Skipping.")
         return
-
     # build_script_and_captions() returns the exact same narration text as the
     # old build_script() did (make_audio.py doesn't change at all), PLUS the
     # individual sentences split out so they can be burned in as on-screen
     # captions -- captions always say exactly what the voice is saying.
     script, captions = build_script_and_captions(records, state, commodity, lang=lang, yesterday_prices=yesterday_prices)
     print(script)
-
     today_str = datetime.now().strftime("%d %b %Y")
     format_mode = _todays_format()
     print(f"Format today: {format_mode}")
-
     safe_name = f"{state}_{commodity}".replace(" ", "_")
     audio_path = f"output_{safe_name}.mp3"
     video_path = f"output_{safe_name}.mp4"
     thumb_path = f"thumb_{safe_name}.jpg"
-
     make_audio(script, out_path=audio_path, lang=lang)
     make_video(
         audio_path, records, state, commodity, lang,
@@ -80,15 +68,22 @@ def run_pipeline(state, commodity, lang="hi"):
         trend_caption=captions["trend"],
     )
     generate_thumbnail(commodity, state, records, today_str, out_path=thumb_path)
-
-    title = f"#Shorts {commodity} Bhav Today {today_str} | {state} Mandi Price Update"
-
+    # Specific mandi/APMC name (e.g. "Sealdah", "Azadpur") straight from
+    # today's data.gov.in record, not just the broad state name. Real
+    # competitor channels in this niche (checked via vidIQ) name their
+    # specific mandi and rank far better on it than on the state name --
+    # e.g. "mandsaur mandi bhav" scores much less competitive (33/100)
+    # than generic "mandi bhav" (48/100) in vidIQ's own keyword data.
+    # Falls back to the state name on the rare day a record has no market
+    # field, so this never breaks the pipeline.
+    mandi_name = str(records[0].get("market", "")).strip() if records else ""
+    location_label = mandi_name if mandi_name else state
+    title = f"#Shorts {commodity} Bhav Today {today_str} | {location_label} Mandi, {state}"
     top_markets = records[:5]
     market_lines = "\n".join(
         f"- {r.get('market')}: Rs.{r.get('modal_price')}/quintal"
         for r in top_markets
     )
-
     description = (
         f"{commodity} Mandi Bhav Today ({today_str}) - {state}\n\n"
         f"Aaj {state} ke mandiyon mein {commodity} ka taaza bhav:\n\n"
@@ -98,14 +93,13 @@ def run_pipeline(state, commodity, lang="hi"):
         f"Subscribe karo TaazaBhav ko roz ka mandi bhav paane ke liye!\n\n"
         f"#mandibhav #{commodity.lower()}price #{state.lower().replace(' ', '')}mandi #shorts"
     )
-
     tags = [
         "mandi bhav", "mandi bhav today", f"{commodity.lower()} price today",
         f"{commodity.lower()} ka bhav", f"{state.lower()} mandi rate",
         f"{state.lower()} mandi bhav", "aaj ka mandi bhav", "agriculture price india",
-        "APMC price", "kisan mandi rate", "TaazaBhav", "shorts"
+        "APMC price", "kisan mandi rate", "TaazaBhav", "shorts",
+        f"{location_label.lower()} mandi bhav",
     ]
-
     # Auto-posted immediately after upload for engagement/SEO. NOTE: the
     # YouTube Data API has no "pin comment" endpoint at all (only
     # list/insert/update/delete/setModerationStatus exist on Comments), so
@@ -117,7 +111,6 @@ def run_pipeline(state, commodity, lang="hi"):
         f"Ye update roz subah 6 baje se pehle milega. Channel subscribe karein "
         f"taaki koi din miss na ho."
     )
-
     try:
         video_id = upload_video(
             video_path, title, description, tags,
@@ -129,12 +122,9 @@ def run_pipeline(state, commodity, lang="hi"):
         print(f"Upload failed for {commodity} - {state}: {e}")
         traceback.print_exc()
         send_telegram_alert(f"TaazaBhav ALERT: upload failed for {commodity} - {state}\n\n{e}")
-
     for f in [audio_path, video_path, thumb_path]:
         if os.path.exists(f):
             os.remove(f)
-
-
 def main():
     # GitHub Actions sets YT_STATE/YT_COMMODITY for a single scheduled run
     # (one state/commodity per cron trigger, staggered through the morning).
@@ -143,7 +133,6 @@ def main():
     single_state = os.environ.get("YT_STATE")
     single_commodity = os.environ.get("YT_COMMODITY")
     single_lang = os.environ.get("YT_LANG", "hi")
-
     if single_state and single_commodity:
         try:
             run_pipeline(single_state, single_commodity, single_lang)
@@ -154,7 +143,6 @@ def main():
                 f"TaazaBhav ALERT: {single_commodity} - {single_state} run crashed\n\n{e}"
             )
         return
-
     for target in TARGETS:
         try:
             run_pipeline(target["state"], target["commodity"], target.get("lang", "hi"))
@@ -164,7 +152,5 @@ def main():
             send_telegram_alert(
                 f"TaazaBhav ALERT: {target['commodity']} - {target['state']} run crashed\n\n{e}"
             )
-
-
 if __name__ == "__main__":
     main()
