@@ -35,7 +35,20 @@ FUSION_DEFAULT = {"bg": (255, 159, 69), "icon": (122, 140, 255), "label": (233, 
 
 
 def _font(path, size):
-    return ImageFont.truetype(path, size)
+    try:
+        return ImageFont.truetype(path, size)
+    except OSError as e:
+        # PIL/FreeType's own error for this ("cannot open resource") never
+        # says WHICH file it choked on -- that's the #1 thing that makes
+        # font bugs hard to diagnose from CI logs. Re-raise with the path
+        # and size attached so the real log line tells us exactly what to
+        # go check (missing file, wrong case on the Linux runner, or a
+        # corrupted/Git-LFS-pointer file instead of the real binary).
+        raise OSError(
+            f"Cannot open font file '{path}' (size={size}): {e}. "
+            f"Check that this exact path/filename (case-sensitive on GitHub Actions' "
+            f"Linux runner) is committed to the repo as a real binary .ttf file."
+        ) from e
 
 
 def _top_price(records):
