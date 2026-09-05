@@ -1,4 +1,5 @@
 import os
+import traceback
 from datetime import datetime
 from fetch_prices import fetch_prices
 from generate_script import build_script_and_captions
@@ -125,6 +126,7 @@ def run_pipeline(state, commodity, lang="hi"):
         save_today_prices(state, commodity, records)
     except Exception as e:
         print(f"Upload failed for {commodity} - {state}: {e}")
+        traceback.print_exc()
 
     for f in [audio_path, video_path, thumb_path]:
         if os.path.exists(f):
@@ -145,6 +147,7 @@ def main():
             run_pipeline(single_state, single_commodity, single_lang)
         except Exception as e:
             print(f"Error processing {single_commodity} - {single_state}: {e}")
+            traceback.print_exc()
         return
 
     for target in TARGETS:
@@ -152,6 +155,7 @@ def main():
             run_pipeline(target["state"], target["commodity"], target.get("lang", "hi"))
         except Exception as e:
             print(f"Error processing {target}: {e}")
+            traceback.print_exc()
 
 
 if __name__ == "__main__":
