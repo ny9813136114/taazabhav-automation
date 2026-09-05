@@ -36,16 +36,19 @@
   },
   "2026-09-05": {
     "Ahirora APMC": 1000,
-    "Buland Shahr APMC": 2800,
-    "Kanpur(Grain) APMC": 3500,
-    "Hardoi APMC": 2300,
-    "Agra APMC": 2500,
-    "Sikanderabad APMC": 4000,
+    "Jhansi APMC": 1900,
     "Muradabad APMC": 2500,
-    "Shamli APMC": 4500,
-    "Kairana APMC": 3300,
-    "Fatehpur APMC": 3500,
-    "Varanasi APMC": 3500,
-    "Mathura APMC": 2257.14
+    "Chandausi APMC": 1888.47,
+    "Mugrabaadshahpur APMC": 2500,
+    "Shadabad APMC": 4800,
+    "Gorakhpur APMC": 2500,
+    "Khandhla APMC": 4500,
+    "Agra APMC": 2500,
+    "Rampurmaniharan APMC": 2411.11,
+    "Sitapur APMC": 2800,
+    "Dhampur APMC": 2500,
+    "Bahraich APMC": 2500,
+    "Mathura APMC": 2445.71,
+    "Prayagraj APMC": 3100
   }
 }
