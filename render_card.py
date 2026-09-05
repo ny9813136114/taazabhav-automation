@@ -128,6 +128,27 @@ def _decorative_rings(w, h, cx, cy, color=(*DARK, 36)):
     return layer
 
 
+def _thick_arrow(length=200, thickness=42, color=(255, 90, 60)):
+    """Bold flat 'look here' arrow pointing right. Caller rotates the
+    returned image to point wherever it needs to (e.g. down-right toward
+    a price card) -- used to fill otherwise-empty thumbnail space AND
+    give the eye an explicit place to land, per vidIQ's thumbnail-score
+    feedback ("no clear visual guidance for the viewer's eye")."""
+    head_len = int(thickness * 2.2)
+    shaft_len = max(length - head_len, 10)
+    h = int(thickness * 2.2)
+    img = Image.new("RGBA", (length, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    mid = h // 2
+    d.rectangle([0, mid - thickness // 2, shaft_len, mid + thickness // 2], fill=(*color, 255))
+    d.polygon([
+        (shaft_len, mid - head_len // 2),
+        (shaft_len, mid + head_len // 2),
+        (shaft_len + head_len, mid),
+    ], fill=(*color, 255))
+    return img
+
+
 def _rounded_panel(w, h, radius, fill, outline=None, width=0):
     layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     d = ImageDraw.Draw(layer)
@@ -263,6 +284,19 @@ def render_vertical_card(commodity, state, records, date_str, max_markets=6):
 # ---------------------------------------------------------------------------
 
 def render_thumbnail(commodity, state, records, date_str):
+    # Sept 2026 revision: vidIQ's thumbnail scorer (real CTR-prediction
+    # feedback pulled from the actual channel, not a guess) flagged the
+    # earlier version at 57/100 for three concrete things -- too much
+    # empty/negative space, "no clear visual guidance for the viewer's
+    # eye" (no arrow/cue), and text that is hard to read at small sizes.
+    # This version: (1) a bold arrow + highlight ring pointing straight
+    # at the price so there's one obvious thing to look at, (2) a second,
+    # larger decorative-ring layer plus a bigger icon/price card so the
+    # background reads as designed rather than empty, (3) bigger/bolder
+    # fonts and a shorter, more specific location label (the actual mandi
+    # name from today's data, e.g. "Lasalgaon" or "Azadpur", instead of
+    # the broad state name -- fewer words, and it matches the
+    # specific-mandi title strategy in main.py).
     W, H = 1280, 720
     style = _style_for(commodity)
     base = Image.new("RGBA", (W, H), (*style["bg"], 255))
@@ -270,41 +304,71 @@ def render_thumbnail(commodity, state, records, date_str):
 
     rings = _decorative_rings(W, H, int(W * 0.88), int(H * 0.2))
     base.alpha_composite(rings, (0, 0))
+    rings2 = _decorative_rings(W, H, int(W * 0.14), int(H * 0.9), color=(*DARK, 26))
+    base.alpha_composite(rings2, (0, 0))
 
     brand = _rounded_badge("TAAZABHAV", _font(BALOO_BOLD, 30), CREAM, DARK, pad_x=20, pad_y=12, angle=-3)
     base.alpha_composite(brand, (pad, 34))
     date_badge = _rounded_badge(date_str.upper(), _font(BALOO_BOLD, 24), DARK, CREAM, pad_x=18, pad_y=11, border=3)
     base.alpha_composite(date_badge, (W - pad - date_badge.width, 38))
 
-    icon_size = 260
+    icon_size = 280
     icon = _flat_icon(icon_size, style["icon"], style["accent"])
     icon_x = pad
-    icon_y = (H - icon_size) // 2 + 20
+    icon_y = (H - icon_size) // 2 + 10
     base.alpha_composite(icon, (icon_x, icon_y))
 
+    # Specific mandi name (e.g. "Lasalgaon", "Azadpur") instead of the
+    # broad state name -- shorter, more locally credible, and consistent
+    # with the video title's own specific-mandi framing.
+    mandi_name = str(records[0].get("market", "")).strip() if records else ""
+    location_label = mandi_name if mandi_name else state
+
     d = ImageDraw.Draw(base)
-    name_font = _font(BALOO_BOLD, 92)
+    name_font = _font(BALOO_BOLD, 96)
     name_x = icon_x + icon_size + 16
     d.text((name_x, icon_y + 4), commodity, fill=(*DARK, 255), font=name_font)
-    sub_font = _font(WORK_SANS_MEDIUM, 36)
-    d.text((name_x, icon_y + 112), f"{state} Mandi Bhav", fill=(91, 38, 0, 255), font=sub_font)
+    sub_font = _font(WORK_SANS_BOLD, 38)
+    d.text((name_x, icon_y + 118), f"{location_label} Mandi", fill=(*DARK, 255), font=sub_font)
 
     top_price = _top_price(records)
-    price_font = _font(BALOO_BOLD, 108)
-    label_font = _font(BALOO_BOLD, 30)
+    price_font = _font(BALOO_BOLD, 116)
+    label_font = _font(BALOO_BOLD, 32)
     price_text = f"Rs. {top_price}"
     ptw = d.textlength(price_text, font=price_font)
-    card_w = int(max(ptw, 440) + 90)
-    card_h = 220
+    card_w = int(max(ptw, 460) + 100)
+    card_h = 230
     card = Image.new("RGBA", (card_w, card_h), (0, 0, 0, 0))
     cd = ImageDraw.Draw(card)
-    cd.rounded_rectangle([0, 0, card_w - 1, card_h - 1], radius=34, fill=(*DARK, 255))
-    cd.text((36, 22), "AAJ KA BHAV", fill=(*style["label"], 255), font=label_font)
-    cd.text((36, 62), price_text, fill=(*CREAM, 255), font=price_font)
+    cd.rounded_rectangle([0, 0, card_w - 1, card_h - 1], radius=36, fill=(*DARK, 255))
+    cd.text((38, 24), "AAJ KA BHAV", fill=(*style["label"], 255), font=label_font)
+    price_y = 68
+    cd.text((38, price_y), price_text, fill=(*CREAM, 255), font=price_font)
+    # Bright highlight ring around the price itself -- one unmistakable
+    # place for the eye to land on. Sized off the text's ACTUAL ink
+    # bounding box (textbbox), not font.getmetrics() -- this font's
+    # nominal ascent/descent is much taller than what digits/"Rs." ever
+    # draw, so a metrics-based ring badly overshoots both up (into the
+    # "AAJ KA BHAV" label above) and down (past the card's bottom edge).
+    ink_l, ink_t, ink_r, ink_b = cd.textbbox((38, price_y), price_text, font=price_font)
+    ring_pad_x, ring_pad_y = 24, 16
+    cd.rounded_rectangle(
+        [ink_l - ring_pad_x, ink_t - ring_pad_y, ink_r + ring_pad_x, ink_b + ring_pad_y],
+        radius=22, outline=(255, 90, 60, 255), width=7,
+    )
     card = card.rotate(-2, expand=True, resample=Image.BICUBIC)
     card_x = W - pad - card.width
     card_y = H - pad - card.height
     base.alpha_composite(card, (card_x, card_y))
+
+    # Bold arrow bridging the gap between the name block and the price
+    # card -- fills what used to be empty space and points straight at
+    # the highlighted price.
+    arrow = _thick_arrow(length=210, thickness=44, color=(255, 90, 60))
+    arrow = arrow.rotate(-38, expand=True, resample=Image.BICUBIC)
+    arrow_x = name_x + 60
+    arrow_y = icon_y + 195
+    base.alpha_composite(arrow, (arrow_x, arrow_y))
 
     return _boost_saturation(base.convert("RGB"))
 
@@ -358,7 +422,6 @@ def render_segment_intro(commodity, state, records, date_str, price_override=Non
     base.alpha_composite(card, (pad - 6, card_y))
 
     y = card_y + card.height + 34
-
     d = ImageDraw.Draw(base)
     d.text((pad, y), "OTHER MANDIS TODAY", fill=(*DARK, 255), font=_font(BALOO_BOLD, 32))
     y += 58
@@ -369,6 +432,7 @@ def render_segment_intro(commodity, state, records, date_str, price_override=Non
     list_h = row_h * n_rows + 20
     list_panel = _rounded_panel(list_w, list_h, 30, CREAM_LIGHT, outline=DARK, width=4)
     base.alpha_composite(list_panel, (pad, int(y)))
+
     d = ImageDraw.Draw(base)
     row_font = _font(WORK_SANS_BOLD, 32)
     price_row_font = _font(MONO_SEMIBOLD, 34)
@@ -383,8 +447,8 @@ def render_segment_intro(commodity, state, records, date_str, price_override=Non
         tw = d.textlength(pt, font=price_row_font)
         d.text((pad + list_w - 30 - tw, ry + 24), pt, fill=(*DARK, 255), font=price_row_font)
         ry += row_h
-    y += list_h + 30
 
+    y += list_h + 30
     if caption:
         draw_caption(base, caption, W, H, font_size=34, max_lines=3, y0=max(y, H - 260))
 
@@ -430,14 +494,17 @@ def render_segment_market(commodity, state, records, index, total, date_str, cap
     card_h = 300
     card = _rounded_panel(W - 2 * pad, card_h, 40, DARK)
     base.alpha_composite(card, (pad, card_y))
+
     d = ImageDraw.Draw(base)
     mn_font = _font(BALOO_BOLD, 44)
     tw = d.textlength(market_name, font=mn_font)
     d.text(((W - tw) // 2, card_y + 34), market_name, fill=(*CREAM, 255), font=mn_font)
+
     price_text = f"Rs. {price}"
     price_font = _font(BALOO_BOLD, 92)
     tw = d.textlength(price_text, font=price_font)
     d.text(((W - tw) // 2, card_y + 100), price_text, fill=(*style["label"], 255), font=price_font)
+
     unit_font = _font(WORK_SANS_MEDIUM, 28)
     unit_text = "per Quintal"
     tw = d.textlength(unit_text, font=unit_font)
@@ -537,8 +604,8 @@ def render_segment_trend(commodity, state, records, date_str, direction, pct, ca
     card_h = 480
     card = _rounded_panel(W - 2 * pad, card_h, 40, DARK)
     base.alpha_composite(card, (pad, card_y))
-    d = ImageDraw.Draw(base)
 
+    d = ImageDraw.Draw(base)
     sub_font = _font(WORK_SANS_MEDIUM, 28)
     sub_text = f"{top_market}  •  KAL KE MUKABLE"
     tw = d.textlength(sub_text, font=sub_font)
@@ -665,13 +732,16 @@ def render_segment_countdown(commodity, state, records, index, total, date_str, 
     card_h = 300
     card = _rounded_panel(W - 2 * pad, card_h, 40, DARK)
     base.alpha_composite(card, (pad, int(y)))
+
     d = ImageDraw.Draw(base)
     mn_font = _font(BALOO_BOLD, 42)
     tw = d.textlength(market_name, font=mn_font)
     d.text(((W - tw) // 2, y + 34), market_name, fill=(*CREAM, 255), font=mn_font)
+
     price_font = _font(BALOO_BOLD, 88)
     tw = d.textlength(price_text, font=price_font)
     d.text(((W - tw) // 2, y + 100), price_text, fill=(*style["label"], 255), font=price_font)
+
     unit_font = _font(WORK_SANS_MEDIUM, 28)
     unit_text = "per Quintal"
     tw = d.textlength(unit_text, font=unit_font)
@@ -744,8 +814,8 @@ def render_segment_spotlight(commodity, state, records, index, total, date_str, 
     card_h = 480
     card = _rounded_panel(W - 2 * pad, card_h, 40, DARK)
     base.alpha_composite(card, (pad, card_y))
-    d = ImageDraw.Draw(base)
 
+    d = ImageDraw.Draw(base)
     mn_font = _font(BALOO_BOLD, 40)
     tw = d.textlength(market_name, font=mn_font)
     d.text(((W - tw) // 2, card_y + 32), market_name, fill=(*CREAM, 255), font=mn_font)
@@ -761,9 +831,9 @@ def render_segment_spotlight(commodity, state, records, index, total, date_str, 
     gauge_y = card_y + 210
     gauge_w = gauge_x1 - gauge_x0
     gauge_h = 26
-
     track = _rounded_panel(gauge_w, gauge_h, gauge_h // 2, (91, 55, 30))
     base.alpha_composite(track, (gauge_x0, gauge_y))
+
     fill_w = int(gauge_w * progress)
     if fill_w > 6:
         fill = _rounded_panel(fill_w, gauge_h, gauge_h // 2, style["icon"])
@@ -791,6 +861,7 @@ def render_segment_spotlight(commodity, state, records, index, total, date_str, 
     modal_font = _font(BALOO_BOLD, 84)
     tw = d.textlength(modal_text, font=modal_font)
     d.text(((W - tw) // 2, gauge_y + gauge_h + 80), modal_text, fill=(*style["label"], 255), font=modal_font)
+
     unit_font = _font(WORK_SANS_MEDIUM, 26)
     unit_text = "AVERAGE (MODAL) per Quintal"
     tw = d.textlength(unit_text, font=unit_font)
