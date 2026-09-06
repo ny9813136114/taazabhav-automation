@@ -1,7 +1,18 @@
 import os
 import traceback
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from fetch_prices import fetch_prices
+
+# GitHub Actions runners' clock (and Python's datetime.now()) is UTC, but
+# every cron time in daily.yml was picked to land at a specific IST wall-clock
+# time (e.g. "30 23 * * *" = 23:30 UTC = 05:00 IST). IST is UTC+5:30, so on
+# any run between 18:30 UTC and 23:59 UTC the UTC calendar date is still
+# YESTERDAY relative to India even though it's already tomorrow morning in
+# IST -- three of the five daily runs (23:30/23:40/23:50 UTC) land in that
+# window, which is why their video titles/thumbnails were showing the wrong
+# (previous) date. Every date shown to viewers must be computed from IST,
+# not from the server's own UTC clock.
+IST = timezone(timedelta(hours=5, minutes=30))
 from generate_script import build_script_and_captions
 from make_audio import make_audio
 from make_video import make_video
@@ -35,7 +46,7 @@ TARGETS = [
 # share state between them.
 FORMAT_ROTATION = ["ticker", "trend", "countdown", "spotlight"]
 def _todays_format():
-    day_of_year = datetime.now().timetuple().tm_yday
+    day_of_year = datetime.now(IST).timetuple().tm_yday
     return FORMAT_ROTATION[day_of_year % len(FORMAT_ROTATION)]
 def run_pipeline(state, commodity, lang="hi"):
     print(f"\n=== Processing {commodity} - {state} ===")
@@ -50,7 +61,7 @@ def run_pipeline(state, commodity, lang="hi"):
     # captions -- captions always say exactly what the voice is saying.
     script, captions = build_script_and_captions(records, state, commodity, lang=lang, yesterday_prices=yesterday_prices)
     print(script)
-    today_str = datetime.now().strftime("%d %b %Y")
+    today_str = datetime.now(IST).strftime("%d %b %Y")
     format_mode = _todays_format()
     print(f"Format today: {format_mode}")
     safe_name = f"{state}_{commodity}".replace(" ", "_")
