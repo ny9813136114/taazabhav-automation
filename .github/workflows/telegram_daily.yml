@@ -18,26 +18,31 @@ permissions:
 jobs:
   broadcast:
     runs-on: ubuntu-latest
+    # Without this, a run that hangs (network stall, an infinite retry,
+    # anything) sits "in progress" forever. Because cancel-in-progress is
+    # false above, every SUBSEQUENT scheduled run then just queues up
+    # behind it and never actually starts -- from the outside this looks
+    # exactly like "automate nahi ho raha", even though the workflow file
+    # is fine, until someone notices and manually cancels/reruns it. This
+    # broadcast normally finishes in well under a minute, so 10 minutes is
+    # a generous ceiling that only ever kicks in for a genuinely stuck run.
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: "pip"
           cache-dependency-path: requirements.txt
-
       - name: Install Python dependencies
         run: pip install -r requirements.txt
-
       - name: Run Telegram broadcast
         env:
           DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python telegram_broadcast.py
-
       - name: Commit Telegram price history
         run: |
           git config user.name "TaazaBhav Bot"
