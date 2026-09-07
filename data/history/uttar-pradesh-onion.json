@@ -67,5 +67,22 @@
     "Fatehpur APMC": 3600,
     "Tanda(Rampur) APMC": 2500,
     "Anwala APMC": 2800
+  },
+  "2026-09-07": {
+    "Noida APMC": 4000,
+    "Lakhimpur APMC": 2919.85,
+    "Haathras APMC": 2500,
+    "Mathura APMC": 3500,
+    "Rampur APMC": 2524.27,
+    "Robertsganj APMC": 2000,
+    "Sirsa APMC": 1800,
+    "Sultanpur APMC": 2500,
+    "Chandausi APMC": 2210,
+    "Samsabad APMC": 2500,
+    "Lalganj APMC": 3500,
+    "Khalilabad APMC": 2500,
+    "Parikshitgarh APMC": 3000,
+    "Hardoi APMC": 2500,
+    "Hargaon (Laharpur) APMC": 2000
   }
 }
