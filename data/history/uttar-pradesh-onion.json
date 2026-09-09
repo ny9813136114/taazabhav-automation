@@ -101,5 +101,22 @@
     "Kairana APMC": 3600,
     "Khairagarh APMC": 4050,
     "Partaval APMC": 2500
+  },
+  "2026-09-09": {
+    "Sikanderabad APMC": 3500,
+    "Kanpur(Grain) APMC": 3500,
+    "Muradabad APMC": 2500,
+    "Pilibhit APMC": 2447.92,
+    "Buland Shahr APMC": 4000,
+    "Jayas APMC": 2500,
+    "Mathura APMC": 2800,
+    "Kannauj APMC": 3500,
+    "Kushinagar APMC": 1193.75,
+    "Auraiya APMC": 3500,
+    "Charra APMC": 3500,
+    "Kosikalan APMC": 1900,
+    "Mugrabaadshahpur APMC": 2500,
+    "Thanabhawan APMC": 2300,
+    "Baraut APMC": 3600
   }
 }
