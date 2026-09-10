@@ -118,5 +118,22 @@
     "Mugrabaadshahpur APMC": 2500,
     "Thanabhawan APMC": 2300,
     "Baraut APMC": 3600
+  },
+  "2026-09-10": {
+    "Noida APMC": 4000,
+    "Samsabad APMC": 2500,
+    "Khairagarh APMC": 4050,
+    "Gorakhpur APMC": 2500,
+    "Hardoi APMC": 2300,
+    "Lucknow APMC": 3500,
+    "Badayoun APMC": 3500,
+    "Jahangirabad APMC": 3000,
+    "Nawabganj APMC": 1389.77,
+    "Prayagraj APMC": 4000,
+    "Sikanderabad APMC": 3800,
+    "Gadaura APMC": 2000,
+    "Kanpur(Grain) APMC": 3500,
+    "Muradabad APMC": 2518.06,
+    "Sitapur APMC": 2800
   }
 }
