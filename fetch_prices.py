@@ -30,7 +30,11 @@ HEADERS = {
 MAX_ATTEMPTS = 3
 BACKOFF_SECONDS = [3, 6]  # delay before attempt 2, delay before attempt 3
 REQUEST_TIMEOUT = 30
-RETRYABLE_STATUS_CODES = {500, 502, 503, 504}
+# 429 included: a public, rate-limited government API polled up to ~30
+# times a day in a concentrated morning window (5 YouTube targets + 25
+# Telegram commodities, some run concurrently) is at least as likely to
+# rate-limit as to 5xx -- both are worth a backoff-and-retry.
+RETRYABLE_STATUS_CODES = {429, 500, 502, 503, 504}
 
 
 class DataFetchError(Exception):
@@ -42,9 +46,16 @@ class DataFetchError(Exception):
 
 def _get_with_retry(params):
     """GETs BASE_URL with `params`, retrying transient failures up to
-    MAX_ATTEMPTS times with backoff. Returns the successful Response.
-    Raises DataFetchError (chained to the last real exception) once all
-    attempts are exhausted or a non-retryable error is hit."""
+    MAX_ATTEMPTS times with backoff. Returns the parsed JSON body of the
+    successful response. Raises DataFetchError (chained to the last real
+    exception) once all attempts are exhausted or a non-retryable error is
+    hit.
+
+    JSON parsing happens INSIDE this retry loop, not after it returns: a
+    response that passes raise_for_status() (HTTP 200) but has a malformed
+    or non-JSON body -- a real failure mode for this API, e.g. an HTML
+    maintenance page served with a 200 -- must go through the same
+    retry/classification path as a 5xx, not bypass it entirely."""
     last_exc = None
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
@@ -55,7 +66,7 @@ def _get_with_retry(params):
                     response=resp,
                 )
             resp.raise_for_status()  # non-retryable 4xx/5xx (e.g. bad api-key) raises straight through
-            return resp
+            return resp.json()
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
             last_exc = e
             is_retryable = True
@@ -63,6 +74,21 @@ def _get_with_retry(params):
             last_exc = e
             status = e.response.status_code if e.response is not None else None
             is_retryable = status in RETRYABLE_STATUS_CODES
+        except ValueError as e:
+            # resp.json() failed to parse (e.g. requests.exceptions.
+            # JSONDecodeError, a ValueError subclass) -- a malformed body
+            # on an otherwise-200 response. At least as likely to be a
+            # transient upstream glitch as a 5xx, so retry it the same way.
+            last_exc = e
+            is_retryable = True
+        except requests.exceptions.RequestException as e:
+            # Catch-all for other transient network conditions not already
+            # covered above (e.g. ChunkedEncodingError) -- retry with the
+            # same bounded budget rather than letting an unclassified
+            # exception bypass this function's retry/error-classification
+            # boundary entirely.
+            last_exc = e
+            is_retryable = True
 
         if not is_retryable or attempt == MAX_ATTEMPTS:
             break
@@ -91,8 +117,8 @@ def fetch_all_states(commodity, limit=500):
         "limit": limit,
         "filters[commodity]": commodity,
     }
-    resp = _get_with_retry(params)
-    return resp.json().get("records", [])
+    data = _get_with_retry(params)
+    return data.get("records", [])
 
 
 def filter_by_state(records, state):

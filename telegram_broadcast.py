@@ -48,7 +48,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests
 
-from fetch_prices import fetch_all_states, filter_by_state, DataFetchError
+from fetch_prices import fetch_all_states, filter_by_state
 from notify import send_telegram_alert
 
 # ---- Single shared channel -- every state's message goes here. ------------
@@ -116,11 +116,19 @@ def _price_of(record):
 def _fetch_all_commodities():
     """Fetches ALL-STATE records for every pooled commodity exactly once,
     with bounded concurrency. Returns {commodity_name: list[record] or None}
-    -- None means that commodity's fetch permanently failed (retries
-    exhausted); callers must treat None as "skip this commodity everywhere
-    today", the same way a per-item empty result was already treated
-    before this change, while also surfacing it as a real failure (see
-    main())."""
+    -- None means that commodity's fetch permanently failed; callers must
+    treat None as "skip this commodity everywhere today", the same way a
+    per-item empty result was already treated before this change, while
+    also surfacing it as a real failure (see main()).
+
+    Catches Exception broadly, not just DataFetchError: this preserves the
+    original _fetch_commodity()'s "one item's failure never stops the
+    whole run" guarantee for ANY exception a single commodity's fetch can
+    raise (e.g. a malformed/non-JSON response body), not only the ones
+    fetch_prices.py happens to classify as DataFetchError. This function
+    has no surrounding try/except at its own call site in main(), so an
+    exception escaping here would otherwise crash the entire broadcast for
+    all 5 states, silently (before any per-state Telegram alert fires)."""
     results = {}
     with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_FETCHES) as pool:
         future_to_name = {
@@ -131,7 +139,7 @@ def _fetch_all_commodities():
             name = future_to_name[future]
             try:
                 results[name] = future.result()
-            except DataFetchError as e:
+            except Exception as e:
                 print(f"[telegram_broadcast] Permanent fetch failure for commodity '{name}': {e}")
                 results[name] = None
     return results

@@ -61,8 +61,6 @@ RESULT_SKIPPED_NO_DATA = "skipped_no_data"
 RESULT_SKIPPED_ALREADY_PUBLISHED = "skipped_already_published"
 RESULT_FAILED = "failed"
 
-_NON_FAILURE_RESULTS = {RESULT_SUCCESS, RESULT_SKIPPED_NO_DATA, RESULT_SKIPPED_ALREADY_PUBLISHED}
-
 
 def _todays_format():
     day_of_year = datetime.now(IST).timetuple().tm_yday
@@ -235,7 +233,7 @@ def main():
                 )
                 results.append(RESULT_FAILED)
 
-    any_failed = any(r not in _NON_FAILURE_RESULTS for r in results)
+    any_failed = any(r == RESULT_FAILED for r in results)
     if any_failed:
         print(f"\nPipeline finished with at least one failure: {results}")
         return 1
