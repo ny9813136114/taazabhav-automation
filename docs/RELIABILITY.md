@@ -58,9 +58,14 @@ Now:
 
 ### Retry policy (`fetch_prices.py`)
 
-- Retries only transient failures: `ConnectionError`, `Timeout`, and HTTP
-  500/502/503/504. A 4xx (e.g. a bad `api-key`) fails on the first attempt
-  -- retrying a request that can never succeed would just waste time.
+- Retries only transient failures: `ConnectionError`, `Timeout`, HTTP
+  429/500/502/503/504, a malformed/non-JSON response body on an otherwise-200
+  response, and any other `requests.exceptions.RequestException` subtype not
+  already covered. A non-retryable 4xx (e.g. a bad `api-key`) fails on the
+  first attempt -- retrying a request that can never succeed would just
+  waste time. (429 and the malformed-body case were added after a branch
+  review found the original policy excluded them; see "Branch-review fixes"
+  below.)
 - Bounded: `MAX_ATTEMPTS = 3` (1 initial + 2 retries), backoff delays of
   `[3, 6]` seconds between attempts, each attempt capped at the existing
   30s request timeout.
@@ -96,6 +101,42 @@ files written by any *other* target that succeeded in the same
 `telegram_daily.yml`'s commit steps specifically to prevent this; it does
 not change whether the job is reported as failed (the earlier "Run
 pipeline" step's exit code still does that).
+
+### Branch-review fixes
+
+A review of this branch before merging (`git diff main...phase-1a-reliability`)
+found four issues, all fixed on the branch before merge:
+
+1. **`git add data/history/ data/published/` could fail the commit step on
+   a legitimate no-op day.** `data/published/` is only created on disk by
+   `publish_state.mark_published()`, which only runs after a *successful*
+   upload -- so a run where every target legitimately skipped (no data
+   today, or already published) never creates that directory, and `git
+   add` on a path that matches no files exits non-zero, failing the
+   step (GitHub Actions runs `bash -e` by default). Fixed by committing an
+   initial `data/published/published_log.json` (`{}`) so the path always
+   exists, matching how `data/history/` itself was never empty to begin
+   with.
+2. **`telegram_broadcast._fetch_all_commodities()` had narrowed its
+   exception handling to `except DataFetchError` only**, with no
+   surrounding try/except at its call site in `main()` -- so any other
+   exception from a single commodity's concurrent fetch (see #3) crashed
+   the *entire* broadcast for all 5 states, silently, before any Telegram
+   alert could fire. Fixed by broadening back to `except Exception`,
+   restoring the original `_fetch_commodity()`'s "one item's failure never
+   stops the whole run" guarantee for any exception type, not just the
+   ones `fetch_prices.py` happens to classify as `DataFetchError`.
+3. **`fetch_all_states()` called `resp.json()` outside `_get_with_retry()`'s
+   try/except entirely** -- a response that passes `raise_for_status()`
+   (HTTP 200) but has a malformed/non-JSON body (a real failure mode for
+   this API) raised an uncaught, unclassified exception that bypassed
+   retry entirely. Fixed by moving JSON parsing inside the retry loop and
+   catching `ValueError` (the base class of `requests.exceptions.
+   JSONDecodeError`) as a retryable condition.
+4. **429 (Too Many Requests) was not in `RETRYABLE_STATUS_CODES`** --
+   arguably the single most likely transient failure mode for a public,
+   rate-limited API polled up to ~30 times a day in a concentrated morning
+   window. Added to the retryable set.
 
 ## 2. Duplicate protection (`publish_state.py`)
 
