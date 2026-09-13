@@ -70,7 +70,14 @@ def _todays_format():
 def run_pipeline(state, commodity, lang="hi"):
     print(f"\n=== Processing {commodity} - {state} ===")
 
-    today_iso = datetime.now(IST).date().isoformat()
+    # Captured once and reused for both today_iso (publish_state's identity
+    # key) and today_str (the date shown to viewers) below -- fetch_prices()
+    # can now take up to ~99s under the Phase 1A retry policy, and computing
+    # these from two separate datetime.now(IST) calls straddling that delay
+    # could let them disagree across an IST midnight (a review finding on
+    # this branch: the guard's key and the displayed date drifting apart).
+    now_ist = datetime.now(IST)
+    today_iso = now_ist.date().isoformat()
     if publish_state.is_published(today_iso, state, commodity):
         print(f"Already published today ({today_iso}) for {commodity} - {state}. Skipping to avoid a duplicate upload.")
         return RESULT_SKIPPED_ALREADY_PUBLISHED
@@ -100,7 +107,7 @@ def run_pipeline(state, commodity, lang="hi"):
     script, captions = build_script_and_captions(records, state, commodity, lang=lang, yesterday_prices=yesterday_prices)
     print(script)
 
-    today_str = datetime.now(IST).strftime("%d %b %Y")
+    today_str = now_ist.strftime("%d %b %Y")
     format_mode = _todays_format()
     print(f"Format today: {format_mode}")
 
