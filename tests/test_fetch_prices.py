@@ -88,6 +88,40 @@ class TestPermanentFailure(unittest.TestCase):
         mock_sleep.assert_not_called()
 
 
+class TestRetryableEdgeCases(unittest.TestCase):
+    """Covers two review findings from the Phase 1A branch review:
+    a malformed (non-JSON) 200 response must be retried the same as a
+    5xx, and 429 (Too Many Requests) must be retryable, not treated as a
+    permanent client error."""
+
+    @patch("fetch_prices.time.sleep", return_value=None)
+    @patch("fetch_prices.requests.get")
+    def test_malformed_json_body_is_retried(self, mock_get, mock_sleep):
+        bad_json_resp = _response(200)
+        bad_json_resp.json.side_effect = ValueError("Expecting value: line 1 column 1 (char 0)")
+        good_resp = _response(200, {"records": [{"state": "Punjab", "market": "Ludhiana APMC", "modal_price": "1200"}]})
+        mock_get.side_effect = [bad_json_resp, good_resp]
+
+        records = fetch_prices.fetch_all_states("Potato")
+
+        self.assertEqual(len(records), 1)
+        self.assertEqual(mock_get.call_count, 2)
+
+    @patch("fetch_prices.time.sleep", return_value=None)
+    @patch("fetch_prices.requests.get")
+    def test_429_is_retryable(self, mock_get, mock_sleep):
+        mock_get.side_effect = [
+            _response(429),
+            _response(200, {"records": [{"state": "Punjab", "market": "Ludhiana APMC", "modal_price": "1200"}]}),
+        ]
+
+        records = fetch_prices.fetch_all_states("Potato")
+
+        self.assertEqual(len(records), 1)
+        self.assertEqual(mock_get.call_count, 2)
+        mock_sleep.assert_called_once()
+
+
 class TestStateFiltering(unittest.TestCase):
     @patch("fetch_prices.time.sleep", return_value=None)
     @patch("fetch_prices.requests.get")
