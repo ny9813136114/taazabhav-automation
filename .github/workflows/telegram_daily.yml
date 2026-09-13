@@ -23,9 +23,15 @@ jobs:
     # false above, every SUBSEQUENT scheduled run then just queues up
     # behind it and never actually starts -- from the outside this looks
     # exactly like "automate nahi ho raha", even though the workflow file
-    # is fine, until someone notices and manually cancels/reruns it. This
-    # broadcast normally finishes in well under a minute, so 10 minutes is
-    # a generous ceiling that only ever kicks in for a genuinely stuck run.
+    # is fine, until someone notices and manually cancels/reruns it.
+    #
+    # Phase 1A: this script used to make ~125 fully-sequential upstream
+    # calls (5 states x 25 commodities) and was observed in production
+    # actually hitting this 10-minute ceiling and getting cancelled. It now
+    # batches by commodity (25 calls, not 125 -- see telegram_broadcast.py)
+    # with modest bounded concurrency, which comfortably restores headroom
+    # under this same 10-minute limit even with the new retry logic added
+    # on each call; see docs/RELIABILITY.md for the exact worst-case math.
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -43,7 +49,11 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python telegram_broadcast.py
-      - name: Commit Telegram price history
+      # if: always() -- same reasoning as daily.yml: telegram_broadcast.py
+      # now exits non-zero on a real failure, and states that DID succeed
+      # earlier in the same run must still have their history committed.
+      - name: Commit Telegram broadcast price history
+        if: always()
         run: |
           git config user.name "TaazaBhav Bot"
           git config user.email "bot@taazabhav.com"

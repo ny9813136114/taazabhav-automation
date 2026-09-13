@@ -1,0 +1,37 @@
+name: Tests
+
+# Phase 1A: this repository previously had zero automated tests (only
+# manual, unassertive test_*.py smoke scripts meant to be run by hand).
+# This workflow runs the new tests/ suite (unittest, stdlib only -- no new
+# dependency added) on every push and via manual dispatch, so regressions
+# in the reliability-critical paths (retry logic, failure-status
+# aggregation, duplicate-upload guard, historical validation) are caught
+# before they reach the scheduled production workflows.
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        env:
+          # Dummy value only -- fetch_prices.py reads this at import time,
+          # and tests must not depend on (or ever touch) the real secret.
+          DATA_GOV_API_KEY: test-key-not-real
+        run: python -m unittest discover -s tests -p "test_*.py" -v

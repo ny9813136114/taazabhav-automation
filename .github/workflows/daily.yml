@@ -30,7 +30,11 @@ jobs:
     # outside even though the workflow file itself is fine. A normal run
     # (audio + video render + thumbnail + YouTube upload) finishes well
     # under 15 minutes, so 20 is a generous ceiling that only kicks in for a
-    # genuinely stuck run.
+    # genuinely stuck run. This still comfortably covers the Phase 1A retry
+    # budget: worst case, every one of the 5 targets exhausts all retries on
+    # a fully-down upstream (~99s each, see fetch_prices.py) -- about 8-9
+    # minutes added on top of the ~1 minute of fixed setup steps, nowhere
+    # near this ceiling. See docs/RELIABILITY.md for the full analysis.
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -93,11 +97,20 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python main.py
+      # if: always() is deliberate (Phase 1A): main.py now exits non-zero
+      # when at least one target had a real failure, so this step would
+      # otherwise be SKIPPED by Actions' default if: success() behavior --
+      # discarding any OTHER targets in the same run that succeeded and
+      # already wrote real price-history/published-state files to disk.
+      # Committing must happen regardless of the job's overall pass/fail
+      # status; the failure itself is still reported by the job's own exit
+      # code (see "Run pipeline" above), not hidden by this step.
       - name: Commit price history
+        if: always()
         run: |
           git config user.name "TaazaBhav Bot"
           git config user.email "bot@taazabhav.com"
-          git add data/history/
+          git add data/history/ data/published/
           git diff --staged --quiet || git commit -m "Update price history"
           git pull --rebase
           git push
