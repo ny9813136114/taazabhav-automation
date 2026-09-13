@@ -132,6 +132,51 @@ class TestRunPipelineSuccess(unittest.TestCase):
         self.assertEqual(mock_mark.call_args.args[-1], "video123")
 
 
+class TestRunPipelineDateConsistency(unittest.TestCase):
+    """Regression test for a review finding: today_iso (publish_state's
+    identity key, checked/recorded at the start and end of run_pipeline())
+    and today_str (the date burned into the video/thumbnail/title) must
+    come from ONE datetime.now(IST) snapshot -- not two separate calls
+    that could disagree if real time crosses an IST midnight during the
+    now-up-to-~99s retried fetch in between them."""
+
+    def test_today_str_date_matches_today_iso_across_a_midnight_boundary(self):
+        import datetime as datetime_module
+
+        # Simulates the fetch call landing just before IST midnight, and
+        # any LATER datetime.now(IST) call (a regression back to two
+        # separate calls, or _todays_format()'s own call) landing just
+        # after it -- proving today_str is NOT derived from that later
+        # call.
+        before_midnight = datetime_module.datetime(2026, 9, 12, 23, 59, 59, tzinfo=main.IST)
+        after_midnight = datetime_module.datetime(2026, 9, 13, 0, 1, 0, tzinfo=main.IST)
+
+        with patch("main.datetime") as mock_datetime_cls, \
+             patch("main.publish_state.is_published", return_value=False), \
+             patch("main.publish_state.mark_published"), \
+             patch("main.load_yesterday_prices", return_value={}), \
+             patch("main.build_script_and_captions", return_value=("script", {
+                 "intro": "intro", "markets": [], "trend": None, "trend_data": None,
+             })), \
+             patch("main.make_audio", return_value=None), \
+             patch("main.make_video") as mock_make_video, \
+             patch("main.generate_thumbnail", return_value=None), \
+             patch("main.fetch_prices", return_value=SAMPLE_RECORDS), \
+             patch("main.upload_video", return_value="video123"), \
+             patch("main.save_today_prices"), \
+             patch("main.os.path.exists", return_value=False):
+            # First call is run_pipeline()'s own now_ist snapshot; any
+            # further calls (a regression, or _todays_format()'s separate
+            # one) land after midnight to prove they're not what today_str
+            # is built from.
+            mock_datetime_cls.now.side_effect = [before_midnight] + [after_midnight] * 10
+            main.run_pipeline("Punjab", "Potato")
+
+        today_str_used = mock_make_video.call_args.kwargs["date_str"]
+        today_str_date_iso = datetime_module.datetime.strptime(today_str_used, "%d %b %Y").date().isoformat()
+        self.assertEqual(today_str_date_iso, "2026-09-12")
+
+
 class TestMainMultiTargetContinuesAfterFailure(unittest.TestCase):
     """Requirement 9: one target's permanent failure must not stop the
     others in the same workflow_dispatch run."""
