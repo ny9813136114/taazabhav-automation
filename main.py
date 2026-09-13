@@ -62,22 +62,42 @@ RESULT_SKIPPED_ALREADY_PUBLISHED = "skipped_already_published"
 RESULT_FAILED = "failed"
 
 
-def _todays_format():
-    day_of_year = datetime.now(IST).timetuple().tm_yday
+def get_canonical_run_date():
+    """The ONE business date for this entire pipeline execution (Phase 1B-B).
+
+    Called exactly once, here, at the very top of main() -- never inside
+    run_pipeline() or any downstream function. Every business-date-dependent
+    component (price history, spoken narration, video title/thumbnail,
+    description, comment, format-of-the-day selection) receives this same
+    value explicitly as a parameter instead of computing its own.
+
+    Why this matters (confirmed, not theoretical -- see docs/RELIABILITY.md
+    and the Phase 1B-A investigation report): before this, main.py, generate_
+    script.py, and price_history.py each called their own date.today()/
+    datetime.now(...) independently. Real production commits proved this
+    let a single run's price-history entry, spoken narration date, and
+    video title disagree by a full day. Computing the date once here and
+    threading it down removes the possibility of that class of bug
+    entirely, rather than fixing each disagreement as it's found -- and
+    guarantees the date used stays stable even if a run straddles IST
+    midnight (fetch_prices.py's retries alone can now take up to ~99s)."""
+    return datetime.now(IST).date()
+
+
+def _todays_format(run_date):
+    day_of_year = run_date.timetuple().tm_yday
     return FORMAT_ROTATION[day_of_year % len(FORMAT_ROTATION)]
 
 
-def run_pipeline(state, commodity, lang="hi"):
+def run_pipeline(state, commodity, run_date, lang="hi"):
+    """run_date: the canonical business date for this whole pipeline
+    execution (a datetime.date, IST-derived), computed once by
+    get_canonical_run_date() in main() and passed down unchanged -- this
+    function must never compute its own "today" for any business-date
+    purpose (history key, narration, title, format-of-the-day)."""
     print(f"\n=== Processing {commodity} - {state} ===")
 
-    # Captured once and reused for both today_iso (publish_state's identity
-    # key) and today_str (the date shown to viewers) below -- fetch_prices()
-    # can now take up to ~99s under the Phase 1A retry policy, and computing
-    # these from two separate datetime.now(IST) calls straddling that delay
-    # could let them disagree across an IST midnight (a review finding on
-    # this branch: the guard's key and the displayed date drifting apart).
-    now_ist = datetime.now(IST)
-    today_iso = now_ist.date().isoformat()
+    today_iso = run_date.isoformat()
     if publish_state.is_published(today_iso, state, commodity):
         print(f"Already published today ({today_iso}) for {commodity} - {state}. Skipping to avoid a duplicate upload.")
         return RESULT_SKIPPED_ALREADY_PUBLISHED
@@ -104,11 +124,11 @@ def run_pipeline(state, commodity, lang="hi"):
     # old build_script() did (make_audio.py doesn't change at all), PLUS the
     # individual sentences split out so they can be burned in as on-screen
     # captions -- captions always say exactly what the voice is saying.
-    script, captions = build_script_and_captions(records, state, commodity, lang=lang, yesterday_prices=yesterday_prices)
+    script, captions = build_script_and_captions(records, state, commodity, run_date, lang=lang, yesterday_prices=yesterday_prices)
     print(script)
 
-    today_str = now_ist.strftime("%d %b %Y")
-    format_mode = _todays_format()
+    today_str = run_date.strftime("%d %b %Y")
+    format_mode = _todays_format(run_date)
     print(f"Format today: {format_mode}")
 
     safe_name = f"{state}_{commodity}".replace(" ", "_")
@@ -182,7 +202,7 @@ def run_pipeline(state, commodity, lang="hi"):
             thumbnail_path=thumb_path, comment_text=comment_text,
         )
         print(f"Done! https://youtu.be/{video_id}")
-        save_today_prices(state, commodity, records)
+        save_today_prices(state, commodity, records, run_date)
         # Deliberately a separate write from save_today_prices() above, and
         # deliberately placed only after upload_video() has already returned
         # a real video_id -- if upload_video() raised, we never reach this
@@ -210,6 +230,15 @@ def main():
     exit code is new."""
     results = []
 
+    # ONE canonical business date for this entire process execution --
+    # computed exactly once, here, before any target is processed, and
+    # passed explicitly to every run_pipeline() call below. See
+    # get_canonical_run_date()'s docstring for why: this is what makes a
+    # multi-target workflow_dispatch run (which can take many minutes)
+    # immune to date drift between its targets, and what makes each
+    # target's own history/narration/title internally consistent.
+    run_date = get_canonical_run_date()
+
     # GitHub Actions sets YT_STATE/YT_COMMODITY for a single scheduled run
     # (one state/commodity per cron trigger, staggered through the morning).
     # Running locally (python main.py) leaves these unset, so it falls back
@@ -220,7 +249,7 @@ def main():
 
     if single_state and single_commodity:
         try:
-            results.append(run_pipeline(single_state, single_commodity, single_lang))
+            results.append(run_pipeline(single_state, single_commodity, run_date, single_lang))
         except Exception as e:
             print(f"Error processing {single_commodity} - {single_state}: {e}")
             traceback.print_exc()
@@ -231,7 +260,7 @@ def main():
     else:
         for target in TARGETS:
             try:
-                results.append(run_pipeline(target["state"], target["commodity"], target.get("lang", "hi")))
+                results.append(run_pipeline(target["state"], target["commodity"], run_date, target.get("lang", "hi")))
             except Exception as e:
                 print(f"Error processing {target}: {e}")
                 traceback.print_exc()

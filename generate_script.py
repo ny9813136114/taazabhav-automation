@@ -108,15 +108,21 @@ LANG_TEMPLATES = {
     },
 }
 
-
-def _build_parts(records, state, commodity, lang="hi", yesterday_prices=None):
+def _build_parts(records, state, commodity, run_date, lang="hi", yesterday_prices=None):
     """Builds the individual narration segments (intro / market lines / trend /
     outro) exactly once. Both build_script() (the audio narration) and
     build_script_and_captions() (narration + matching on-screen captions)
     call this, so the spoken words and the captions can never drift apart --
-    the caption for a segment is always the literal sentence being spoken."""
+    the caption for a segment is always the literal sentence being spoken.
+
+    run_date: the canonical business date (a datetime.date) for the intro
+    line's "aaj {date} hai" -- Phase 1B-B. Must come from the caller (main.py's
+    single per-run snapshot), never from an independent date.today() here:
+    a real production incident showed this file's own former date.today()
+    call could disagree with the date already shown in the video's own
+    title/thumbnail for the same run."""
     tpl = LANG_TEMPLATES.get(lang, LANG_TEMPLATES["hi"])
-    today = date.today().strftime("%d %B %Y")
+    today = run_date.strftime("%d %B %Y")
 
     intro = tpl["intro"].format(date=today, state=state, commodity=commodity)
 
@@ -152,40 +158,54 @@ def _build_parts(records, state, commodity, lang="hi", yesterday_prices=None):
     outro = tpl["outro"]
     return intro, market_lines, trend, trend_data, outro
 
+def build_script(records, state, commodity, lang="hi", yesterday_prices=None, run_date=None):
+    """Unchanged from before: one script string, for make_audio.py.
 
-def build_script(records, state, commodity, lang="hi", yesterday_prices=None):
-    """Unchanged from before: one script string, for make_audio.py."""
-    intro, market_lines, trend, trend_data, outro = _build_parts(records, state, commodity, lang, yesterday_prices)
+    run_date is optional here (unlike build_script_and_captions(), which the
+    real pipeline calls and which requires it) specifically so the existing
+    manual smoke-test scripts (test_script.py, test_preview.py) that call
+    this function directly, standalone, with no pipeline run_date to supply,
+    keep working unchanged -- falls back to date.today() only in that
+    standalone case."""
+    if run_date is None:
+        run_date = date.today()
+    intro, market_lines, trend, trend_data, outro = _build_parts(records, state, commodity, run_date, lang, yesterday_prices)
     lines = [intro, ""]
     lines.extend(market_lines)
     if trend:
         lines.append("")
         lines.append(trend)
-    lines.append("")
+        lines.append("")
     lines.append(outro)
     return "\n".join(lines)
 
-
-def build_script_and_captions(records, state, commodity, lang="hi", yesterday_prices=None):
+def build_script_and_captions(records, state, commodity, run_date, lang="hi", yesterday_prices=None):
     """Same narration text as build_script() (so make_audio.py doesn't
     change at all), PLUS the individual pieces split out for use as
     on-screen captions in make_video.py -- so the captions always say
     exactly what the voice is saying, word for word.
 
+    run_date (required, Phase 1B-B): the canonical business date for this
+    pipeline run (a datetime.date), supplied explicitly by main.py's single
+    per-run snapshot. This is the function main.py actually calls, so
+    unlike build_script() it has no date.today() fallback -- the real
+    pipeline must always supply this, and forgetting to would be a bug
+    worth failing loudly on rather than silently recomputing the date here.
+
     Returns (script_text, captions) where captions is:
-        {"intro": str, "markets": [str, ...], "trend": str or None,
-         "trend_data": {"direction": "up"/"down"/"flat", "pct": float} or None}
+    {"intro": str, "markets": [str, ...], "trend": str or None,
+     "trend_data": {"direction": "up"/"down"/"flat", "pct": float} or None}
     trend_data carries the raw numbers (not the sentence) for the Bull vs
     Bear visual segment in make_video.py -- it's None whenever there's no
     day-over-day comparison available (e.g. first day, no price history yet).
     """
-    intro, market_lines, trend, trend_data, outro = _build_parts(records, state, commodity, lang, yesterday_prices)
+    intro, market_lines, trend, trend_data, outro = _build_parts(records, state, commodity, run_date, lang, yesterday_prices)
     lines = [intro, ""]
     lines.extend(market_lines)
     if trend:
         lines.append("")
         lines.append(trend)
-    lines.append("")
+        lines.append("")
     lines.append(outro)
     script_text = "\n".join(lines)
 

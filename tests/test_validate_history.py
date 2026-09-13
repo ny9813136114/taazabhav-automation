@@ -116,5 +116,72 @@ class TestValidateHistory(unittest.TestCase):
         self.assertEqual(len(reports), 2)
 
 
+class TestPhase1BBSchemaCompatibility(unittest.TestCase):
+    """Phase 1B-B added an `arrival_date` field alongside modal_price
+    (price_history.py now stores {"modal_price": ..., "arrival_date": ...}
+    instead of a bare number, going forward). validate_history.py must
+    keep validating correctly against the NEW shape without producing
+    false positives, and must keep working against OLD (bare-number)
+    entries already on disk -- the two shapes coexist in the same real
+    files (Part 7's explicit "do not rewrite historical files" rule)."""
+
+    def setUp(self):
+        self._tmpdir = tempfile.TemporaryDirectory()
+        self.dir = Path(self._tmpdir.name)
+
+    def tearDown(self):
+        self._tmpdir.cleanup()
+
+    def _write(self, filename, content):
+        path = self.dir / filename
+        path.write_text(json.dumps(content), encoding="utf-8")
+        return path
+
+    def test_new_wrapped_format_is_not_flagged_as_invalid(self):
+        path = self._write("punjab-potato.json", {
+            "2026-09-12": {
+                "Ludhiana APMC": {"modal_price": 800, "arrival_date": "12/09/2026"},
+                "Rajpura APMC": {"modal_price": 850, "arrival_date": "12/09/2026"},
+            },
+        })
+        report = validate_history.validate_file(path)
+        self.assertEqual(report["findings"], [])
+        self.assertEqual(report["records_scanned"], 2)
+
+    def test_new_format_na_placeholder_still_not_flagged(self):
+        path = self._write("karnataka-tomato.json", {
+            "2026-09-05": {"Doddaballapur APMC": {"modal_price": "N/A", "arrival_date": None}},
+        })
+        report = validate_history.validate_file(path)
+        self.assertEqual(report["findings"], [])
+
+    def test_new_format_implausible_magnitude_still_detected(self):
+        path = self._write("punjab-potato.json", {
+            "2026-09-05": {
+                "Quadian APMC": {"modal_price": 500, "arrival_date": "05/09/2026"},
+                "Rajpura APMC": {"modal_price": 800, "arrival_date": "05/09/2026"},
+                "Tanda APMC": {"modal_price": 1100, "arrival_date": "05/09/2026"},
+                "Raikot APMC": {"modal_price": 670, "arrival_date": "05/09/2026"},
+                "Patti APMC": {"modal_price": 0.04, "arrival_date": "05/09/2026"},
+            },
+        })
+        report = validate_history.validate_file(path)
+        outlier_findings = [f for f in report["findings"] if f["type"] == "implausible_price_magnitude"]
+        self.assertEqual(len(outlier_findings), 1)
+        self.assertEqual(outlier_findings[0]["market"], "Patti APMC")
+
+    def test_a_file_mixing_old_bare_numbers_and_new_wrapped_entries_validates_cleanly(self):
+        path = self._write("uttar-pradesh-onion.json", {
+            # Consecutive dates -- no gap -- so this test only exercises the
+            # old/new per-market value shapes, not the unrelated
+            # missing_dates_in_range check.
+            "2026-09-11": {"Lucknow APMC": 3500},  # old format, untouched on disk
+            "2026-09-12": {"Lucknow APMC": {"modal_price": 3600, "arrival_date": "12/09/2026"}},  # new format
+        })
+        report = validate_history.validate_file(path)
+        self.assertEqual(report["findings"], [])
+        self.assertEqual(report["records_scanned"], 2)
+
+
 if __name__ == "__main__":
     unittest.main()
