@@ -172,7 +172,10 @@ class TestPhase1BBSchemaCompatibility(unittest.TestCase):
 
     def test_a_file_mixing_old_bare_numbers_and_new_wrapped_entries_validates_cleanly(self):
         path = self._write("uttar-pradesh-onion.json", {
-            "2026-09-05": {"Lucknow APMC": 3500},  # old format, untouched on disk
+            # Consecutive dates -- no gap -- so this test only exercises the
+            # old/new per-market value shapes, not the unrelated
+            # missing_dates_in_range check.
+            "2026-09-11": {"Lucknow APMC": 3500},  # old format, untouched on disk
             "2026-09-12": {"Lucknow APMC": {"modal_price": 3600, "arrival_date": "12/09/2026"}},  # new format
         })
         report = validate_history.validate_file(path)
