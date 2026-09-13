@@ -5,9 +5,15 @@ This does NOT modify any file. It only reports what it finds. Running it is
 always safe: `python validate_history.py`.
 
 Built specifically against the actual schema found in this repo:
-  { "YYYY-MM-DD": { "<market name>": <modal_price or "N/A">, ... }, ... }
+  { "YYYY-MM-DD": { "<market name>": <per-market value>, ... }, ... }
 one file per (state, commodity) pair, filename "<state-slug>-<commodity>.json"
-(see price_history._history_file()).
+(see price_history._history_file()). A per-market value is either a bare
+modal_price number/"N/A" (every entry written before Phase 1B-B, still
+present on disk and never rewritten by that change) or
+{"modal_price": ..., "arrival_date": ...} (written going forward) -- see
+_unwrap_modal_price() below, which is the only place this file needed to
+change for that: every check after it runs against the same plain
+modal_price value either way, unmodified.
 
 What this checks, and why each check is deterministic given the real schema:
 
@@ -110,6 +116,18 @@ def _as_number(value):
     return float(value)
 
 
+def _unwrap_modal_price(stored_value):
+    """A per-market value is either a bare modal_price (pre-Phase-1B-B
+    entries, unchanged on disk) or {"modal_price": ..., "arrival_date": ...}
+    (current schema). Returns the plain modal_price either way, so every
+    check below keeps working against old AND new entries with no other
+    change -- this does not alter what is validated or how, only how the
+    (possibly-wrapped) value is read."""
+    if isinstance(stored_value, dict):
+        return stored_value.get("modal_price")
+    return stored_value
+
+
 def validate_file(path):
     """Returns a dict report for one history file. Never raises on bad
     data -- a file that fails to parse at all is reported as its own
@@ -154,7 +172,8 @@ def validate_file(path):
             continue
 
         market_names_this_day = []
-        for market_name, price in day_value.items():
+        for market_name, raw_value in day_value.items():
+            price = _unwrap_modal_price(raw_value)
             report["records_scanned"] += 1
             market_names_this_day.append(market_name)
 
@@ -205,7 +224,8 @@ def validate_file(path):
             for date_key, day_value in history.items():
                 if not isinstance(day_value, dict):
                     continue
-                for market_name, price in day_value.items():
+                for market_name, raw_value in day_value.items():
+                    price = _unwrap_modal_price(raw_value)
                     if _is_number(price):
                         numeric_price = _as_number(price)
                         if 0 < numeric_price < threshold:
