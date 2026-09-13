@@ -273,3 +273,21 @@ deliberately left alone in Phase 1A -- fixing it touches
 in scope here, and `publish_state.py` was written to source its date from
 the caller (`main.py`'s already-correct IST date) specifically so it
 doesn't inherit this problem. Recommended as Phase 1B follow-up.
+
+## A second-review finding, also not fixed (Phase 1B)
+
+A follow-up max-effort review of this branch found that
+`validate_history.py`'s `implausible_price_magnitude` check compares each
+price against *that file's own median* (5% of it). This is deterministic
+and safe when anomalies are isolated, but it has a real blind spot: if a
+*majority* of a file's records are already anomalously scaled -- exactly
+the pattern found in `data/telegram_history/Punjab.json`, where 11 of 18
+commodities sit in the same tiny (₹0.05-30) range -- the median itself is
+dragged down by those very records, raising the bar for what counts as an
+outlier and potentially masking most of the pattern rather than flagging
+it. The check still catches the single most extreme value (as it did for
+`punjab-potato.json`'s `Patti APMC: 0.08`), just not the full scope of a
+pervasive, systemic anomaly. Fixing this properly means comparing against
+an external reference (e.g. the same commodity's typical range across
+*other* states) rather than a file's own numbers, which is Phase 1B (Data
+Trust) work, not a Phase 1A reliability fix.
