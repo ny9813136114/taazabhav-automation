@@ -108,5 +108,67 @@
     "Dinhata APMC": 560,
     "Ghatal APMC": 830,
     "Belacoba APMC": 580
+  },
+  "2026-09-14": {
+    "Coochbehar APMC": {
+      "modal_price": 650,
+      "arrival_date": "14/09/2026"
+    },
+    "Bethuadahari APMC": {
+      "modal_price": 800,
+      "arrival_date": "14/09/2026"
+    },
+    "Champadanga APMC": {
+      "modal_price": 760,
+      "arrival_date": "14/09/2026"
+    },
+    "Belacoba APMC": {
+      "modal_price": 590,
+      "arrival_date": "14/09/2026"
+    },
+    "Chakdah APMC": {
+      "modal_price": 780,
+      "arrival_date": "14/09/2026"
+    },
+    "Falakata APMC": {
+      "modal_price": 550,
+      "arrival_date": "14/09/2026"
+    },
+    "Karsiyang(Matigara) APMC": {
+      "modal_price": 1500,
+      "arrival_date": "14/09/2026"
+    },
+    "Moynaguri APMC": {
+      "modal_price": 580,
+      "arrival_date": "14/09/2026"
+    },
+    "Pandua APMC": {
+      "modal_price": 720,
+      "arrival_date": "14/09/2026"
+    },
+    "Bara Bazar (Posta Bazar) APMC": {
+      "modal_price": 900,
+      "arrival_date": "14/09/2026"
+    },
+    "Habra APMC": {
+      "modal_price": 900,
+      "arrival_date": "14/09/2026"
+    },
+    "Jangipur APMC": {
+      "modal_price": 1300,
+      "arrival_date": "14/09/2026"
+    },
+    "Pundibari APMC": {
+      "modal_price": 650,
+      "arrival_date": "14/09/2026"
+    },
+    "Egra/contai APMC": {
+      "modal_price": 835,
+      "arrival_date": "14/09/2026"
+    },
+    "Siliguri APMC": {
+      "modal_price": 620,
+      "arrival_date": "14/09/2026"
+    }
   }
 }

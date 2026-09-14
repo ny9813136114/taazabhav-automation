@@ -118,5 +118,67 @@
     "Kanpur(Grain) APMC": 3500,
     "Muradabad APMC": 2518.06,
     "Sitapur APMC": 2800
+  },
+  "2026-09-14": {
+    "Sikanderabad APMC": {
+      "modal_price": 4000,
+      "arrival_date": "14/09/2026"
+    },
+    "Khekda APMC": {
+      "modal_price": 3600,
+      "arrival_date": "14/09/2026"
+    },
+    "Sirsa APMC": {
+      "modal_price": 2155,
+      "arrival_date": "14/09/2026"
+    },
+    "Hardoi APMC": {
+      "modal_price": 2500,
+      "arrival_date": "14/09/2026"
+    },
+    "Samsabad APMC": {
+      "modal_price": 2500,
+      "arrival_date": "14/09/2026"
+    },
+    "Khairagarh APMC": {
+      "modal_price": 3550,
+      "arrival_date": "14/09/2026"
+    },
+    "Jhansi APMC": {
+      "modal_price": 2200,
+      "arrival_date": "14/09/2026"
+    },
+    "Chaandpur APMC": {
+      "modal_price": 3000,
+      "arrival_date": "14/09/2026"
+    },
+    "Kanpur(Grain) APMC": {
+      "modal_price": 3500,
+      "arrival_date": "14/09/2026"
+    },
+    "Kosikalan APMC": {
+      "modal_price": 1921.43,
+      "arrival_date": "14/09/2026"
+    },
+    "Mathura APMC": {
+      "modal_price": 3500.47,
+      "arrival_date": "14/09/2026"
+    },
+    "Nawabganj APMC": {
+      "modal_price": 3000,
+      "arrival_date": "14/09/2026"
+    },
+    "Rudauli APMC": {
+      "modal_price": 2500,
+      "arrival_date": "14/09/2026"
+    },
+    "Shikohabad APMC": {
+      "modal_price": 2500,
+      "arrival_date": "14/09/2026"
+    },
+    "Gangoh APMC": {
+      "modal_price": 3538.46,
+      "arrival_date": "14/09/2026"
+    }
   }
 }

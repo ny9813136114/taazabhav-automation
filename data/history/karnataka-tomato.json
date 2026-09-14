@@ -7,5 +7,11 @@
     "Doddaballapur APMC": 1200,
     "Gundlupet APMC": 1500,
     "Ramanagara APMC": 1600
+  },
+  "2026-09-14": {
+    "Ramanagara APMC": {
+      "modal_price": 1600,
+      "arrival_date": "14/09/2026"
+    }
   }
 }
