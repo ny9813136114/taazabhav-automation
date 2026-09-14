@@ -180,5 +180,67 @@
       "modal_price": 3538.46,
       "arrival_date": "14/09/2026"
     }
+  },
+  "2026-09-15": {
+    "Azamgarh APMC": {
+      "modal_price": 3800,
+      "arrival_date": "14/09/2026"
+    },
+    "Chaandpur APMC": {
+      "modal_price": 3000,
+      "arrival_date": "14/09/2026"
+    },
+    "Varanasi APMC": {
+      "modal_price": 3591.77,
+      "arrival_date": "14/09/2026"
+    },
+    "Utraula APMC": {
+      "modal_price": 1200,
+      "arrival_date": "14/09/2026"
+    },
+    "Bishalpur APMC": {
+      "modal_price": 2220,
+      "arrival_date": "14/09/2026"
+    },
+    "Rampur APMC": {
+      "modal_price": 2500,
+      "arrival_date": "14/09/2026"
+    },
+    "Shahabad(New Mandi) APMC": {
+      "modal_price": 2500,
+      "arrival_date": "14/09/2026"
+    },
+    "Noida APMC": {
+      "modal_price": 4109.35,
+      "arrival_date": "14/09/2026"
+    },
+    "Saharanpur APMC": {
+      "modal_price": 3608.77,
+      "arrival_date": "14/09/2026"
+    },
+    "Muradabad APMC": {
+      "modal_price": 2500,
+      "arrival_date": "14/09/2026"
+    },
+    "Jayas APMC": {
+      "modal_price": 2500,
+      "arrival_date": "14/09/2026"
+    },
+    "Nawabganj APMC": {
+      "modal_price": 3000,
+      "arrival_date": "14/09/2026"
+    },
+    "Sirsa APMC": {
+      "modal_price": 2155,
+      "arrival_date": "14/09/2026"
+    },
+    "Hardoi APMC": {
+      "modal_price": 2500,
+      "arrival_date": "14/09/2026"
+    },
+    "Baraut APMC": {
+      "modal_price": 3600,
+      "arrival_date": "14/09/2026"
+    }
   }
 }
