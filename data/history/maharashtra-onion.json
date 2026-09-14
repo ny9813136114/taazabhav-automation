@@ -157,5 +157,63 @@
       "modal_price": 3000,
       "arrival_date": "14/09/2026"
     }
+  },
+  "2026-09-15": {
+    "APMC Akola ": {
+      "modal_price": 3600,
+      "arrival_date": "14/09/2026"
+    },
+    "APMC Pune ": {
+      "modal_price": 3000,
+      "arrival_date": "14/09/2026"
+    },
+    "APMC Vita ": {
+      "modal_price": 5000,
+      "arrival_date": "14/09/2026"
+    },
+    "Shree Sairaj Krushi Market, Dist Ahilyanagar": {
+      "modal_price": 3000,
+      "arrival_date": "14/09/2026"
+    },
+    "APMC Shevgaon ": {
+      "modal_price": 2500,
+      "arrival_date": "14/09/2026"
+    },
+    "APMC Karjat ": {
+      "modal_price": 4000,
+      "arrival_date": "14/09/2026"
+    },
+    "Rahuri(Vambori) ": {
+      "modal_price": 4100,
+      "arrival_date": "14/09/2026"
+    },
+    "Newasa(Ghodegaon) ": {
+      "modal_price": 4200,
+      "arrival_date": "14/09/2026"
+    },
+    "Pune(Pimpri) ": {
+      "modal_price": 3500,
+      "arrival_date": "14/09/2026"
+    },
+    "Amrawati(Frui & Veg. Market) ": {
+      "modal_price": 3250,
+      "arrival_date": "14/09/2026"
+    },
+    "Pune(Manjri) ": {
+      "modal_price": 3000,
+      "arrival_date": "14/09/2026"
+    },
+    "Pune(Moshi) ": {
+      "modal_price": 3500,
+      "arrival_date": "14/09/2026"
+    },
+    "APMC Lonand ": {
+      "modal_price": 4000,
+      "arrival_date": "14/09/2026"
+    },
+    "APMC Hingna": {
+      "modal_price": 5000,
+      "arrival_date": "14/09/2026"
+    }
   }
 }
