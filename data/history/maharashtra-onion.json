@@ -215,5 +215,63 @@
       "modal_price": 5000,
       "arrival_date": "14/09/2026"
     }
+  },
+  "2026-09-16": {
+    "APMC Devala ": {
+      "modal_price": 4380,
+      "arrival_date": "15/09/2026"
+    },
+    "Junnar(Alephata) ": {
+      "modal_price": 4500,
+      "arrival_date": "15/09/2026"
+    },
+    "APMC Satara ": {
+      "modal_price": 3400,
+      "arrival_date": "15/09/2026"
+    },
+    "APMC Solapur ": {
+      "modal_price": 3300,
+      "arrival_date": "15/09/2026"
+    },
+    "Shivsiddha Govind Producer Company Ltd Sanchalit Khajgi Krushi Utpann Bajar Samati-Abhona-Kalwan": {
+      "modal_price": 4450,
+      "arrival_date": "15/09/2026"
+    },
+    "APMC Dharashiv ": {
+      "modal_price": 3250,
+      "arrival_date": "15/09/2026"
+    },
+    "APMC Nagpur ": {
+      "modal_price": 4750,
+      "arrival_date": "15/09/2026"
+    },
+    "APMC Kamthi ": {
+      "modal_price": 4350,
+      "arrival_date": "15/09/2026"
+    },
+    "APMC Nasik ": {
+      "modal_price": 4300,
+      "arrival_date": "15/09/2026"
+    },
+    "APMC Gevrai ": {
+      "modal_price": 3600,
+      "arrival_date": "15/09/2026"
+    },
+    "Pune(Moshi) ": {
+      "modal_price": 3500,
+      "arrival_date": "15/09/2026"
+    },
+    "Sangli(Phale, Bhajipala Market) ": {
+      "modal_price": 3550,
+      "arrival_date": "15/09/2026"
+    },
+    "Pune(Pimpri) ": {
+      "modal_price": 4000,
+      "arrival_date": "15/09/2026"
+    },
+    "APMC Chattrapati Sambhajinagar ": {
+      "modal_price": 3675,
+      "arrival_date": "15/09/2026"
+    }
   }
 }
