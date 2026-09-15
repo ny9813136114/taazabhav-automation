@@ -13,5 +13,35 @@
       "modal_price": 1600,
       "arrival_date": "14/09/2026"
     }
+  },
+  "2026-09-15": {
+    "Doddaballapur APMC": {
+      "modal_price": 1300,
+      "arrival_date": "15/09/2026"
+    },
+    "Chickkaballapura APMC": {
+      "modal_price": 1072,
+      "arrival_date": "15/09/2026"
+    },
+    "Ramanagara APMC": {
+      "modal_price": 2000,
+      "arrival_date": "15/09/2026"
+    },
+    "Chamarajanagar APMC": {
+      "modal_price": 1400,
+      "arrival_date": "15/09/2026"
+    },
+    "Belgaum APMC": {
+      "modal_price": 1500,
+      "arrival_date": "15/09/2026"
+    },
+    "Mulbagal APMC": {
+      "modal_price": 1000,
+      "arrival_date": "15/09/2026"
+    },
+    "Gundlupet APMC": {
+      "modal_price": 1700,
+      "arrival_date": "15/09/2026"
+    }
   }
 }

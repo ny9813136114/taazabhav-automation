@@ -14,5 +14,67 @@
     "Kharar APMC": 800,
     "Sahnewal APMC": 700,
     "Lalru APMC": 870
+  },
+  "2026-09-15": {
+    "Bhagta Bhai Ka APMC": {
+      "modal_price": 900,
+      "arrival_date": "15/09/2026"
+    },
+    "GarhShankar (Kotfatuhi) APMC": {
+      "modal_price": 900,
+      "arrival_date": "15/09/2026"
+    },
+    "Bhucho APMC": {
+      "modal_price": 700,
+      "arrival_date": "15/09/2026"
+    },
+    "Kharar APMC": {
+      "modal_price": 800,
+      "arrival_date": "15/09/2026"
+    },
+    "Jalandhar City(Jalandhar) APMC": {
+      "modal_price": 260,
+      "arrival_date": "15/09/2026"
+    },
+    "Mukerian(Talwara) APMC": {
+      "modal_price": 1000,
+      "arrival_date": "15/09/2026"
+    },
+    "Raikot APMC": {
+      "modal_price": 670,
+      "arrival_date": "15/09/2026"
+    },
+    "Patti APMC": {
+      "modal_price": 0.03,
+      "arrival_date": "15/09/2026"
+    },
+    "Samrala APMC": {
+      "modal_price": 500,
+      "arrival_date": "15/09/2026"
+    },
+    "Garh Shankar APMC": {
+      "modal_price": 800,
+      "arrival_date": "15/09/2026"
+    },
+    "Lalru APMC": {
+      "modal_price": 900,
+      "arrival_date": "15/09/2026"
+    },
+    "Ahmedgarh APMC": {
+      "modal_price": 400,
+      "arrival_date": "15/09/2026"
+    },
+    "Sahnewal APMC": {
+      "modal_price": 700,
+      "arrival_date": "15/09/2026"
+    },
+    "Adampur APMC": {
+      "modal_price": 600,
+      "arrival_date": "15/09/2026"
+    },
+    "Tanda Urmur APMC": {
+      "modal_price": 1100,
+      "arrival_date": "15/09/2026"
+    }
   }
 }
