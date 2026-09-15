@@ -242,5 +242,67 @@
       "modal_price": 3600,
       "arrival_date": "14/09/2026"
     }
+  },
+  "2026-09-16": {
+    "Fatehpur APMC": {
+      "modal_price": 3640,
+      "arrival_date": "15/09/2026"
+    },
+    "Saharanpur APMC": {
+      "modal_price": 3500,
+      "arrival_date": "15/09/2026"
+    },
+    "Kanpur(Grain) APMC": {
+      "modal_price": 3500,
+      "arrival_date": "15/09/2026"
+    },
+    "Bahraich APMC": {
+      "modal_price": 2500,
+      "arrival_date": "15/09/2026"
+    },
+    "Prayagraj APMC": {
+      "modal_price": 4000,
+      "arrival_date": "15/09/2026"
+    },
+    "Raibareilly APMC": {
+      "modal_price": 3700,
+      "arrival_date": "15/09/2026"
+    },
+    "Rampur APMC": {
+      "modal_price": 2505.86,
+      "arrival_date": "15/09/2026"
+    },
+    "Shamli APMC": {
+      "modal_price": 4640,
+      "arrival_date": "15/09/2026"
+    },
+    "Shikohabad APMC": {
+      "modal_price": 2500,
+      "arrival_date": "15/09/2026"
+    },
+    "Hardoi APMC": {
+      "modal_price": 2300,
+      "arrival_date": "15/09/2026"
+    },
+    "Firozabad APMC": {
+      "modal_price": 2500,
+      "arrival_date": "15/09/2026"
+    },
+    "Amroha APMC": {
+      "modal_price": 2500,
+      "arrival_date": "15/09/2026"
+    },
+    "Kairana APMC": {
+      "modal_price": 3000,
+      "arrival_date": "15/09/2026"
+    },
+    "Jhansi APMC": {
+      "modal_price": 2200,
+      "arrival_date": "15/09/2026"
+    },
+    "Varanasi APMC": {
+      "modal_price": 3500,
+      "arrival_date": "15/09/2026"
+    }
   }
 }
