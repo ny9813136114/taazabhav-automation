@@ -35,7 +35,7 @@ jobs:
     # a fully-down upstream (~99s each, see fetch_prices.py) -- about 8-9
     # minutes added on top of the ~1 minute of fixed setup steps, nowhere
     # near this ceiling. See docs/RELIABILITY.md for the full analysis.
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
