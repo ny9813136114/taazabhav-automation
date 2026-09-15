@@ -170,5 +170,67 @@
       "modal_price": 620,
       "arrival_date": "14/09/2026"
     }
+  },
+  "2026-09-15": {
+    "Karimpur APMC": {
+      "modal_price": 800,
+      "arrival_date": "14/09/2026"
+    },
+    "Pandua APMC": {
+      "modal_price": 720,
+      "arrival_date": "14/09/2026"
+    },
+    "Dhupguri APMC": {
+      "modal_price": 590,
+      "arrival_date": "14/09/2026"
+    },
+    "Champadanga APMC": {
+      "modal_price": 760,
+      "arrival_date": "14/09/2026"
+    },
+    "Ranaghat APMC": {
+      "modal_price": 780,
+      "arrival_date": "14/09/2026"
+    },
+    "Durgapur APMC": {
+      "modal_price": 780,
+      "arrival_date": "14/09/2026"
+    },
+    "Kandi APMC": {
+      "modal_price": 720,
+      "arrival_date": "14/09/2026"
+    },
+    "Jhargram APMC": {
+      "modal_price": 750,
+      "arrival_date": "14/09/2026"
+    },
+    "Kalimpong APMC": {
+      "modal_price": 2100,
+      "arrival_date": "14/09/2026"
+    },
+    "Guskara APMC": {
+      "modal_price": 740,
+      "arrival_date": "14/09/2026"
+    },
+    "Toofanganj APMC": {
+      "modal_price": 560,
+      "arrival_date": "14/09/2026"
+    },
+    "Gangarampur(Dakshin Dinajpur) APMC": {
+      "modal_price": 590,
+      "arrival_date": "14/09/2026"
+    },
+    "Jiaganj APMC": {
+      "modal_price": 550,
+      "arrival_date": "14/09/2026"
+    },
+    "Mekhliganj APMC": {
+      "modal_price": 560,
+      "arrival_date": "14/09/2026"
+    },
+    "Barasat APMC": {
+      "modal_price": 800,
+      "arrival_date": "14/09/2026"
+    }
   }
 }
