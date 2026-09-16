@@ -273,5 +273,67 @@
       "modal_price": 3675,
       "arrival_date": "15/09/2026"
     }
+  },
+  "2026-09-17": {
+    "APMC Satana ": {
+      "modal_price": 4225,
+      "arrival_date": "16/09/2026"
+    },
+    "APMC Sinner ": {
+      "modal_price": 4400,
+      "arrival_date": "16/09/2026"
+    },
+    "APMC Devala ": {
+      "modal_price": 4330,
+      "arrival_date": "16/09/2026"
+    },
+    "Pimpalgaon Baswant(Saykheda) ": {
+      "modal_price": 3800,
+      "arrival_date": "16/09/2026"
+    },
+    "APMC Pune ": {
+      "modal_price": 3000,
+      "arrival_date": "16/09/2026"
+    },
+    "Pune(Manjri) ": {
+      "modal_price": 3000,
+      "arrival_date": "16/09/2026"
+    },
+    "APMC Satara ": {
+      "modal_price": 3400,
+      "arrival_date": "16/09/2026"
+    },
+    "APMC Vaduj ": {
+      "modal_price": 4000,
+      "arrival_date": "16/09/2026"
+    },
+    "APMC Mangal Wedha ": {
+      "modal_price": 4450,
+      "arrival_date": "16/09/2026"
+    },
+    "Laxmi-Sopan Agriculture Produce Marketing Co Ltd, Barshi, Dist Solapur": {
+      "modal_price": 3800,
+      "arrival_date": "16/09/2026"
+    },
+    "Shivsiddha Govind Producer Company Ltd Sanchalit Khajgi Krushi Utpann Bajar Samati-Abhona-Kalwan": {
+      "modal_price": 4600,
+      "arrival_date": "16/09/2026"
+    },
+    "APMC Bhusaval ": {
+      "modal_price": 4500,
+      "arrival_date": "16/09/2026"
+    },
+    "Prasanna Krushi Market, Tal Parnet, Dist Ahilyanagar": {
+      "modal_price": 2855,
+      "arrival_date": "16/09/2026"
+    },
+    "APMC Pimpalgaon Baswant ": {
+      "modal_price": 4600,
+      "arrival_date": "16/09/2026"
+    },
+    "APMC Kalyan ": {
+      "modal_price": 4000,
+      "arrival_date": "16/09/2026"
+    }
   }
 }
