@@ -232,5 +232,67 @@
       "modal_price": 800,
       "arrival_date": "14/09/2026"
     }
+  },
+  "2026-09-16": {
+    "Kalna APMC": {
+      "modal_price": 740,
+      "arrival_date": "15/09/2026"
+    },
+    "Karimpur APMC": {
+      "modal_price": 790,
+      "arrival_date": "15/09/2026"
+    },
+    "Bishnupur(Bankura) APMC": {
+      "modal_price": 640,
+      "arrival_date": "15/09/2026"
+    },
+    "Pandua APMC": {
+      "modal_price": 700,
+      "arrival_date": "15/09/2026"
+    },
+    "Dinhata APMC": {
+      "modal_price": 560,
+      "arrival_date": "15/09/2026"
+    },
+    "Habra APMC": {
+      "modal_price": 900,
+      "arrival_date": "15/09/2026"
+    },
+    "Jangipur APMC": {
+      "modal_price": 1400,
+      "arrival_date": "15/09/2026"
+    },
+    "Jhargram APMC": {
+      "modal_price": 740,
+      "arrival_date": "15/09/2026"
+    },
+    "Uluberia APMC": {
+      "modal_price": 840,
+      "arrival_date": "15/09/2026"
+    },
+    "Baxirhat APMC": {
+      "modal_price": 560,
+      "arrival_date": "15/09/2026"
+    },
+    "Gangarampur(Dakshin Dinajpur) APMC": {
+      "modal_price": 590,
+      "arrival_date": "15/09/2026"
+    },
+    "Gajol APMC": {
+      "modal_price": 630,
+      "arrival_date": "15/09/2026"
+    },
+    "Mekhliganj APMC": {
+      "modal_price": 560,
+      "arrival_date": "15/09/2026"
+    },
+    "Medinipur(West) APMC": {
+      "modal_price": 660,
+      "arrival_date": "15/09/2026"
+    },
+    "Bolpur APMC": {
+      "modal_price": 1050,
+      "arrival_date": "15/09/2026"
+    }
   }
 }
