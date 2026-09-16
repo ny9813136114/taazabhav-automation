@@ -304,5 +304,67 @@
       "modal_price": 3500,
       "arrival_date": "15/09/2026"
     }
+  },
+  "2026-09-17": {
+    "Muradabad APMC": {
+      "modal_price": 2500,
+      "arrival_date": "16/09/2026"
+    },
+    "Dhampur APMC": {
+      "modal_price": 2501.41,
+      "arrival_date": "16/09/2026"
+    },
+    "Rampur APMC": {
+      "modal_price": 2800,
+      "arrival_date": "16/09/2026"
+    },
+    "Sirsaganj APMC": {
+      "modal_price": 2000,
+      "arrival_date": "16/09/2026"
+    },
+    "Muradnagar APMC": {
+      "modal_price": 3300.21,
+      "arrival_date": "16/09/2026"
+    },
+    "Najibabad APMC": {
+      "modal_price": 2500,
+      "arrival_date": "16/09/2026"
+    },
+    "Khandhla APMC": {
+      "modal_price": 3500,
+      "arrival_date": "16/09/2026"
+    },
+    "Jhansi APMC": {
+      "modal_price": 1800,
+      "arrival_date": "16/09/2026"
+    },
+    "Kairana APMC": {
+      "modal_price": 3000,
+      "arrival_date": "16/09/2026"
+    },
+    "Kosikalan APMC": {
+      "modal_price": 1900,
+      "arrival_date": "16/09/2026"
+    },
+    "Buland Shahr APMC": {
+      "modal_price": 3031.18,
+      "arrival_date": "16/09/2026"
+    },
+    "Charra APMC": {
+      "modal_price": 3000,
+      "arrival_date": "16/09/2026"
+    },
+    "Aligarh APMC": {
+      "modal_price": 3920.1,
+      "arrival_date": "16/09/2026"
+    },
+    "Lucknow APMC": {
+      "modal_price": 3500,
+      "arrival_date": "16/09/2026"
+    },
+    "Thanabhawan APMC": {
+      "modal_price": 2300,
+      "arrival_date": "16/09/2026"
+    }
   }
 }
