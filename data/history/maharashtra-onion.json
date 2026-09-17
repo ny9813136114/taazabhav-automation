@@ -335,5 +335,67 @@
       "modal_price": 4000,
       "arrival_date": "16/09/2026"
     }
+  },
+  "2026-09-18": {
+    "APMC Akola ": {
+      "modal_price": 3000,
+      "arrival_date": "17/09/2026"
+    },
+    "APMC Bhusaval ": {
+      "modal_price": 4500,
+      "arrival_date": "17/09/2026"
+    },
+    "APMC Kolhapur ": {
+      "modal_price": 3200,
+      "arrival_date": "17/09/2026"
+    },
+    "APMC Devala ": {
+      "modal_price": 4380,
+      "arrival_date": "17/09/2026"
+    },
+    "APMC Pimpalgaon Baswant ": {
+      "modal_price": 4550,
+      "arrival_date": "17/09/2026"
+    },
+    "Junnar(Otur) ": {
+      "modal_price": 4500,
+      "arrival_date": "17/09/2026"
+    },
+    "Pune(Khadiki) ": {
+      "modal_price": 1600,
+      "arrival_date": "17/09/2026"
+    },
+    "APMC Islampur ": {
+      "modal_price": 4000,
+      "arrival_date": "17/09/2026"
+    },
+    "Mumbai-Onion & Potato Market ": {
+      "modal_price": 3900,
+      "arrival_date": "17/09/2026"
+    },
+    "APMC Shevgaon ": {
+      "modal_price": 4600,
+      "arrival_date": "17/09/2026"
+    },
+    "APMC Umrane": {
+      "modal_price": 3900,
+      "arrival_date": "17/09/2026"
+    },
+    "APMC Nagpur ": {
+      "modal_price": 4250,
+      "arrival_date": "17/09/2026"
+    },
+    "APMC Kamthi ": {
+      "modal_price": 4850,
+      "arrival_date": "17/09/2026"
+    },
+    "APMC Nasik ": {
+      "modal_price": 4300,
+      "arrival_date": "17/09/2026"
+    },
+    "APMC Sinner ": {
+      "modal_price": 4350,
+      "arrival_date": "17/09/2026"
+    }
   }
 }
