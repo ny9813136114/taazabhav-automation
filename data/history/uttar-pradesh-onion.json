@@ -366,5 +366,67 @@
       "modal_price": 2300,
       "arrival_date": "16/09/2026"
     }
+  },
+  "2026-09-18": {
+    "Aligarh APMC": {
+      "modal_price": 3200,
+      "arrival_date": "17/09/2026"
+    },
+    "Golagokarnath APMC": {
+      "modal_price": 2000,
+      "arrival_date": "17/09/2026"
+    },
+    "Anwala APMC": {
+      "modal_price": 2800,
+      "arrival_date": "17/09/2026"
+    },
+    "Muradabad APMC": {
+      "modal_price": 2500,
+      "arrival_date": "17/09/2026"
+    },
+    "Pilibhit APMC": {
+      "modal_price": 1589.93,
+      "arrival_date": "17/09/2026"
+    },
+    "Buland Shahr APMC": {
+      "modal_price": 2800,
+      "arrival_date": "17/09/2026"
+    },
+    "Chandoli APMC": {
+      "modal_price": 2000,
+      "arrival_date": "17/09/2026"
+    },
+    "Khekda APMC": {
+      "modal_price": 3600,
+      "arrival_date": "17/09/2026"
+    },
+    "Mugrabaadshahpur APMC": {
+      "modal_price": 2500,
+      "arrival_date": "17/09/2026"
+    },
+    "Paliakala APMC": {
+      "modal_price": 2900,
+      "arrival_date": "17/09/2026"
+    },
+    "Rudauli APMC": {
+      "modal_price": 2500,
+      "arrival_date": "17/09/2026"
+    },
+    "Shamli APMC": {
+      "modal_price": 4650,
+      "arrival_date": "17/09/2026"
+    },
+    "Uttaripura APMC": {
+      "modal_price": 3500,
+      "arrival_date": "17/09/2026"
+    },
+    "Gorakhpur APMC": {
+      "modal_price": 3000,
+      "arrival_date": "17/09/2026"
+    },
+    "Kairana APMC": {
+      "modal_price": 2800,
+      "arrival_date": "17/09/2026"
+    }
   }
 }
