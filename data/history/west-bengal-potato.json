@@ -294,5 +294,67 @@
       "modal_price": 1050,
       "arrival_date": "15/09/2026"
     }
+  },
+  "2026-09-17": {
+    "Diamond Harbour(South 24-pgs) APMC": {
+      "modal_price": 860,
+      "arrival_date": "16/09/2026"
+    },
+    "Samsi APMC": {
+      "modal_price": 630,
+      "arrival_date": "16/09/2026"
+    },
+    "Bara Bazar (Posta Bazar) APMC": {
+      "modal_price": 900,
+      "arrival_date": "16/09/2026"
+    },
+    "Khatra APMC": {
+      "modal_price": 670,
+      "arrival_date": "16/09/2026"
+    },
+    "Falakata APMC": {
+      "modal_price": 530,
+      "arrival_date": "16/09/2026"
+    },
+    "Darjeeling APMC": {
+      "modal_price": 1500,
+      "arrival_date": "16/09/2026"
+    },
+    "Egra/contai APMC": {
+      "modal_price": 835,
+      "arrival_date": "16/09/2026"
+    },
+    "Birbhum APMC": {
+      "modal_price": 1060,
+      "arrival_date": "16/09/2026"
+    },
+    "Nadia APMC": {
+      "modal_price": 780,
+      "arrival_date": "16/09/2026"
+    },
+    "Kalipur APMC": {
+      "modal_price": 720,
+      "arrival_date": "16/09/2026"
+    },
+    "Jiaganj APMC": {
+      "modal_price": 550,
+      "arrival_date": "16/09/2026"
+    },
+    "Habra APMC": {
+      "modal_price": 900,
+      "arrival_date": "16/09/2026"
+    },
+    "Rampurhat APMC": {
+      "modal_price": 670,
+      "arrival_date": "16/09/2026"
+    },
+    "Bolpur APMC": {
+      "modal_price": 1060,
+      "arrival_date": "16/09/2026"
+    },
+    "Ghatal APMC": {
+      "modal_price": 830,
+      "arrival_date": "16/09/2026"
+    }
   }
 }
