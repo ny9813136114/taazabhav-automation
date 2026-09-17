@@ -76,5 +76,11 @@
       "modal_price": 1100,
       "arrival_date": "15/09/2026"
     }
+  },
+  "2026-09-17": {
+    "Mukerian(Talwara) APMC": {
+      "modal_price": 1200,
+      "arrival_date": "17/09/2026"
+    }
   }
 }
