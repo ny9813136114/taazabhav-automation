@@ -397,5 +397,67 @@
       "modal_price": 4350,
       "arrival_date": "17/09/2026"
     }
+  },
+  "2026-09-19": {
+    "APMC Sangamner ": {
+      "modal_price": 2700,
+      "arrival_date": "18/09/2026"
+    },
+    "APMC Kolhapur ": {
+      "modal_price": 3200,
+      "arrival_date": "18/09/2026"
+    },
+    "APMC Manmad ": {
+      "modal_price": 4200,
+      "arrival_date": "18/09/2026"
+    },
+    "APMC Sinner ": {
+      "modal_price": 4050,
+      "arrival_date": "18/09/2026"
+    },
+    "Khed(Chakan) ": {
+      "modal_price": 3500,
+      "arrival_date": "18/09/2026"
+    },
+    "Pune(Khadiki) ": {
+      "modal_price": 1700,
+      "arrival_date": "18/09/2026"
+    },
+    "Junnar(Alephata) ": {
+      "modal_price": 4500,
+      "arrival_date": "18/09/2026"
+    },
+    "Pune(Manjri) ": {
+      "modal_price": 4000,
+      "arrival_date": "18/09/2026"
+    },
+    "APMC Akluj ": {
+      "modal_price": 3800,
+      "arrival_date": "18/09/2026"
+    },
+    "APMC Kopargaon ": {
+      "modal_price": 3850,
+      "arrival_date": "18/09/2026"
+    },
+    "APMC Paithan ": {
+      "modal_price": 4000,
+      "arrival_date": "18/09/2026"
+    },
+    "Lasalgaon(Vinchur) ": {
+      "modal_price": 4200,
+      "arrival_date": "18/09/2026"
+    },
+    "Pune(Moshi) ": {
+      "modal_price": 3400,
+      "arrival_date": "18/09/2026"
+    },
+    "Omchatinya Multi State Agro Purpose Co-Op Society, Dist Ahilyanagar": {
+      "modal_price": 4200,
+      "arrival_date": "18/09/2026"
+    },
+    "Mumbai-Onion & Potato Market ": {
+      "modal_price": 3800,
+      "arrival_date": "18/09/2026"
+    }
   }
 }
