@@ -428,5 +428,67 @@
       "modal_price": 2800,
       "arrival_date": "17/09/2026"
     }
+  },
+  "2026-09-19": {
+    "Aligarh APMC": {
+      "modal_price": 4000,
+      "arrival_date": "18/09/2026"
+    },
+    "Thanabhawan APMC": {
+      "modal_price": 2300,
+      "arrival_date": "18/09/2026"
+    },
+    "Najibabad APMC": {
+      "modal_price": 2451.11,
+      "arrival_date": "18/09/2026"
+    },
+    "Auraiya APMC": {
+      "modal_price": 4000,
+      "arrival_date": "18/09/2026"
+    },
+    "Kasganj APMC": {
+      "modal_price": 1900,
+      "arrival_date": "18/09/2026"
+    },
+    "Shahabad(New Mandi) APMC": {
+      "modal_price": 2500,
+      "arrival_date": "18/09/2026"
+    },
+    "Rampurmaniharan APMC": {
+      "modal_price": 2500,
+      "arrival_date": "18/09/2026"
+    },
+    "Anwala APMC": {
+      "modal_price": 2800,
+      "arrival_date": "18/09/2026"
+    },
+    "Varanasi APMC": {
+      "modal_price": 3568.41,
+      "arrival_date": "18/09/2026"
+    },
+    "Ayodhya APMC": {
+      "modal_price": 2500,
+      "arrival_date": "18/09/2026"
+    },
+    "Rampur APMC": {
+      "modal_price": 2500,
+      "arrival_date": "18/09/2026"
+    },
+    "Shamli APMC": {
+      "modal_price": 4638.89,
+      "arrival_date": "18/09/2026"
+    },
+    "Jhansi APMC": {
+      "modal_price": 2215.38,
+      "arrival_date": "18/09/2026"
+    },
+    "Ghaziabad APMC": {
+      "modal_price": 4031.84,
+      "arrival_date": "18/09/2026"
+    },
+    "Lakhimpur APMC": {
+      "modal_price": 2959.74,
+      "arrival_date": "18/09/2026"
+    }
   }
 }
