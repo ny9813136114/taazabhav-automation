@@ -356,5 +356,67 @@
       "modal_price": 830,
       "arrival_date": "16/09/2026"
     }
+  },
+  "2026-09-19": {
+    "Durgapur APMC": {
+      "modal_price": 780,
+      "arrival_date": "18/09/2026"
+    },
+    "Siliguri APMC": {
+      "modal_price": 620,
+      "arrival_date": "18/09/2026"
+    },
+    "Khatra APMC": {
+      "modal_price": 660,
+      "arrival_date": "18/09/2026"
+    },
+    "Balarampur APMC": {
+      "modal_price": 740,
+      "arrival_date": "18/09/2026"
+    },
+    "Beldanga APMC": {
+      "modal_price": 740,
+      "arrival_date": "18/09/2026"
+    },
+    "Guskara APMC": {
+      "modal_price": 740,
+      "arrival_date": "18/09/2026"
+    },
+    "Sheoraphuly APMC": {
+      "modal_price": 680,
+      "arrival_date": "18/09/2026"
+    },
+    "Baxirhat APMC": {
+      "modal_price": 560,
+      "arrival_date": "18/09/2026"
+    },
+    "Gajol APMC": {
+      "modal_price": 630,
+      "arrival_date": "18/09/2026"
+    },
+    "Bishnupur(Bankura) APMC": {
+      "modal_price": 640,
+      "arrival_date": "18/09/2026"
+    },
+    "Habra APMC": {
+      "modal_price": 900,
+      "arrival_date": "18/09/2026"
+    },
+    "Karsiyang(Matigara) APMC": {
+      "modal_price": 1500,
+      "arrival_date": "18/09/2026"
+    },
+    "Kalipur APMC": {
+      "modal_price": 720,
+      "arrival_date": "18/09/2026"
+    },
+    "Toofanganj APMC": {
+      "modal_price": 560,
+      "arrival_date": "18/09/2026"
+    },
+    "Jiaganj APMC": {
+      "modal_price": 550,
+      "arrival_date": "18/09/2026"
+    }
   }
 }
