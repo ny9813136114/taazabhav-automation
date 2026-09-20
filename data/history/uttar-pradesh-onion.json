@@ -1,5 +1,4 @@
 {
-  "2026-09-03": {},
   "2026-09-05": {
     "Ahirora APMC": 1000,
     "Jhansi APMC": 1900,
@@ -534,6 +533,68 @@
     "Shahpur APMC": {
       "modal_price": 2027.14,
       "arrival_date": "19/09/2026"
+    }
+  },
+  "2026-09-21": {
+    "Lakhimpur APMC": {
+      "modal_price": 2877.87,
+      "arrival_date": "20/09/2026"
+    },
+    "Haathras APMC": {
+      "modal_price": 3000,
+      "arrival_date": "20/09/2026"
+    },
+    "Jangipura APMC": {
+      "modal_price": 3500,
+      "arrival_date": "20/09/2026"
+    },
+    "Paliakala APMC": {
+      "modal_price": 2900,
+      "arrival_date": "20/09/2026"
+    },
+    "Thanabhawan APMC": {
+      "modal_price": 2300,
+      "arrival_date": "20/09/2026"
+    },
+    "Jhansi APMC": {
+      "modal_price": 1948.48,
+      "arrival_date": "20/09/2026"
+    },
+    "Saharanpur APMC": {
+      "modal_price": 3647.61,
+      "arrival_date": "20/09/2026"
+    },
+    "Buland Shahr APMC": {
+      "modal_price": 2800,
+      "arrival_date": "20/09/2026"
+    },
+    "Chandoli APMC": {
+      "modal_price": 3500,
+      "arrival_date": "20/09/2026"
+    },
+    "Jalaun APMC": {
+      "modal_price": 3200,
+      "arrival_date": "20/09/2026"
+    },
+    "Shamli APMC": {
+      "modal_price": 5200,
+      "arrival_date": "20/09/2026"
+    },
+    "Kanpur(Grain) APMC": {
+      "modal_price": 3500,
+      "arrival_date": "20/09/2026"
+    },
+    "Prayagraj APMC": {
+      "modal_price": 4000,
+      "arrival_date": "20/09/2026"
+    },
+    "Baraut APMC": {
+      "modal_price": 3600,
+      "arrival_date": "20/09/2026"
+    },
+    "Bansi APMC": {
+      "modal_price": 1800,
+      "arrival_date": "20/09/2026"
     }
   }
 }
