@@ -459,5 +459,67 @@
       "modal_price": 3800,
       "arrival_date": "18/09/2026"
     }
+  },
+  "2026-09-21": {
+    "APMC Satara ": {
+      "modal_price": 3400,
+      "arrival_date": "20/09/2026"
+    },
+    "APMC Mangal Wedha ": {
+      "modal_price": 4200,
+      "arrival_date": "20/09/2026"
+    },
+    "APMC Rahata ": {
+      "modal_price": 3900,
+      "arrival_date": "20/09/2026"
+    },
+    "APMC Parner ": {
+      "modal_price": 4000,
+      "arrival_date": "20/09/2026"
+    },
+    "Pune(Manjri) ": {
+      "modal_price": 4000,
+      "arrival_date": "20/09/2026"
+    },
+    "APMC Newasa ": {
+      "modal_price": 4000,
+      "arrival_date": "20/09/2026"
+    },
+    "APMC Chattrapati Sambhajinagar ": {
+      "modal_price": 3600,
+      "arrival_date": "20/09/2026"
+    },
+    "Junnar(Narayangaon) ": {
+      "modal_price": 2900,
+      "arrival_date": "20/09/2026"
+    },
+    "APMC Vaduj ": {
+      "modal_price": 3900,
+      "arrival_date": "20/09/2026"
+    },
+    "APMC Ramtek ": {
+      "modal_price": 4000,
+      "arrival_date": "20/09/2026"
+    },
+    "Pune(Pimpri) ": {
+      "modal_price": 4250,
+      "arrival_date": "20/09/2026"
+    },
+    "APMC Dharashiv ": {
+      "modal_price": 4000,
+      "arrival_date": "20/09/2026"
+    },
+    "APMC Bhusaval ": {
+      "modal_price": 4500,
+      "arrival_date": "20/09/2026"
+    },
+    "Junnar(Alephata) ": {
+      "modal_price": 4100,
+      "arrival_date": "20/09/2026"
+    },
+    "Pune(Moshi) ": {
+      "modal_price": 3250,
+      "arrival_date": "20/09/2026"
+    }
   }
 }
