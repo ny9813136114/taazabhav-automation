@@ -1,7 +1,4 @@
 {
-  "2026-09-04": {
-    "Pune(Moshi) ": 18
-  },
   "2026-09-05": {
     "APMC Paithan ": 4250,
     "APMC Dharashiv ": 3750,
@@ -520,6 +517,68 @@
     "Pune(Moshi) ": {
       "modal_price": 3250,
       "arrival_date": "20/09/2026"
+    }
+  },
+  "2026-09-22": {
+    "APMC Dhule ": {
+      "modal_price": 3600,
+      "arrival_date": "21/09/2026"
+    },
+    "Newasa(Ghodegaon) ": {
+      "modal_price": 4200,
+      "arrival_date": "21/09/2026"
+    },
+    "APMC Nampur": {
+      "modal_price": 3400,
+      "arrival_date": "21/09/2026"
+    },
+    "APMC Lasalgaon ": {
+      "modal_price": 4100,
+      "arrival_date": "21/09/2026"
+    },
+    "Pune(Manjri) ": {
+      "modal_price": 4000,
+      "arrival_date": "21/09/2026"
+    },
+    "Sangli(Phale, Bhajipala Market) ": {
+      "modal_price": 3450,
+      "arrival_date": "21/09/2026"
+    },
+    "Dindori(Vani) ": {
+      "modal_price": 4251,
+      "arrival_date": "21/09/2026"
+    },
+    "Mumbai-Onion & Potato Market ": {
+      "modal_price": 4000,
+      "arrival_date": "21/09/2026"
+    },
+    "APMC Shevgaon ": {
+      "modal_price": 2600,
+      "arrival_date": "21/09/2026"
+    },
+    "APMC Akola ": {
+      "modal_price": 3500,
+      "arrival_date": "21/09/2026"
+    },
+    "APMC Sakri ": {
+      "modal_price": 3400,
+      "arrival_date": "21/09/2026"
+    },
+    "APMC Nagpur ": {
+      "modal_price": 4250,
+      "arrival_date": "21/09/2026"
+    },
+    "APMC Kamthi ": {
+      "modal_price": 4850,
+      "arrival_date": "21/09/2026"
+    },
+    "APMC Yeola ": {
+      "modal_price": 3800,
+      "arrival_date": "21/09/2026"
+    },
+    "APMC Kalvan ": {
+      "modal_price": 3850,
+      "arrival_date": "21/09/2026"
     }
   }
 }
