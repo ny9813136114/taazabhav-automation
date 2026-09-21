@@ -1,7 +1,4 @@
 {
-  "2026-09-04": {
-    "Tamluk (Medinipur E) APMC": 800
-  },
   "2026-09-05": {
     "Karsiyang(Matigara) APMC": 1500,
     "Darjeeling APMC": 1500,
@@ -479,6 +476,68 @@
     "Dhupguri APMC": {
       "modal_price": 580,
       "arrival_date": "19/09/2026"
+    }
+  },
+  "2026-09-21": {
+    "Kalna APMC": {
+      "modal_price": 740,
+      "arrival_date": "20/09/2026"
+    },
+    "Guskara APMC": {
+      "modal_price": 740,
+      "arrival_date": "20/09/2026"
+    },
+    "Barasat APMC": {
+      "modal_price": 800,
+      "arrival_date": "20/09/2026"
+    },
+    "Indus(Bankura Sadar) APMC": {
+      "modal_price": 655,
+      "arrival_date": "20/09/2026"
+    },
+    "Karsiyang(Matigara) APMC": {
+      "modal_price": 1500,
+      "arrival_date": "20/09/2026"
+    },
+    "Siliguri APMC": {
+      "modal_price": 620,
+      "arrival_date": "20/09/2026"
+    },
+    "Purulia APMC": {
+      "modal_price": 700,
+      "arrival_date": "20/09/2026"
+    },
+    "Kalipur APMC": {
+      "modal_price": 720,
+      "arrival_date": "20/09/2026"
+    },
+    "Bankura Sadar APMC": {
+      "modal_price": 665,
+      "arrival_date": "20/09/2026"
+    },
+    "Bishnupur(Bankura) APMC": {
+      "modal_price": 640,
+      "arrival_date": "20/09/2026"
+    },
+    "Darjeeling APMC": {
+      "modal_price": 1500,
+      "arrival_date": "20/09/2026"
+    },
+    "Balarampur APMC": {
+      "modal_price": 700,
+      "arrival_date": "20/09/2026"
+    },
+    "Sheoraphuly APMC": {
+      "modal_price": 700,
+      "arrival_date": "20/09/2026"
+    },
+    "Habra APMC": {
+      "modal_price": 900,
+      "arrival_date": "20/09/2026"
+    },
+    "Khatra APMC": {
+      "modal_price": 660,
+      "arrival_date": "20/09/2026"
     }
   }
 }
