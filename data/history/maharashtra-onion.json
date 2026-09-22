@@ -1,20 +1,4 @@
 {
-  "2026-09-05": {
-    "APMC Paithan ": 4250,
-    "APMC Dharashiv ": 3750,
-    "Newasa(Ghodegaon) ": 4000,
-    "APMC Satara ": 3000,
-    "APMC Solapur ": 3300,
-    "Shivsiddha Govind Producer Company Ltd Sanchalit Khajgi Krushi Utpann Bajar Samati-Abhona-Kalwan": 4700,
-    "APMC Shevgaon ": 3200,
-    "Amrawati(Frui & Veg. Market) ": 5000,
-    "APMC Bhusaval ": 4000,
-    "APMC Nagpur ": 4750,
-    "APMC Kalvan ": 4550,
-    "Sangli(Phale, Bhajipala Market) ": 3400,
-    "APMC Jamkhed ": 2250,
-    "APMC Sangamner ": 1750
-  },
   "2026-09-06": {
     "Junnar(Narayangaon) ": 3300,
     "APMC Bhusaval ": 4000,
@@ -579,6 +563,68 @@
     "APMC Kalvan ": {
       "modal_price": 3850,
       "arrival_date": "21/09/2026"
+    }
+  },
+  "2026-09-23": {
+    "APMC Lasalgaon ": {
+      "modal_price": 4070,
+      "arrival_date": "22/09/2026"
+    },
+    "Sangli(Phale, Bhajipala Market) ": {
+      "modal_price": 3300,
+      "arrival_date": "22/09/2026"
+    },
+    "APMC Newasa ": {
+      "modal_price": 3900,
+      "arrival_date": "22/09/2026"
+    },
+    "APMC Akola ": {
+      "modal_price": 3000,
+      "arrival_date": "22/09/2026"
+    },
+    "Amrawati(Frui & Veg. Market) ": {
+      "modal_price": 3350,
+      "arrival_date": "22/09/2026"
+    },
+    "APMC Bhusaval ": {
+      "modal_price": 4500,
+      "arrival_date": "22/09/2026"
+    },
+    "APMC Nagpur ": {
+      "modal_price": 4250,
+      "arrival_date": "22/09/2026"
+    },
+    "APMC Sangamner ": {
+      "modal_price": 3000,
+      "arrival_date": "22/09/2026"
+    },
+    "Chandrapur(Ganjwad) ": {
+      "modal_price": 5500,
+      "arrival_date": "22/09/2026"
+    },
+    "APMC Dhule ": {
+      "modal_price": 3600,
+      "arrival_date": "22/09/2026"
+    },
+    "APMC Jalgaon ": {
+      "modal_price": 2750,
+      "arrival_date": "22/09/2026"
+    },
+    "APMC Gevrai ": {
+      "modal_price": 1800,
+      "arrival_date": "22/09/2026"
+    },
+    "APMC Dindori ": {
+      "modal_price": 4211,
+      "arrival_date": "22/09/2026"
+    },
+    "Junnar(Alephata) ": {
+      "modal_price": 4200,
+      "arrival_date": "22/09/2026"
+    },
+    "APMC Vaduj ": {
+      "modal_price": 4500,
+      "arrival_date": "22/09/2026"
     }
   }
 }
