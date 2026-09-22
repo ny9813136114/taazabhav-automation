@@ -1,9 +1,4 @@
 {
-  "2026-09-05": {
-    "Karsiyang(Matigara) APMC": 1500,
-    "Darjeeling APMC": 1500,
-    "Siliguri APMC": 620
-  },
   "2026-09-06": {
     "Dinhata APMC": 570,
     "Siliguri APMC": 620,
@@ -538,6 +533,68 @@
     "Khatra APMC": {
       "modal_price": 660,
       "arrival_date": "20/09/2026"
+    }
+  },
+  "2026-09-22": {
+    "Katwa APMC": {
+      "modal_price": 740,
+      "arrival_date": "21/09/2026"
+    },
+    "Bethuadahari APMC": {
+      "modal_price": 810,
+      "arrival_date": "21/09/2026"
+    },
+    "Kaliaganj APMC": {
+      "modal_price": 640,
+      "arrival_date": "21/09/2026"
+    },
+    "Jalpaiguri Sadar APMC": {
+      "modal_price": 590,
+      "arrival_date": "21/09/2026"
+    },
+    "Asansol APMC": {
+      "modal_price": 780,
+      "arrival_date": "21/09/2026"
+    },
+    "Mekhliganj APMC": {
+      "modal_price": 560,
+      "arrival_date": "21/09/2026"
+    },
+    "Bolpur APMC": {
+      "modal_price": 1080,
+      "arrival_date": "21/09/2026"
+    },
+    "Ranaghat APMC": {
+      "modal_price": 780,
+      "arrival_date": "21/09/2026"
+    },
+    "Jangipur APMC": {
+      "modal_price": 1400,
+      "arrival_date": "21/09/2026"
+    },
+    "Durgapur APMC": {
+      "modal_price": 780,
+      "arrival_date": "21/09/2026"
+    },
+    "Balarampur APMC": {
+      "modal_price": 700,
+      "arrival_date": "21/09/2026"
+    },
+    "Jhargram APMC": {
+      "modal_price": 750,
+      "arrival_date": "21/09/2026"
+    },
+    "Nimdhighi Market": {
+      "modal_price": 840,
+      "arrival_date": "21/09/2026"
+    },
+    "Sheoraphuly APMC": {
+      "modal_price": 700,
+      "arrival_date": "21/09/2026"
+    },
+    "Ramkrishanpur(Howrah)": {
+      "modal_price": 840,
+      "arrival_date": "21/09/2026"
     }
   }
 }
