@@ -1,18 +1,4 @@
 {
-  "2026-09-06": {
-    "Junnar(Narayangaon) ": 3300,
-    "APMC Bhusaval ": 4000,
-    "Pune(Pimpri) ": 3750,
-    "APMC Pune ": 13,
-    "Junnar(Alephata) ": 4500,
-    "Omchatinya Multi State Agro Purpose Co-Op Society, Dist Ahilyanagar": 4200,
-    "Pune(Manjri) ": 8,
-    "Pune(Moshi) ": 13,
-    "APMC Satara ": 3250,
-    "Junnar(Otur) ": 4500,
-    "Pune(Khadiki) ": 1350,
-    "APMC Rahata ": 4500
-  },
   "2026-09-07": {
     "APMC Sinner ": 4300,
     "APMC Devala ": 4580,
@@ -625,6 +611,68 @@
     "APMC Vaduj ": {
       "modal_price": 4500,
       "arrival_date": "22/09/2026"
+    }
+  },
+  "2026-09-24": {
+    "APMC Kopargaon ": {
+      "modal_price": 3875,
+      "arrival_date": "23/09/2026"
+    },
+    "Newasa(Ghodegaon) ": {
+      "modal_price": 3900,
+      "arrival_date": "23/09/2026"
+    },
+    "APMC Nagpur ": {
+      "modal_price": 4250,
+      "arrival_date": "23/09/2026"
+    },
+    "APMC Satana ": {
+      "modal_price": 3850,
+      "arrival_date": "23/09/2026"
+    },
+    "APMC Devala ": {
+      "modal_price": 4050,
+      "arrival_date": "23/09/2026"
+    },
+    "APMC Pune ": {
+      "modal_price": 2850,
+      "arrival_date": "23/09/2026"
+    },
+    "Pune(Khadiki) ": {
+      "modal_price": 1700,
+      "arrival_date": "23/09/2026"
+    },
+    "Pune(Manjri) ": {
+      "modal_price": 4000,
+      "arrival_date": "23/09/2026"
+    },
+    "Khed(Chakan) ": {
+      "modal_price": 3500,
+      "arrival_date": "23/09/2026"
+    },
+    "Sangli(Phale, Bhajipala Market) ": {
+      "modal_price": 3250,
+      "arrival_date": "23/09/2026"
+    },
+    "APMC Mangal Wedha ": {
+      "modal_price": 4400,
+      "arrival_date": "23/09/2026"
+    },
+    "Shree Sairaj Krushi Market, Dist Ahilyanagar": {
+      "modal_price": 2550,
+      "arrival_date": "23/09/2026"
+    },
+    "APMC Kolhapur ": {
+      "modal_price": 3000,
+      "arrival_date": "23/09/2026"
+    },
+    "Lasalgaon(Vinchur) ": {
+      "modal_price": 3900,
+      "arrival_date": "23/09/2026"
+    },
+    "APMC Khed ": {
+      "modal_price": 3500,
+      "arrival_date": "23/09/2026"
     }
   }
 }
