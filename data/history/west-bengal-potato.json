@@ -1,21 +1,4 @@
 {
-  "2026-09-07": {
-    "Siliguri APMC": 620,
-    "Balarampur APMC": 740,
-    "Falakata APMC": 620,
-    "Darjeeling APMC": 1500,
-    "Sheoraphuly APMC": 700,
-    "Ghatal APMC": 820,
-    "Khatra APMC": 720,
-    "Durgapur APMC": 780,
-    "Medinipur(West) APMC": 660,
-    "Kalna APMC": 740,
-    "Bishnupur(Bankura) APMC": 720,
-    "Champadanga APMC": 740,
-    "Habra APMC": 960,
-    "Jangipur APMC": 1400,
-    "Kandi APMC": 700
-  },
   "2026-09-08": {
     "Baxirhat APMC": 560,
     "Sheoraphuly APMC": 690,
@@ -640,6 +623,68 @@
     "Chakdah APMC": {
       "modal_price": 780,
       "arrival_date": "22/09/2026"
+    }
+  },
+  "2026-09-24": {
+    "Ghatal APMC": {
+      "modal_price": 840,
+      "arrival_date": "23/09/2026"
+    },
+    "Baxirhat APMC": {
+      "modal_price": 550,
+      "arrival_date": "23/09/2026"
+    },
+    "Diamond Harbour(South 24-pgs) APMC": {
+      "modal_price": 880,
+      "arrival_date": "23/09/2026"
+    },
+    "Guskara APMC": {
+      "modal_price": 740,
+      "arrival_date": "23/09/2026"
+    },
+    "Sheoraphuly APMC": {
+      "modal_price": 700,
+      "arrival_date": "23/09/2026"
+    },
+    "Mathabhanga APMC": {
+      "modal_price": 550,
+      "arrival_date": "23/09/2026"
+    },
+    "Medinipur(West) APMC": {
+      "modal_price": 650,
+      "arrival_date": "23/09/2026"
+    },
+    "Falakata APMC": {
+      "modal_price": 550,
+      "arrival_date": "23/09/2026"
+    },
+    "Kandi APMC": {
+      "modal_price": 720,
+      "arrival_date": "23/09/2026"
+    },
+    "Balarampur APMC": {
+      "modal_price": 700,
+      "arrival_date": "23/09/2026"
+    },
+    "Jhargram APMC": {
+      "modal_price": 750,
+      "arrival_date": "23/09/2026"
+    },
+    "Burdwan APMC": {
+      "modal_price": 720,
+      "arrival_date": "23/09/2026"
+    },
+    "Ramkrishanpur(Howrah)": {
+      "modal_price": 840,
+      "arrival_date": "23/09/2026"
+    },
+    "Bethuadahari APMC": {
+      "modal_price": 790,
+      "arrival_date": "23/09/2026"
+    },
+    "Kaliaganj APMC": {
+      "modal_price": 620,
+      "arrival_date": "23/09/2026"
     }
   }
 }
