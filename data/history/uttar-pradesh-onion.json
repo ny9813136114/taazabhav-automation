@@ -1,21 +1,4 @@
 {
-  "2026-09-08": {
-    "Akbarpur APMC": 3800,
-    "Rampurmaniharan APMC": 2400,
-    "Anwala APMC": 2800,
-    "Ghaziabad APMC": 4010,
-    "Lakhimpur APMC": 2888.14,
-    "Muradabad APMC": 2500,
-    "Pilibhit APMC": 2045.48,
-    "Nawabganj APMC": 2500,
-    "Hardoi APMC": 2300,
-    "Badayoun APMC": 3500,
-    "Nanuta APMC": 4340,
-    "Parikshitgarh APMC": 2800,
-    "Kairana APMC": 3600,
-    "Khairagarh APMC": 4050,
-    "Partaval APMC": 2500
-  },
   "2026-09-09": {
     "Sikanderabad APMC": 3500,
     "Kanpur(Grain) APMC": 3500,
@@ -730,6 +713,68 @@
     "Rudauli APMC": {
       "modal_price": 2500,
       "arrival_date": "23/09/2026"
+    }
+  },
+  "2026-09-25": {
+    "Tilhar APMC": {
+      "modal_price": 3000,
+      "arrival_date": "24/09/2026"
+    },
+    "Najibabad APMC": {
+      "modal_price": 2311.09,
+      "arrival_date": "24/09/2026"
+    },
+    "Ghaziabad APMC": {
+      "modal_price": 4042.26,
+      "arrival_date": "24/09/2026"
+    },
+    "Kanpur(Grain) APMC": {
+      "modal_price": 3500,
+      "arrival_date": "24/09/2026"
+    },
+    "Kasganj APMC": {
+      "modal_price": 1900,
+      "arrival_date": "24/09/2026"
+    },
+    "Akbarpur APMC": {
+      "modal_price": 5414.05,
+      "arrival_date": "24/09/2026"
+    },
+    "Atrauli APMC": {
+      "modal_price": 4404.82,
+      "arrival_date": "24/09/2026"
+    },
+    "Noida APMC": {
+      "modal_price": 4000,
+      "arrival_date": "24/09/2026"
+    },
+    "Jaunpur APMC": {
+      "modal_price": 3702.78,
+      "arrival_date": "24/09/2026"
+    },
+    "Dudhi APMC": {
+      "modal_price": 3500,
+      "arrival_date": "24/09/2026"
+    },
+    "Barabanki APMC": {
+      "modal_price": 2500,
+      "arrival_date": "24/09/2026"
+    },
+    "Chandausi APMC": {
+      "modal_price": 1984.28,
+      "arrival_date": "24/09/2026"
+    },
+    "Auraiya APMC": {
+      "modal_price": 3759.45,
+      "arrival_date": "24/09/2026"
+    },
+    "Azamgarh APMC": {
+      "modal_price": 5983.65,
+      "arrival_date": "24/09/2026"
+    },
+    "Rampurmaniharan APMC": {
+      "modal_price": 2400,
+      "arrival_date": "24/09/2026"
     }
   }
 }
