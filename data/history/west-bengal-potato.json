@@ -1,21 +1,4 @@
 {
-  "2026-09-08": {
-    "Baxirhat APMC": 560,
-    "Sheoraphuly APMC": 690,
-    "Chakdah APMC": 780,
-    "Sainthia APMC": 1050,
-    "Gangarampur(Dakshin Dinajpur) APMC": 590,
-    "Kandi APMC": 700,
-    "Islampur APMC": 550,
-    "Birbhum APMC": 1050,
-    "Habra APMC": 900,
-    "Durgapur APMC": 780,
-    "Falakata APMC": 550,
-    "Barasat APMC": 800,
-    "Karimpur APMC": 790,
-    "Dhupguri APMC": 590,
-    "Tamluk (Medinipur E) APMC": 800
-  },
   "2026-09-09": {
     "Bishnupur(Bankura) APMC": 720,
     "Coochbehar APMC": 650,
@@ -685,6 +668,68 @@
     "Kaliaganj APMC": {
       "modal_price": 620,
       "arrival_date": "23/09/2026"
+    }
+  },
+  "2026-09-25": {
+    "Habra APMC": {
+      "modal_price": 900,
+      "arrival_date": "24/09/2026"
+    },
+    "Durgapur APMC": {
+      "modal_price": 780,
+      "arrival_date": "24/09/2026"
+    },
+    "Egra/contai APMC": {
+      "modal_price": 835,
+      "arrival_date": "24/09/2026"
+    },
+    "Karimpur APMC": {
+      "modal_price": 790,
+      "arrival_date": "24/09/2026"
+    },
+    "Bethuadahari APMC": {
+      "modal_price": 790,
+      "arrival_date": "24/09/2026"
+    },
+    "Ghatal APMC": {
+      "modal_price": 820,
+      "arrival_date": "24/09/2026"
+    },
+    "Garbeta(Medinipur) APMC": {
+      "modal_price": 640,
+      "arrival_date": "24/09/2026"
+    },
+    "Diamond Harbour(South 24-pgs) APMC": {
+      "modal_price": 880,
+      "arrival_date": "24/09/2026"
+    },
+    "Toofanganj APMC": {
+      "modal_price": 550,
+      "arrival_date": "24/09/2026"
+    },
+    "Gangarampur(Dakshin Dinajpur) APMC": {
+      "modal_price": 590,
+      "arrival_date": "24/09/2026"
+    },
+    "Baxirhat APMC": {
+      "modal_price": 550,
+      "arrival_date": "24/09/2026"
+    },
+    "Coochbehar APMC": {
+      "modal_price": 650,
+      "arrival_date": "24/09/2026"
+    },
+    "Kolaghat APMC": {
+      "modal_price": 800,
+      "arrival_date": "24/09/2026"
+    },
+    "Bishnupur(Bankura) APMC": {
+      "modal_price": 640,
+      "arrival_date": "24/09/2026"
+    },
+    "Sheoraphuly APMC": {
+      "modal_price": 680,
+      "arrival_date": "24/09/2026"
     }
   }
 }
