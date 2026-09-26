@@ -146,5 +146,94 @@ class TestStateFiltering(unittest.TestCase):
         self.assertEqual(result, [])
 
 
+class TestPaging(unittest.TestCase):
+    """Batch 1 (26 Sep 2026): one limit=500 call silently dropped every
+    state the API listed after row 500. fetch_all_states must page with
+    offset until a short page comes back."""
+
+    @patch("fetch_prices.time.sleep", return_value=None)
+    @patch("fetch_prices.requests.get")
+    def test_pages_until_short_page(self, mock_get, mock_sleep):
+        full = [{"state": "Uttar Pradesh", "market": f"M{i}", "modal_price": "1000"} for i in range(fetch_prices.PAGE_SIZE)]
+        tail = [{"state": "Karnataka", "market": "Kolar", "modal_price": "900"}]
+        mock_get.side_effect = [_response(200, {"records": full}), _response(200, {"records": tail})]
+
+        records = fetch_prices.fetch_all_states("Tomato")
+
+        self.assertEqual(len(records), fetch_prices.PAGE_SIZE + 1)
+        self.assertEqual(mock_get.call_count, 2)
+        offsets = [c.kwargs["params"]["offset"] for c in mock_get.call_args_list]
+        self.assertEqual(offsets, [0, fetch_prices.PAGE_SIZE])
+
+    @patch("fetch_prices.time.sleep", return_value=None)
+    @patch("fetch_prices.requests.get")
+    def test_stops_at_api_total(self, mock_get, mock_sleep):
+        full = [{"state": "Punjab", "market": f"M{i}", "modal_price": "1000"} for i in range(fetch_prices.PAGE_SIZE)]
+        mock_get.return_value = _response(200, {"records": full, "total": fetch_prices.PAGE_SIZE})
+
+        records = fetch_prices.fetch_all_states("Potato")
+
+        self.assertEqual(len(records), fetch_prices.PAGE_SIZE)
+        self.assertEqual(mock_get.call_count, 1)
+
+    @patch("fetch_prices.time.sleep", return_value=None)
+    @patch("fetch_prices.requests.get")
+    def test_failed_later_page_raises(self, mock_get, mock_sleep):
+        full = [{"state": "Punjab", "market": f"M{i}", "modal_price": "1000"} for i in range(fetch_prices.PAGE_SIZE)]
+        mock_get.side_effect = [_response(200, {"records": full})] + [_response(502)] * fetch_prices.MAX_ATTEMPTS
+
+        with self.assertRaises(fetch_prices.DataFetchError):
+            fetch_prices.fetch_all_states("Potato")
+
+
+class TestCleanRecords(unittest.TestCase):
+    """Batch 1: real on-screen errors from the 25 Sep UP onion Short."""
+
+    def test_sorted_highest_first_and_whole_rupees(self):
+        rows = [
+            {"market": "Najibabad APMC", "modal_price": "2311.09", "min_price": "2000", "max_price": "2500.5"},
+            {"market": "Tilhar APMC", "modal_price": "5983", "min_price": "5000", "max_price": "6000"},
+            {"market": "Ghaziabad APMC", "modal_price": "4042.26"},
+        ]
+        out = fetch_prices.clean_records(rows)
+        self.assertEqual([r["market"] for r in out], ["Tilhar APMC", "Ghaziabad APMC", "Najibabad APMC"])
+        self.assertEqual(out[2]["modal_price"], 2311)
+        self.assertEqual(out[2]["max_price"], 2501)
+        # missing min/max fall back to modal, never "N/A" on screen
+        self.assertEqual(out[1]["min_price"], 4042)
+
+    def test_one_row_per_market_uses_median_variety(self):
+        rows = [
+            {"market": "Tilhar APMC", "modal_price": "5983", "variety": "Big"},
+            {"market": "Tilhar APMC", "modal_price": "3000", "variety": "Local"},
+            {"market": "tilhar apmc ", "modal_price": "4000", "variety": "Red"},
+        ]
+        out = fetch_prices.clean_records(rows)
+        self.assertEqual(len(out), 1)
+        self.assertEqual(out[0]["modal_price"], 4000)
+
+    def test_drops_missing_or_non_positive_modal(self):
+        rows = [
+            {"market": "A", "modal_price": "0"},
+            {"market": "B", "modal_price": "N/A"},
+            {"market": "C"},
+            {"market": "D", "modal_price": "1500"},
+        ]
+        out = fetch_prices.clean_records(rows)
+        self.assertEqual([r["market"] for r in out], ["D"])
+
+    @patch("fetch_prices.time.sleep", return_value=None)
+    @patch("fetch_prices.requests.get")
+    def test_fetch_prices_returns_cleaned_sorted(self, mock_get, mock_sleep):
+        mock_get.return_value = _response(200, {"records": [
+            {"state": "Uttar Pradesh", "market": "Low", "modal_price": "1000"},
+            {"state": "Uttar Pradesh", "market": "High", "modal_price": "3000.4"},
+            {"state": "Bihar", "market": "Other", "modal_price": "9999"},
+        ]})
+        records = fetch_prices.fetch_prices(state="Uttar Pradesh", commodity="Onion")
+        self.assertEqual([r["market"] for r in records], ["High", "Low"])
+        self.assertEqual(records[0]["modal_price"], 3000)
+
+
 if __name__ == "__main__":
     unittest.main()

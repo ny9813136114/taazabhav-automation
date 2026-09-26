@@ -101,24 +101,111 @@ def _get_with_retry(params):
     ) from last_exc
 
 
-def fetch_all_states(commodity, limit=500):
-    """Fetches up to `limit` records for `commodity` across ALL states in one
-    API call (data.gov.in has no reliable server-side state filter for this
-    resource, so state filtering always happens locally -- see
-    filter_by_state()). Exposed separately from fetch_prices() so callers
-    that need the same commodity's data for multiple states (e.g.
-    telegram_broadcast.py, which previously called fetch_prices() once per
-    state per commodity) can fetch it ONCE and filter locally, instead of
-    making one redundant upstream call per state.
-    Raises DataFetchError if the request fails after retries."""
-    params = {
-        "api-key": API_KEY,
-        "format": "json",
-        "limit": limit,
-        "filters[commodity]": commodity,
-    }
-    data = _get_with_retry(params)
-    return data.get("records", [])
+PAGE_SIZE = 500
+MAX_PAGES = 12  # hard stop: 6,000 rows, far above any single commodity's daily count
+
+
+def fetch_all_states(commodity, limit=PAGE_SIZE):
+    """Fetches ALL records for `commodity` across ALL states, paging through
+    the API with `offset` (data.gov.in has no reliable server-side state
+    filter for this resource, so state filtering always happens locally --
+    see filter_by_state()).
+
+    Why paging (Batch 1, 26 Sep 2026): this used to be ONE call with
+    limit=500. Onion/potato/tomato each report from far more than 500
+    markets on a busy day, so whichever states the API happened to list
+    after row 500 were silently cut off -- a state could look like "no data
+    today" when it actually had dozens of markets reporting (likely why
+    Karnataka tomato and Punjab potato skipped most days).
+
+    Paging stops when a page comes back short (fewer than `limit` rows),
+    empty, or once the API's own `total` is reached. Each page goes through
+    the same retry policy as before; a page that still fails after retries
+    raises DataFetchError for the whole call (a partial all-India list would
+    silently drop states again, which is exactly the bug being fixed).
+
+    Exposed separately from fetch_prices() so callers that need the same
+    commodity's data for multiple states (e.g. telegram_broadcast.py) can
+    fetch it ONCE and filter locally.
+    Raises DataFetchError if a request fails after retries."""
+    all_records = []
+    offset = 0
+    for _ in range(MAX_PAGES):
+        params = {
+            "api-key": API_KEY,
+            "format": "json",
+            "limit": limit,
+            "offset": offset,
+            "filters[commodity]": commodity,
+        }
+        data = _get_with_retry(params)
+        page = data.get("records", []) or []
+        all_records.extend(page)
+        total = _to_int(data.get("total"))
+        offset += len(page)
+        if len(page) < limit or not page:
+            break
+        if total is not None and offset >= total:
+            break
+    return all_records
+
+
+def _to_int(v):
+    try:
+        return int(v)
+    except (TypeError, ValueError):
+        return None
+
+
+def _price(v):
+    """Parses an API price field ("2311.09", "3000", 3000) to a whole-rupee
+    int, or None if it is missing/unparseable/non-positive."""
+    try:
+        f = float(str(v).replace(",", "").strip())
+    except (TypeError, ValueError):
+        return None
+    if f != f or f <= 0:  # NaN or non-positive
+        return None
+    return int(f + 0.5)  # half-up, not Python's banker's rounding
+
+
+def clean_records(records):
+    """Makes one state's rows safe and meaningful to show on screen
+    (Batch 1, 26 Sep 2026 -- fixes real on-screen errors seen live):
+
+    1. Prices become whole rupees (the 25 Sep card showed "Rs.2311.09").
+       Rows with a missing or non-positive modal price are dropped.
+    2. ONE row per mandi. The API returns one row per variety/grade, so the
+       same mandi could appear twice with very different prices (25 Sep UP
+       onion: Tilhar APMC at 5,983 AND 3,000). For a mandi with several
+       rows we keep its median-priced row -- a real reported row, not an
+       invented average.
+    3. Sorted by modal price, highest first. Before this, records came in
+       raw API order, so "the" mandi named in the title, hero price label
+       and narration was simply whichever row the API listed first. Now
+       records[0] is always the best-paying mandi and records[-1] the
+       lowest, so every downstream "top" label is true by construction.
+    """
+    by_market = {}
+    for r in records:
+        modal = _price(r.get("modal_price"))
+        if modal is None:
+            continue
+        row = dict(r)
+        row["modal_price"] = modal
+        lo = _price(r.get("min_price"))
+        hi = _price(r.get("max_price"))
+        row["min_price"] = lo if lo is not None else modal
+        row["max_price"] = hi if hi is not None else modal
+        key = str(r.get("market", "")).strip().lower()
+        by_market.setdefault(key, []).append(row)
+
+    cleaned = []
+    for rows in by_market.values():
+        rows.sort(key=lambda x: x["modal_price"])
+        cleaned.append(rows[(len(rows) - 1) // 2])
+    cleaned.sort(key=lambda x: x["modal_price"], reverse=True)
+    return cleaned
 
 
 def filter_by_state(records, state):
@@ -149,7 +236,7 @@ def fetch_prices(state="Uttar Pradesh", commodity="Onion", limit=15):
     list.
     """
     all_records = fetch_all_states(commodity)
-    state_records = filter_by_state(all_records, state)
+    state_records = clean_records(filter_by_state(all_records, state))
     return state_records[:limit]
 
 

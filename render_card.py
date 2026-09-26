@@ -51,8 +51,30 @@ def _font(path, size):
         ) from e
 
 
+def _inr(v):
+    """Whole rupees with Indian digit grouping: 598300 -> "5,98,300",
+    5983 -> "5,983". Anything non-numeric (e.g. "N/A") is returned as-is.
+    Batch 1, 26 Sep 2026: cards showed raw API strings like "Rs.2311.09"."""
+    try:
+        n = int(round(float(str(v).replace(",", ""))))
+    except (TypeError, ValueError):
+        return str(v)
+    sign = "-" if n < 0 else ""
+    d = str(abs(n))
+    if len(d) <= 3:
+        return sign + d
+    head, tail = d[:-3], d[-3:]
+    groups = []
+    while len(head) > 2:
+        groups.insert(0, head[-2:])
+        head = head[:-2]
+    if head:
+        groups.insert(0, head)
+    return sign + ",".join(groups + [tail])
+
+
 def _top_price(records):
-    prices = [int(r.get("modal_price", 0)) for r in records if r.get("modal_price")]
+    prices = [int(round(float(r.get("modal_price", 0)))) for r in records if r.get("modal_price") not in (None, "", "N/A")]
     return max(prices) if prices else 0
 
 
@@ -256,7 +278,7 @@ def render_vertical_card(commodity, state, records, date_str, max_markets=6):
     top_price = _top_price(records)
     box_h = 180
     draw.rectangle([pad, y, width - pad, y + box_h], fill=CARD_COLOR, outline=BORDER_COLOR, width=3)
-    draw.text((pad + 35, y + 40), f"Rs. {top_price}/Quintal", fill=GOLD, font=_font(BOLD_FONT, 88))
+    draw.text((pad + 35, y + 40), f"Rs. {_inr(top_price)}/Quintal", fill=GOLD, font=_font(BOLD_FONT, 88))
     y += box_h + 60
 
     f_market = _font(BOLD_FONT, 38)
@@ -264,7 +286,7 @@ def render_vertical_card(commodity, state, records, date_str, max_markets=6):
     row_h = 95
     for r in records[:max_markets]:
         market = str(r.get("market", ""))[:24]
-        price_text = f"Rs.{r.get('modal_price', 'N/A')}"
+        price_text = f"Rs.{_inr(r.get('modal_price', 'N/A'))}"
         draw.rectangle([pad, y, width - pad, y + row_h - 12], fill=CARD_COLOR)
         draw.text((pad + 28, y + 20), market, fill=WHITE, font=f_market)
         tw = draw.textlength(price_text, font=f_price)
@@ -334,7 +356,7 @@ def render_thumbnail(commodity, state, records, date_str):
     top_price = _top_price(records)
     price_font = _font(BALOO_BOLD, 116)
     label_font = _font(BALOO_BOLD, 32)
-    price_text = f"Rs. {top_price}"
+    price_text = f"Rs. {_inr(top_price)}"
     ptw = d.textlength(price_text, font=price_font)
     card_w = int(max(ptw, 460) + 100)
     card_h = 230
@@ -408,7 +430,7 @@ def render_segment_intro(commodity, state, records, date_str, price_override=Non
     price_font = _font(BALOO_BOLD, 128)
     label_font = _font(BALOO_BOLD, 30)
     unit_font = _font(WORK_SANS_MEDIUM, 30)
-    price_text = f"Rs. {top_price}"
+    price_text = f"Rs. {_inr(top_price)}"
     ptw = ImageDraw.Draw(base).textlength(price_text, font=price_font)
     card_w, card_h = int(max(ptw, 600) + 100), 300
     card = Image.new("RGBA", (card_w, card_h), (0, 0, 0, 0))
@@ -443,7 +465,7 @@ def render_segment_intro(commodity, state, records, date_str, price_override=Non
         if i > 0:
             d.line([(pad + 30, ry), (pad + list_w - 30, ry)], fill=(240, 223, 192, 255), width=2)
         d.text((pad + 30, ry + 26), name, fill=(91, 38, 0, 255), font=row_font)
-        pt = f"Rs.{price}"
+        pt = f"Rs.{_inr(price)}"
         tw = d.textlength(pt, font=price_row_font)
         d.text((pad + list_w - 30 - tw, ry + 24), pt, fill=(*DARK, 255), font=price_row_font)
         ry += row_h
@@ -500,7 +522,7 @@ def render_segment_market(commodity, state, records, index, total, date_str, cap
     tw = d.textlength(market_name, font=mn_font)
     d.text(((W - tw) // 2, card_y + 34), market_name, fill=(*CREAM, 255), font=mn_font)
 
-    price_text = f"Rs. {price}"
+    price_text = f"Rs. {_inr(price)}"
     price_font = _font(BALOO_BOLD, 92)
     tw = d.textlength(price_text, font=price_font)
     d.text(((W - tw) // 2, card_y + 100), price_text, fill=(*style["label"], 255), font=price_font)
@@ -540,7 +562,7 @@ def render_segment_market(commodity, state, records, index, total, date_str, cap
             base.alpha_composite(bar, (pad + 3, int(y) + 3))
         d = ImageDraw.Draw(base)
         d.text((pad + 26, y + 18), name, fill=(*DARK, 255), font=row_font)
-        pt = f"Rs.{p}"
+        pt = f"Rs.{_inr(p)}"
         tw = d.textlength(pt, font=price_row_font)
         d.text((W - pad - 26 - tw, y + 18), pt, fill=(*DARK, 255), font=price_row_font)
         y += row_h
@@ -650,7 +672,7 @@ def render_segment_trend(commodity, state, records, date_str, direction, pct, ca
     d.text(((W - tw) // 2, card_y + 300), trend_label, fill=(*CREAM, 255), font=label_font)
 
     price_font = _font(MONO_SEMIBOLD, 34)
-    price_text = f"Aaj: Rs. {today_price} / Quintal"
+    price_text = f"Aaj: Rs. {_inr(today_price)} / Quintal"
     tw = d.textlength(price_text, font=price_font)
     d.text(((W - tw) // 2, card_y + 370), price_text, fill=(232, 201, 163, 255), font=price_font)
 
@@ -725,9 +747,9 @@ def render_segment_countdown(commodity, state, records, index, total, date_str, 
     try:
         final_price_val = float(final_price)
         shown_price = int(final_price_val * max(min(reveal_progress, 1.0), 0.0))
-        price_text = f"Rs. {shown_price}"
+        price_text = f"Rs. {_inr(shown_price)}"
     except (TypeError, ValueError):
-        price_text = f"Rs. {final_price}"
+        price_text = f"Rs. {_inr(final_price)}"
 
     card_h = 300
     card = _rounded_panel(W - 2 * pad, card_h, 40, DARK)
@@ -851,13 +873,13 @@ def render_segment_spotlight(commodity, state, records, index, total, date_str, 
     )
 
     lbl_font = _font(MONO_SEMIBOLD, 28)
-    d.text((gauge_x0, gauge_y + gauge_h + 20), f"MIN {int(min_p)}", fill=(232, 201, 163, 255), font=lbl_font)
-    max_text = f"MAX {int(max_p)}"
+    d.text((gauge_x0, gauge_y + gauge_h + 20), f"MIN {_inr(min_p)}", fill=(232, 201, 163, 255), font=lbl_font)
+    max_text = f"MAX {_inr(max_p)}"
     tw = d.textlength(max_text, font=lbl_font)
     d.text((gauge_x1 - tw, gauge_y + gauge_h + 20), max_text, fill=(232, 201, 163, 255), font=lbl_font)
 
     modal_shown = int(modal_p * progress)
-    modal_text = f"Rs. {modal_shown}"
+    modal_text = f"Rs. {_inr(modal_shown)}"
     modal_font = _font(BALOO_BOLD, 84)
     tw = d.textlength(modal_text, font=modal_font)
     d.text(((W - tw) // 2, gauge_y + gauge_h + 80), modal_text, fill=(*style["label"], 255), font=modal_font)
