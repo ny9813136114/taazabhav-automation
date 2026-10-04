@@ -30,7 +30,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         ? `${name} ${year} (${whenShort}, held) — Next Mela Date | ${m.hi}`
         : `${name} ${year} Date: ${whenShort} — Venue, Details | ${m.hi}`;
   const lead = m.status === "confirmed" ? `${name} ${year} date: ${when}${m.previousStart ? " (date changed by the organiser)" : ""}` : `${name} ${year}: dates not announced yet (${when})`;
-  const description = `${lead}, at ${m.venue}, ${m.state}. ${m.highlights}. Organiser: ${m.organiser}. Official source linked.`;
+  // fix33: keep it under ~160 chars so Google doesn't cut the date off.
+  const full = `${lead}, at ${m.venue}, ${m.state}. ${m.highlights}.`;
+  const description = full.length <= 160 ? full : full.slice(0, 157).replace(/[\s,;—-]+\S*$/, "") + "…";
   return { title, description, alternates: { canonical: path }, openGraph: { images: OG_IMAGES, title, description, url: path } };
 }
 

@@ -662,7 +662,7 @@ export const LEARN_ARTICLES: LearnArticle[] = [
     title: "MSP 2026-27 List (Paddy ₹2,441) + New Rabi MSP 2027-28",
     hindiTitle: "एमएसपी 2026-27 पूरी सूची",
     description:
-      "Paddy (dhan) MSP 2026-27: ₹2,441 common, ₹2,461 Grade A — the same in UP, Punjab and every state. Full Kharif 2026-27 list plus the new Rabi 2027-28 MSP (wheat ₹2,610), from PIB.",
+      "Paddy MSP 2026-27: ₹2,441 common, ₹2,461 Grade A (same in UP and all states). Full Kharif list + new Rabi 2027-28 MSP: wheat ₹2,610. Source: PIB.",
     dek: "Official MSP in ₹ per quintal: paddy and every Kharif crop for 2026-27, and the new Rabi 2027-28 MSP announced on 30 September 2026.",
     dekHi: "आधिकारिक एमएसपी, ₹ प्रति क्विंटल: धान और हर ख़रीफ़ फसल 2026-27, और 30 सितंबर 2026 को घोषित नया रबी एमएसपी 2027-28।",
     datePublished: "2026-09-26",
