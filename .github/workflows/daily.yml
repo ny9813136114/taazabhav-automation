@@ -105,6 +105,8 @@ jobs:
           YT_LANG: "hi"
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          META_TOKEN: ${{ secrets.META_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
         run: python main.py
       # if: always() is deliberate (Phase 1A): main.py now exits non-zero
       # when at least one target had a real failure, so this step would

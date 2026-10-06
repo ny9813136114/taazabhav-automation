@@ -1,0 +1,33 @@
+name: Check Meta connection
+
+# Manual only. Verifies META_TOKEN + FB_PAGE_ID can reach the Facebook Page
+# and its linked Instagram account. Posts NOTHING.
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests
+      - name: Check
+        env:
+          META_TOKEN: ${{ secrets.META_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+        run: |
+          python - <<'PY'
+          import os, requests, meta_publish as mp
+          tok, ig = mp.page_credentials()
+          page = requests.get(f"{mp.GRAPH}/{os.environ['FB_PAGE_ID']}", params={"fields": "name", "access_token": tok}, timeout=30).json()
+          print("Facebook Page OK:", page.get("name"))
+          if ig:
+              u = requests.get(f"{mp.GRAPH}/{ig}", params={"fields": "username", "access_token": tok}, timeout=30).json()
+              print("Instagram OK: @" + str(u.get("username")), "(id", ig + ")")
+          else:
+              raise SystemExit("Instagram NOT linked to this Page (or token lacks instagram_basic).")
+          PY
