@@ -11,6 +11,11 @@ on:
     - cron: "0 0 * * *"    # 05:30 IST -- Karnataka, Tomato
     - cron: "10 0 * * *"   # 05:40 IST -- Punjab, Potato
   workflow_dispatch:
+    inputs:
+      slot:
+        description: "Story slot 1-5 (leave empty to run the 5 old fixed targets)"
+        required: false
+        default: ""
 
 concurrency:
   group: taazabhav-daily
@@ -65,29 +70,22 @@ jobs:
       # every target in TARGETS in one go, same as testing locally.
       - name: Pick today's target from the schedule that fired
         run: |
+          # Batch 3: each schedule is a SLOT, not a fixed state/crop.
+          # pick_story.py chooses the day's strongest story for the slot
+          # (falls back to the old fixed target for that slot if nothing
+          # can be scored). A manual run can pass a slot too.
           case "${{ github.event.schedule }}" in
-            "30 23 * * *")
-              echo "YT_STATE=Uttar Pradesh" >> "$GITHUB_ENV"
-              echo "YT_COMMODITY=Onion" >> "$GITHUB_ENV"
-              ;;
-            "40 23 * * *")
-              echo "YT_STATE=Maharashtra" >> "$GITHUB_ENV"
-              echo "YT_COMMODITY=Onion" >> "$GITHUB_ENV"
-              ;;
-            "50 23 * * *")
-              echo "YT_STATE=West Bengal" >> "$GITHUB_ENV"
-              echo "YT_COMMODITY=Potato" >> "$GITHUB_ENV"
-              ;;
-            "0 0 * * *")
-              echo "YT_STATE=Karnataka" >> "$GITHUB_ENV"
-              echo "YT_COMMODITY=Tomato" >> "$GITHUB_ENV"
-              ;;
-            "10 0 * * *")
-              echo "YT_STATE=Punjab" >> "$GITHUB_ENV"
-              echo "YT_COMMODITY=Potato" >> "$GITHUB_ENV"
-              ;;
+            "30 23 * * *") echo "YT_SLOT=1" >> "$GITHUB_ENV" ;;
+            "40 23 * * *") echo "YT_SLOT=2" >> "$GITHUB_ENV" ;;
+            "50 23 * * *") echo "YT_SLOT=3" >> "$GITHUB_ENV" ;;
+            "0 0 * * *")   echo "YT_SLOT=4" >> "$GITHUB_ENV" ;;
+            "10 0 * * *")  echo "YT_SLOT=5" >> "$GITHUB_ENV" ;;
             *)
-              echo "Manual run -- no single target set, main.py will process every TARGETS entry."
+              if [ -n "${{ github.event.inputs.slot }}" ]; then
+                echo "YT_SLOT=${{ github.event.inputs.slot }}" >> "$GITHUB_ENV"
+              else
+                echo "Manual run with no slot -- main.py will process every fixed TARGETS entry."
+              fi
               ;;
           esac
       - name: Run pipeline
@@ -110,7 +108,7 @@ jobs:
         run: |
           git config user.name "TaazaBhav Bot"
           git config user.email "bot@taazabhav.com"
-          git add data/history/ data/published/
+          git add data/history/ data/published/ data/stories/ 2>/dev/null || git add data/history/ data/published/
           git diff --staged --quiet || git commit -m "Update price history"
           git pull --rebase
           git push

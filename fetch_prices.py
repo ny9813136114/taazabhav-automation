@@ -20,16 +20,20 @@ HEADERS = {
 # (4xx, not in RETRYABLE_STATUS_CODES) fails immediately, since retrying
 # those can never succeed and would just waste the workflow's time budget.
 #
-# Budget: MAX_ATTEMPTS=3 total tries, with REQUEST_TIMEOUT=30s per try and
+# Budget: MAX_ATTEMPTS=3 total tries, with REQUEST_TIMEOUT (see below) per try and
 # BACKOFF_SECONDS between tries. Worst case per call (every attempt hangs to
-# the full timeout): 3*30 + sum(BACKOFF_SECONDS) = 90 + 9 = 99s. Typical case
+# the full timeout): 3*60 + sum(BACKOFF_SECONDS) = 180 + 9 = 189s. Typical case
 # (a fast 502 response, not a hang): a few seconds per attempt + 9s backoff.
 # See docs/RELIABILITY.md for the full worst-case analysis across a
 # multi-target run.
 # ---------------------------------------------------------------------------
 MAX_ATTEMPTS = 3
 BACKOFF_SECONDS = [3, 6]  # delay before attempt 2, delay before attempt 3
-REQUEST_TIMEOUT = 30
+# 60s (was 30s): matches the website's own fetch-daily timeout. On 26-27 Sep
+# 2026 data.gov.in answered light requests instantly but took >40s on real
+# commodity queries, so every 30s attempt timed out. Worst case per page is
+# now 3*60 + 9 = 189s; the workflow timeout (35 min) still covers paging.
+REQUEST_TIMEOUT = 60
 # 429 included: a public, rate-limited government API polled up to ~30
 # times a day in a concentrated morning window (5 YouTube targets + 25
 # Telegram commodities, some run concurrently) is at least as likely to

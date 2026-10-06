@@ -217,7 +217,10 @@ def _build_message(state, date_str, today_prices, yesterday_prices):
         "━" * 12,
         footer_note,
         "✅ Roz subah yahi update yahin milega",
-        "▶️ Poora video dekhne ke liye: youtube.com/@TaazaBhav",
+        # Was youtube.com/@TaazaBhav -- that handle is a DIFFERENT (2023)
+        # mandi channel, not ours. Ours is @TaazaBhavIN (fixed 26 Sep 2026).
+        "🌐 Har mandi ka poora bhav: taazabhav.com",
+        "▶️ Roz ka video: youtube.com/@TaazaBhavIN",
         "",
         "#TaazaBhav #MandiBhav",
     ]
