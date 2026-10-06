@@ -261,6 +261,20 @@ def run_pipeline(state, commodity, run_date, lang="hi", records=None, story=None
         # line, so a failed upload can never be mistaken for a published one
         # on a subsequent retry. See publish_state.py.
         publish_state.mark_published(today_iso, state, commodity, video_id)
+        # Batch 6: same Short as a Reel on Facebook + Instagram. Never
+        # affects the YouTube result.
+        if flash_ok:
+            try:
+                import meta_publish
+                if meta_publish.enabled():
+                    cap = meta_publish.build_caption(title, description, commodity, state)
+                    res = meta_publish.publish_all(video_path, cap)
+                    print(f"Meta: facebook={res['facebook']} instagram={res['instagram']}")
+                    if res["errors"]:
+                        send_telegram_alert("TaazaBhav ALERT: Reel post issue\n\n" + "\n".join(res["errors"]))
+            except Exception as e:
+                print(f"Meta publish failed: {e}")
+                send_telegram_alert(f"TaazaBhav ALERT: Reel post failed for {commodity} - {state}\n\n{e}")
     except Exception as e:
         print(f"Upload failed for {commodity} - {state}: {e}")
         traceback.print_exc()
