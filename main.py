@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import traceback
 from datetime import datetime, timezone, timedelta
@@ -165,7 +166,7 @@ def build_metadata(commodity, state, records, run_date):
     return title, description, tags, comment_text
 
 
-def run_pipeline(state, commodity, run_date, lang="hi", records=None):
+def run_pipeline(state, commodity, run_date, lang="hi", records=None, story=None, slot=None):
     """run_date: the canonical business date for this whole pipeline
     execution (a datetime.date, IST-derived), computed once by
     get_canonical_run_date() in main() and passed down unchanged -- this
@@ -216,19 +217,35 @@ def run_pipeline(state, commodity, run_date, lang="hi", records=None):
     video_path = f"output_{safe_name}.mp4"
     thumb_path = f"thumb_{safe_name}.jpg"
 
-    make_audio(script, out_path=audio_path, lang=lang)
-    make_video(
-        audio_path, records, state, commodity, lang,
-        output_path=video_path, date_str=today_str,
-        intro_caption=captions["intro"],
-        market_captions=captions["markets"],
-        format_mode=format_mode,
-        trend_data=captions["trend_data"],
-        trend_caption=captions["trend"],
-    )
-    generate_thumbnail(commodity, state, records, today_str, out_path=thumb_path)
-
     title, description, tags, comment_text = build_metadata(commodity, state, records, run_date)
+
+    # Batch 4: scheduled slots publish the 8 s "भाव फ्लैश" (Remotion + stock
+    # clip). Any failure falls back to the classic narrated video below.
+    flash_ok = False
+    if slot and os.environ.get("TB_FORMAT", "flash") == "flash":
+        try:
+            import flash
+            video_path, title, description = flash.make_flash(
+                records, state, commodity, run_date, story=story, slot=slot, out_path=video_path)
+            thumb_path = None
+            flash_ok = True
+            print(f"Flash rendered: {title}")
+        except Exception as e:
+            print(f"Flash render failed, using classic video: {e}")
+            traceback.print_exc()
+
+    if not flash_ok:
+        make_audio(script, out_path=audio_path, lang=lang)
+        make_video(
+        audio_path, records, state, commodity, lang,
+            output_path=video_path, date_str=today_str,
+            intro_caption=captions["intro"],
+            market_captions=captions["markets"],
+            format_mode=format_mode,
+            trend_data=captions["trend_data"],
+            trend_caption=captions["trend"],
+        )
+        generate_thumbnail(commodity, state, records, today_str, out_path=thumb_path)
 
     result = RESULT_SUCCESS
     try:
@@ -250,7 +267,7 @@ def run_pipeline(state, commodity, run_date, lang="hi", records=None):
         send_telegram_alert(f"TaazaBhav ALERT: upload failed for {commodity} - {state}\n\n{e}")
         result = RESULT_FAILED
     for f in [audio_path, video_path, thumb_path]:
-        if os.path.exists(f):
+        if f and os.path.exists(f):
             os.remove(f)
     return result
 
@@ -297,7 +314,9 @@ def main():
             pre_records, reason = None, f"fallback after story-engine error: {e}"
         print(f"Slot {single_slot}: {commodity} - {state} ({reason})")
         try:
-            results.append(run_pipeline(state, commodity, run_date, single_lang, records=pre_records))
+            m = re.search(r"story=(\w+)", reason or "")
+            results.append(run_pipeline(state, commodity, run_date, single_lang, records=pre_records,
+                                        story=m.group(1) if m else None, slot=int(single_slot)))
         except Exception as e:
             print(f"Error processing {commodity} - {state}: {e}")
             traceback.print_exc()
