@@ -3,6 +3,7 @@ import { Composition, registerRoot } from "remotion";
 import { MandiShort, totalFrames } from "./MandiShort";
 import { BhavFlash, flashFrames, type FlashProps } from "./BhavFlash";
 import { MelaAlert, melaFrames, type MelaProps } from "./MelaAlert";
+import { SawalJawab, sawalFrames, type SawalProps } from "./SawalJawab";
 import { FPS, H, W } from "./theme";
 import type { ShortProps } from "./types";
 
@@ -27,8 +28,24 @@ export const MELA_SAMPLE: MelaProps = {
   cta: "तारीख, पता, कैलेंडर में जोड़ें:", link: "taazabhav.com/kisan-mela/sample", seconds: 9,
 };
 
+// Sample only (layout preview); real props come from sawal_video.py (Batch 8).
+export const SAWAL_SAMPLE: SawalProps = {
+  clip: null, credit: null, label: "खाद का सही रेट", tone: "gold",
+  lines: [
+    { text: "डीएपी की बोरी ₹1,350 से ज़्यादा में मिली?", audio: null, from: 0, frames: 75 },
+    { text: "50 किलो डीएपी की कीमत सरकार ने ₹1,350 तय की है।", audio: null, from: 80, frames: 90 },
+    { text: "इससे ज़्यादा लेना गलत है, बिल ज़रूर मांगें।", audio: null, from: 175, frames: 75 },
+    { text: "शिकायत ज़िला कृषि अधिकारी से करें।", audio: null, from: 255, frames: 70 },
+    { text: "बोरी का पूरा हिसाब taazabhav.com/khad-calculator पर।", audio: null, from: 330, frames: 80 },
+  ],
+  link: "taazabhav.com/khad-calculator", asof: "जानकारी 6 अक्टूबर 2026 तक की", frames: 450,
+};
+
 const Root: React.FC = () => (
   <>
+    <Composition id="SawalJawab" component={SawalJawab as any} width={W} height={H} fps={FPS}
+      durationInFrames={sawalFrames(SAWAL_SAMPLE)} defaultProps={SAWAL_SAMPLE}
+      calculateMetadata={({ props }) => ({ durationInFrames: sawalFrames(props as SawalProps) })} />
   <Composition
     id="MelaAlert"
     component={MelaAlert as any}
