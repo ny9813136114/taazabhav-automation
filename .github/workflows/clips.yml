@@ -1,0 +1,43 @@
+name: Build clip library
+
+# Manual only (Actions -> "Build clip library" -> Run workflow), about once a
+# month. Downloads portrait stock clips from Pexels (+ Pixabay if the key is
+# set), trims them to 8 s 720x1280 and commits them to assets/clips/.
+# The daily 5 AM runs only READ this folder, never the stock APIs.
+# After a run, open assets/clips/preview.jpg; put bad clip names (e.g.
+# pexels-12345) in assets/clips/blocklist.txt, delete the file, re-run.
+on:
+  workflow_dispatch:
+    inputs:
+      crops:
+        description: "Crops to fill (space separated, empty = all)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  clips:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pip install requests pillow
+      - name: Fetch clips
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+        run: python fetch_clips.py ${{ github.event.inputs.crops }}
+      - name: Commit clips
+        run: |
+          git config user.name "TaazaBhav Bot"
+          git config user.email "bot@taazabhav.com"
+          git add assets/clips/
+          git diff --staged --quiet || git commit -m "Update clip library"
+          git pull --rebase
+          git push

@@ -55,6 +55,17 @@ jobs:
           sudo apt-get install -y ffmpeg
       - name: Install Python dependencies
         run: pip install -r requirements.txt
+      # Batch 4: Node + Remotion for the 8 s "भाव फ्लैश" Shorts (shorts/).
+      # If this or the render fails, main.py falls back to the classic video.
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: shorts/package-lock.json
+      - name: Install Remotion
+        working-directory: shorts
+        run: npm ci --no-audit --no-fund && npx remotion browser ensure
       - name: Restore YouTube credentials
         run: |
           echo "${{ secrets.YT_TOKEN_PICKLE_B64 }}" | base64 -d -i > token.pickle
