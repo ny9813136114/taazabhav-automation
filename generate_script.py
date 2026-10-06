@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import date
 from price_history import compute_trend
+from hindi_names import commodity_hi, state_hi, spoken_market, price_int
 
 LANG_TEMPLATES = {
     "hi": {
@@ -121,6 +122,8 @@ def _build_parts(records, state, commodity, run_date, lang="hi", yesterday_price
     a real production incident showed this file's own former date.today()
     call could disagree with the date already shown in the video's own
     title/thumbnail for the same run."""
+    if lang == "hi":
+        return _build_parts_hi(records, state, commodity, run_date, yesterday_prices)
     tpl = LANG_TEMPLATES.get(lang, LANG_TEMPLATES["hi"])
     today = run_date.strftime("%d %B %Y")
 
@@ -157,6 +160,113 @@ def _build_parts(records, state, commodity, run_date, lang="hi", yesterday_price
 
     outro = tpl["outro"]
     return intro, market_lines, trend, trend_data, outro
+
+# ---------------------------------------------------------------------------
+# Hindi story-first script (Batch 2, 26 Sep 2026).
+#
+# Why: the old script opened every video with "नमस्कार दोस्तों! आज {date}
+# है..." and then read 9 numbers (min/max/modal x 3 markets). Views fell
+# from 100-220 to 2-60 per Short in two weeks: nothing in the first 2
+# seconds changed from one day to the next, and nobody can hold 9 numbers.
+#
+# Now: sentence 1 is today's story (the gap between the best and worst
+# mandi, or the best mandi), then one short line per market (modal price
+# only), the existing day-over-day trend line, and an outro that sends
+# people to the website instead of asking for the bell icon. Every slot has
+# 3 wordings picked by the date, so no two days sound the same.
+#
+# Relies on records being sorted highest modal price first (fetch_prices.
+# clean_records(), Batch 1) -- records[0] is the best mandi, records[-1]
+# the lowest of the ones fetched. The market lines still narrate
+# records[:3] in order, because make_video.py draws segment i from
+# records[i]; voice and picture must stay in step.
+#
+# The spoken date keeps the "%d %B %Y" form: the canonical-date tests
+# (tests/test_generate_script.py) check for it, and it proves which day's
+# prices these are.
+# ---------------------------------------------------------------------------
+SPREAD_STORY_MIN = 0.25  # >= 25% gap between best and lowest mandi = "spread" story
+
+HOOKS_SPREAD = [
+    "{s} में आज {c} का भाव {low} से {high} रुपये तक — मंडी बदलने से {gap} रुपये क्विंटल का फ़र्क।",
+    "एक ही राज्य, एक ही {c} — {low_m} में {low} रुपये, और {high_m} में {high} रुपये।",
+    "{s} की मंडियों में {c} पर आज {gap} रुपये क्विंटल का अंतर है। देखिए सबसे अच्छा भाव कहाँ मिला।",
+]
+HOOKS_BEST = [
+    "आज {s} में {c} का सबसे अच्छा भाव {high_m} मंडी में मिला — {high} रुपये क्विंटल।",
+    "{c} बेचना है? आज {s} में सबसे ऊँचा भाव {high_m} में है — {high} रुपये।",
+    "{s} में आज {c} का टॉप भाव: {high_m}, {high} रुपये प्रति क्विंटल।",
+]
+DATE_LINE = "यह {date} के ताज़ा सरकारी भाव हैं।"
+MARKET_LINES = [
+    "{m} मंडी में {modal} रुपये।",
+    "{m} में भाव {modal} रुपये क्विंटल।",
+    "{m} — {modal} रुपये।",
+]
+OUTROS = [
+    "अपनी मंडी का पूरा भाव ताज़ा भाव डॉट कॉम पर देखें।",
+    "भाड़ा और खर्चा जोड़कर ही मंडी चुनें। हर मंडी का भाव ताज़ा भाव डॉट कॉम पर।",
+    "कल सुबह फिर मिलेंगे नए भाव के साथ। पूरी लिस्ट ताज़ा भाव डॉट कॉम पर।",
+]
+
+
+def _pick(options, run_date, salt=0):
+    return options[(run_date.toordinal() + salt) % len(options)]
+
+
+def _build_parts_hi(records, state, commodity, run_date, yesterday_prices=None):
+    tpl = LANG_TEMPLATES["hi"]
+    c = commodity_hi(commodity)
+    s = state_hi(state)
+    today = run_date.strftime("%d %B %Y")
+
+    priced = [r for r in records if price_int(r.get("modal_price")) is not None]
+    hook = None
+    if priced:
+        high_r, low_r = priced[0], priced[-1]
+        high, low = price_int(high_r.get("modal_price")), price_int(low_r.get("modal_price"))
+        fields = dict(
+            s=s, c=c, high=high, low=low, gap=high - low,
+            high_m=spoken_market(high_r.get("market", "")),
+            low_m=spoken_market(low_r.get("market", "")),
+        )
+        if len(priced) >= 2 and low > 0 and (high - low) / low >= SPREAD_STORY_MIN:
+            hook = _pick(HOOKS_SPREAD, run_date).format(**fields)
+        else:
+            hook = _pick(HOOKS_BEST, run_date).format(**fields)
+    if hook is None:
+        hook = f"आज {s} में {c} के ताज़ा भाव।"
+    intro = hook + " " + DATE_LINE.format(date=today)
+
+    market_lines = []
+    for i, r in enumerate(records[:3]):
+        market_lines.append(_pick(MARKET_LINES, run_date, salt=i).format(
+            m=spoken_market(r.get("market", "")),
+            modal=price_int(r.get("modal_price")) if price_int(r.get("modal_price")) is not None else "N/A",
+        ))
+
+    trend = None
+    trend_data = None
+    if yesterday_prices and records:
+        top = records[0]
+        trend_result = compute_trend(
+            yesterday_prices, top.get("market", "").strip(),
+            top.get("modal_price"),
+        )
+        if trend_result:
+            direction, pct = trend_result
+            trend = tpl["trend"].format(
+                market=spoken_market(top.get("market", "")),
+                commodity=c,
+                pct=pct,
+                trend=tpl["trend_word"][direction],
+                modal=price_int(top.get("modal_price")),
+            )
+            trend_data = {"direction": direction, "pct": pct}
+
+    outro = _pick(OUTROS, run_date)
+    return intro, market_lines, trend, trend_data, outro
+
 
 def build_script(records, state, commodity, lang="hi", yesterday_prices=None, run_date=None):
     """Unchanged from before: one script string, for make_audio.py.

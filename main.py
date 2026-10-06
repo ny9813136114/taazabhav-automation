@@ -22,6 +22,7 @@ from upload_youtube import upload_video
 from price_history import load_yesterday_prices, save_today_prices
 from notify import send_telegram_alert
 import publish_state
+from hindi_names import commodity_hi, state_hi, date_hi, page_url, inr, price_int
 # ---- States/commodities to cover in each daily run (items with real daily demand) ----
 TARGETS = [
     {"state": "Uttar Pradesh", "commodity": "Onion", "lang": "hi"},
@@ -89,7 +90,82 @@ def _todays_format(run_date):
     return FORMAT_ROTATION[day_of_year % len(FORMAT_ROTATION)]
 
 
-def run_pipeline(state, commodity, run_date, lang="hi"):
+
+def build_metadata(commodity, state, records, run_date):
+    """Title, description, tags and pinned-comment text (Batch 2, 26 Sep 2026).
+
+    Before: `#Shorts Onion Bhav Today 25 Sep 2026 | Tilhar APMC Mandi, ...`
+    -- English-only, and the mandi named was simply the first API row.
+    Now: Hindi story + price first (what a Hindi viewer reads in the feed),
+    then the English search phrase vidIQ shows real demand for ("onion rate
+    today" ~5.2K/month, low competition), then state and date. The
+    description and comment lead with the matching taazabhav.com page.
+
+    records are sorted highest modal price first (fetch_prices.clean_records).
+    """
+    c_hi = commodity_hi(commodity)
+    s_hi = state_hi(state)
+    day = run_date.strftime("%d %b")
+    prices = [p for p in (price_int(r.get("modal_price")) for r in records) if p is not None]
+    high = max(prices) if prices else None
+    low = min(prices) if prices else None
+    top_market = str(records[0].get("market", "")).strip() if records else ""
+
+    if high is not None and low is not None and low < high:
+        story = f"{c_hi} का भाव ₹{inr(low)}–₹{inr(high)}"
+    elif high is not None:
+        story = f"{c_hi} का भाव आज ₹{inr(high)}"
+    else:
+        story = f"{c_hi} का भाव आज"
+    title = f"{story} | {commodity} Rate Today {state} | {day} #Shorts"
+    if len(title) > 100:
+        title = f"{story} | {commodity} Rate Today | {day} #Shorts"
+    title = title[:100]
+
+    url = page_url(commodity, state)
+    market_lines = "\n".join(
+        f"- {r.get('market')}: ₹{inr(r.get('modal_price'))}/क्विंटल"
+        for r in records[:8]
+    )
+    range_line = (
+        f"{s_hi} में आज {c_hi} का भाव ₹{inr(low)} से ₹{inr(high)} प्रति क्विंटल "
+        f"({len(prices)} मंडियाँ)।" if prices else f"{s_hi} में आज {c_hi} का भाव।"
+    )
+    description = (
+        f"{range_line}\n"
+        f"हर मंडी का पूरा भाव: {url}\n\n"
+        f"{commodity} rate today in {state} mandis ({run_date.strftime('%d %b %Y')}):\n"
+        f"{market_lines}\n\n"
+        f"Source: Agmarknet / data.gov.in (Government of India). "
+        f"Prices are per quintal; freight and commission are extra.\n"
+        f"TaazaBhav.com — free daily mandi bhav, no subscription.\n"
+        f"Telegram: https://t.me/taazabhav\n"
+        f"Instagram: https://www.instagram.com/taazabhav/\n"
+        f"Facebook: https://www.facebook.com/profile.php?id=61594672476852\n\n"
+        f"#mandibhav #{commodity.lower().replace(' ', '')}ratetoday "
+        f"#{state.lower().replace(' ', '')}mandi #shorts"
+    )
+    tags = [
+        f"{commodity.lower()} rate today", f"{commodity.lower()} price today",
+        "mandi bhav", "mandi bhav today", "aaj ka mandi bhav",
+        f"{c_hi} का भाव", f"{c_hi} का भाव आज", f"{commodity.lower()} ka bhav",
+        f"{state.lower()} mandi bhav", f"{state.lower()} mandi rate",
+        "kisan mandi rate", "APMC price", "TaazaBhav",
+    ]
+    for r in records[:3]:
+        m = str(r.get("market", "")).strip()
+        if m:
+            tags.append(f"{m.lower()} mandi bhav")
+    comment_text = (
+        f"आज ({date_hi(run_date)}) {s_hi} में {c_hi} का भाव — सबसे अच्छा: "
+        f"{top_market} ₹{inr(high)}.\n"
+        f"अपनी मंडी का भाव यहाँ देखें: {url}\n\n"
+        f"आपकी मंडी में आज क्या भाव मिला? कमेंट में लिखें।"
+    )
+    return title, description, tags, comment_text
+
+
+def run_pipeline(state, commodity, run_date, lang="hi", records=None):
     """run_date: the canonical business date for this whole pipeline
     execution (a datetime.date, IST-derived), computed once by
     get_canonical_run_date() in main() and passed down unchanged -- this
@@ -105,7 +181,11 @@ def run_pipeline(state, commodity, run_date, lang="hi"):
     yesterday_prices = load_yesterday_prices(state, commodity)
 
     try:
-        records = fetch_prices(state=state, commodity=commodity)
+        # Batch 3: the story engine (pick_story.py) has usually already
+        # fetched and cleaned this pair's rows while scoring -- reuse them
+        # instead of hitting data.gov.in a second time.
+        if records is None:
+            records = fetch_prices(state=state, commodity=commodity)
     except DataFetchError as e:
         # A genuine upstream failure (data.gov.in unreachable/erroring even
         # after retries) -- this is NOT the same as a legitimate empty
@@ -148,52 +228,7 @@ def run_pipeline(state, commodity, run_date, lang="hi"):
     )
     generate_thumbnail(commodity, state, records, today_str, out_path=thumb_path)
 
-    # Specific mandi/APMC name (e.g. "Sealdah", "Azadpur") straight from
-    # today's data.gov.in record, not just the broad state name. Real
-    # competitor channels in this niche (checked via vidIQ) name their
-    # specific mandi and rank far better on it than on the state name --
-    # e.g. "mandsaur mandi bhav" scores much less competitive (33/100)
-    # than generic "mandi bhav" (48/100) in vidIQ's own keyword data.
-    # Falls back to the state name on the rare day a record has no market
-    # field, so this never breaks the pipeline.
-    mandi_name = str(records[0].get("market", "")).strip() if records else ""
-    location_label = mandi_name if mandi_name else state
-
-    title = f"#Shorts {commodity} Bhav Today {today_str} | {location_label} Mandi, {state}"
-
-    top_markets = records[:5]
-    market_lines = "\n".join(
-        f"- {r.get('market')}: Rs.{r.get('modal_price')}/quintal"
-        for r in top_markets
-    )
-    description = (
-        f"{commodity} Mandi Bhav Today ({today_str}) - {state}\n\n"
-        f"Aaj {state} ke mandiyon mein {commodity} ka taaza bhav:\n\n"
-        f"{market_lines}\n\n"
-        f"Ye video roz automatically {state} ke APMC mandis ke official data.gov.in data se banti hai. "
-        f"Kisan aur vyapari roz ka sahi bhav yahan dekh sakte hain.\n\n"
-        f"Subscribe karo TaazaBhav ko roz ka mandi bhav paane ke liye!\n\n"
-        f"#mandibhav #{commodity.lower()}price #{state.lower().replace(' ', '')}mandi #shorts"
-    )
-    tags = [
-        "mandi bhav", "mandi bhav today", f"{commodity.lower()} price today",
-        f"{commodity.lower()} ka bhav", f"{state.lower()} mandi rate",
-        f"{state.lower()} mandi bhav", "aaj ka mandi bhav", "agriculture price india",
-        "APMC price", "kisan mandi rate", "TaazaBhav", "shorts",
-        f"{location_label.lower()} mandi bhav",
-    ]
-
-    # Auto-posted immediately after upload for engagement/SEO. NOTE: the
-    # YouTube Data API has no "pin comment" endpoint at all (only
-    # list/insert/update/delete/setModerationStatus exist on Comments), so
-    # this can't be auto-pinned -- it just posts the comment. Pin it
-    # manually in YouTube Studio if you want it pinned (one tap per video).
-    comment_text = (
-        f"Aaj ({today_str}) {state} ke mandiyon mein {commodity} ka poora bhav:\n\n"
-        f"{market_lines}\n\n"
-        f"Ye update roz subah 6 baje se pehle milega. Channel subscribe karein "
-        f"taaki koi din miss na ho."
-    )
+    title, description, tags, comment_text = build_metadata(commodity, state, records, run_date)
 
     result = RESULT_SUCCESS
     try:
@@ -243,11 +278,32 @@ def main():
     # (one state/commodity per cron trigger, staggered through the morning).
     # Running locally (python main.py) leaves these unset, so it falls back
     # to processing every target in TARGETS in one go -- same as before.
+    single_slot = os.environ.get("YT_SLOT")
     single_state = os.environ.get("YT_STATE")
     single_commodity = os.environ.get("YT_COMMODITY")
     single_lang = os.environ.get("YT_LANG", "hi")
 
-    if single_state and single_commodity:
+    if single_slot:
+        # Batch 3: a scheduled slot picks the day's strongest story
+        # (pick_story.py) instead of a fixed state/crop. Falls back to the
+        # old fixed target for this slot if nothing can be scored.
+        import pick_story
+        try:
+            ranked = pick_story.ranked_for_today(run_date)
+            state, commodity, pre_records, reason = pick_story.choose_for_slot(
+                single_slot, run_date, publish_state.is_published, ranked)
+        except Exception as e:
+            state, commodity = pick_story.FALLBACK_BY_SLOT.get(int(single_slot), pick_story.FALLBACK_BY_SLOT[1])
+            pre_records, reason = None, f"fallback after story-engine error: {e}"
+        print(f"Slot {single_slot}: {commodity} - {state} ({reason})")
+        try:
+            results.append(run_pipeline(state, commodity, run_date, single_lang, records=pre_records))
+        except Exception as e:
+            print(f"Error processing {commodity} - {state}: {e}")
+            traceback.print_exc()
+            send_telegram_alert(f"TaazaBhav ALERT: slot {single_slot} ({commodity} - {state}) run crashed\n\n{e}")
+            results.append(RESULT_FAILED)
+    elif single_state and single_commodity:
         try:
             results.append(run_pipeline(single_state, single_commodity, run_date, single_lang))
         except Exception as e:

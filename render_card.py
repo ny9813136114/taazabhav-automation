@@ -1,5 +1,6 @@
 import math
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance
+from hindi_names import state_hi
 
 # Legacy assets (still used by render_vertical_card / render_thumbnail below).
 BOLD_FONT = "assets/fonts/NotoSansDevanagari-Bold.ttf"
@@ -30,6 +31,12 @@ FUSION_STYLE = {
     "potato": {"bg": (242, 200, 121), "icon": (185, 140, 85), "label": (255, 240, 194), "accent": "spots"},
     "tomato": {"bg": (255, 122, 89), "icon": (226, 60, 60), "label": (255, 211, 194), "accent": "calyx"},
     "wheat": {"bg": (246, 214, 93), "icon": (216, 167, 46), "label": (255, 243, 176), "accent": "grain"},
+    # Batch 3 (27 Sep 2026): crops the story engine can now pick.
+    "garlic": {"bg": (236, 196, 150), "icon": (250, 244, 230), "label": (255, 240, 214), "accent": "sprout"},
+    "soyabean": {"bg": (226, 196, 110), "icon": (196, 160, 72), "label": (255, 240, 190), "accent": "spots"},
+    "cotton": {"bg": (160, 200, 230), "icon": (250, 250, 250), "label": (226, 240, 255), "accent": None},
+    "maize": {"bg": (250, 200, 70), "icon": (240, 170, 30), "label": (255, 240, 170), "accent": "grain"},
+    "groundnut": {"bg": (222, 170, 110), "icon": (190, 130, 70), "label": (255, 230, 196), "accent": "spots"},
 }
 FUSION_DEFAULT = {"bg": (255, 159, 69), "icon": (122, 140, 255), "label": (233, 236, 255), "accent": None}
 
@@ -363,7 +370,7 @@ def render_thumbnail(commodity, state, records, date_str):
     card = Image.new("RGBA", (card_w, card_h), (0, 0, 0, 0))
     cd = ImageDraw.Draw(card)
     cd.rounded_rectangle([0, 0, card_w - 1, card_h - 1], radius=36, fill=(*DARK, 255))
-    cd.text((38, 24), "AAJ KA BHAV", fill=(*style["label"], 255), font=label_font)
+    cd.text((38, 24), "आज का भाव", fill=(*style["label"], 255), font=label_font)
     price_y = 68
     cd.text((38, price_y), price_text, fill=(*CREAM, 255), font=price_font)
     # Bright highlight ring around the price itself -- one unmistakable
@@ -423,29 +430,29 @@ def render_segment_intro(commodity, state, records, date_str, price_override=Non
     name_font = _font(BALOO_BOLD, 76)
     d.text((icon_x + icon_size + 26, icon_y + 40), commodity, fill=(*DARK, 255), font=name_font)
     sub_font = _font(WORK_SANS_MEDIUM, 32)
-    d.text((icon_x + icon_size + 26, icon_y + 130), f"{state} Mandi", fill=(91, 38, 0, 255), font=sub_font)
+    d.text((icon_x + icon_size + 26, icon_y + 130), f"{state_hi(state)} मंडी", fill=(91, 38, 0, 255), font=_font(BALOO_BOLD, 34))
 
     # price card (slightly rotated, matches the approved mockup)
     top_price = price_override if price_override is not None else _top_price(records)
     price_font = _font(BALOO_BOLD, 128)
     label_font = _font(BALOO_BOLD, 30)
-    unit_font = _font(WORK_SANS_MEDIUM, 30)
+    unit_font = _font(BALOO_BOLD, 30)
     price_text = f"Rs. {_inr(top_price)}"
     ptw = ImageDraw.Draw(base).textlength(price_text, font=price_font)
     card_w, card_h = int(max(ptw, 600) + 100), 300
     card = Image.new("RGBA", (card_w, card_h), (0, 0, 0, 0))
     cd = ImageDraw.Draw(card)
     cd.rounded_rectangle([0, 0, card_w - 1, card_h - 1], radius=40, fill=(*DARK, 255))
-    cd.text((44, 30), "AAJ KA BHAV", fill=(*style["label"], 255), font=label_font)
+    cd.text((44, 30), "आज का भाव", fill=(*style["label"], 255), font=label_font)
     cd.text((44, 78), price_text, fill=(*CREAM, 255), font=price_font)
-    cd.text((44, 226), f"per Quintal  •  {records[0].get('market','') if records else ''}", fill=(232, 201, 163, 255), font=unit_font)
+    cd.text((44, 226), f"प्रति क्विंटल  •  {records[0].get('market','') if records else ''}", fill=(232, 201, 163, 255), font=unit_font)
     card = card.rotate(-1.3, expand=True, resample=Image.BICUBIC)
     card_y = icon_y + icon_size + 40
     base.alpha_composite(card, (pad - 6, card_y))
 
     y = card_y + card.height + 34
     d = ImageDraw.Draw(base)
-    d.text((pad, y), "OTHER MANDIS TODAY", fill=(*DARK, 255), font=_font(BALOO_BOLD, 32))
+    d.text((pad, y), "आज की टॉप मंडियाँ", fill=(*DARK, 255), font=_font(BALOO_BOLD, 32))
     y += 58
 
     list_w = W - 2 * pad
@@ -527,13 +534,13 @@ def render_segment_market(commodity, state, records, index, total, date_str, cap
     tw = d.textlength(price_text, font=price_font)
     d.text(((W - tw) // 2, card_y + 100), price_text, fill=(*style["label"], 255), font=price_font)
 
-    unit_font = _font(WORK_SANS_MEDIUM, 28)
-    unit_text = "per Quintal"
+    unit_font = _font(BALOO_BOLD, 28)
+    unit_text = "प्रति क्विंटल"
     tw = d.textlength(unit_text, font=unit_font)
     d.text(((W - tw) // 2, card_y + 224), unit_text, fill=(232, 201, 163, 255), font=unit_font)
 
     y = card_y + card_h + 44
-    d.text((pad, y), "OTHER MANDIS TODAY", fill=(*DARK, 255), font=_font(BALOO_BOLD, 30))
+    d.text((pad, y), "बाकी मंडियों का भाव", fill=(*DARK, 255), font=_font(BALOO_BOLD, 30))
     y += 56
 
     others = [(i, r) for i, r in enumerate(records[:6]) if i != index]
@@ -614,13 +621,13 @@ def render_segment_trend(commodity, state, records, date_str, direction, pct, ca
 
     if direction == "up":
         trend_color = (52, 199, 89)     # green -- bullish
-        trend_label = "TREND: UP"
+        trend_label = "भाव बढ़ा"
     elif direction == "down":
         trend_color = (239, 68, 68)     # red -- bearish
-        trend_label = "TREND: DOWN"
+        trend_label = "भाव घटा"
     else:
         trend_color = (161, 161, 170)   # grey -- flat
-        trend_label = "TREND: STEADY"
+        trend_label = "भाव स्थिर"
 
     card_y = icon_y + icon_size + 110
     card_h = 480
@@ -628,8 +635,8 @@ def render_segment_trend(commodity, state, records, date_str, direction, pct, ca
     base.alpha_composite(card, (pad, card_y))
 
     d = ImageDraw.Draw(base)
-    sub_font = _font(WORK_SANS_MEDIUM, 28)
-    sub_text = f"{top_market}  •  KAL KE MUKABLE"
+    sub_font = _font(BALOO_BOLD, 28)
+    sub_text = f"{top_market}  •  कल के मुकाबले"
     tw = d.textlength(sub_text, font=sub_font)
     d.text(((W - tw) // 2, card_y + 40), sub_text, fill=(232, 201, 163, 255), font=sub_font)
 
@@ -671,8 +678,8 @@ def render_segment_trend(commodity, state, records, date_str, direction, pct, ca
     tw = d.textlength(trend_label, font=label_font)
     d.text(((W - tw) // 2, card_y + 300), trend_label, fill=(*CREAM, 255), font=label_font)
 
-    price_font = _font(MONO_SEMIBOLD, 34)
-    price_text = f"Aaj: Rs. {_inr(today_price)} / Quintal"
+    price_font = _font(BALOO_BOLD, 34)
+    price_text = f"आज: Rs. {_inr(today_price)} / क्विंटल"
     tw = d.textlength(price_text, font=price_font)
     d.text(((W - tw) // 2, card_y + 370), price_text, fill=(232, 201, 163, 255), font=price_font)
 
@@ -727,7 +734,7 @@ def render_segment_countdown(commodity, state, records, index, total, date_str, 
 
     d = ImageDraw.Draw(base)
     label_font = _font(BALOO_BOLD, 32)
-    label_text = f"AAJ KA TOP {total} MANDI"
+    label_text = f"आज की टॉप {total} मंडियाँ"
     tw = d.textlength(label_text, font=label_font)
     d.text(((W - tw) // 2, y), label_text, fill=(*DARK, 255), font=label_font)
     y += 60
@@ -764,8 +771,8 @@ def render_segment_countdown(commodity, state, records, index, total, date_str, 
     tw = d.textlength(price_text, font=price_font)
     d.text(((W - tw) // 2, y + 100), price_text, fill=(*style["label"], 255), font=price_font)
 
-    unit_font = _font(WORK_SANS_MEDIUM, 28)
-    unit_text = "per Quintal"
+    unit_font = _font(BALOO_BOLD, 28)
+    unit_text = "प्रति क्विंटल"
     tw = d.textlength(unit_text, font=unit_font)
     d.text(((W - tw) // 2, y + 224), unit_text, fill=(232, 201, 163, 255), font=unit_font)
 
@@ -842,8 +849,8 @@ def render_segment_spotlight(commodity, state, records, index, total, date_str, 
     tw = d.textlength(market_name, font=mn_font)
     d.text(((W - tw) // 2, card_y + 32), market_name, fill=(*CREAM, 255), font=mn_font)
 
-    sub_font = _font(WORK_SANS_MEDIUM, 26)
-    sub_text = "AAJ KA RANGE"
+    sub_font = _font(BALOO_BOLD, 26)
+    sub_text = "आज का न्यूनतम–अधिकतम भाव"
     tw = d.textlength(sub_text, font=sub_font)
     d.text(((W - tw) // 2, card_y + 96), sub_text, fill=(232, 201, 163, 255), font=sub_font)
 
@@ -884,8 +891,8 @@ def render_segment_spotlight(commodity, state, records, index, total, date_str, 
     tw = d.textlength(modal_text, font=modal_font)
     d.text(((W - tw) // 2, gauge_y + gauge_h + 80), modal_text, fill=(*style["label"], 255), font=modal_font)
 
-    unit_font = _font(WORK_SANS_MEDIUM, 26)
-    unit_text = "AVERAGE (MODAL) per Quintal"
+    unit_font = _font(BALOO_BOLD, 26)
+    unit_text = "औसत (मॉडल) भाव प्रति क्विंटल"
     tw = d.textlength(unit_text, font=unit_font)
     d.text(((W - tw) // 2, gauge_y + gauge_h + 190), unit_text, fill=(232, 201, 163, 255), font=unit_font)
 
