@@ -1,0 +1,5 @@
+node_modules/
+public/fonts/
+public/clip.mp4
+out/
+props.json

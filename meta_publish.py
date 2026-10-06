@@ -1,0 +1,136 @@
+# -*- coding: utf-8 -*-
+"""Batch 6 (27 Sep 2026): posts each "भाव फ्लैश" Short as a Reel on the
+TaazaBhav Facebook Page and the linked Instagram account.
+
+Free: Meta Graph API (Pages API video_reels + Instagram Content Publishing,
+resumable upload -- no public video URL needed).
+
+Secrets (GitHub):
+  META_TOKEN  -- System User token (never expires) with pages_show_list,
+                 pages_read_engagement, pages_manage_posts, instagram_basic,
+                 instagram_content_publish.
+  FB_PAGE_ID  -- the Page's numeric id.
+
+Called by main.py ONLY after the YouTube upload succeeded. Any error here is
+reported (Telegram alert) but never changes the YouTube result.
+"""
+import os
+import time
+
+import requests
+
+GRAPH_VERSION = os.environ.get("META_GRAPH_VERSION", "v23.0")
+GRAPH = f"https://graph.facebook.com/{GRAPH_VERSION}"
+TIMEOUT = 60
+IG_POLL_SECONDS = 10
+IG_POLL_MAX = 30  # 5 minutes
+
+
+class MetaError(RuntimeError):
+    pass
+
+
+def enabled():
+    return bool(os.environ.get("META_TOKEN") and os.environ.get("FB_PAGE_ID"))
+
+
+def _check(resp, what):
+    try:
+        body = resp.json()
+    except ValueError:
+        body = {"raw": resp.text[:300]}
+    if resp.status_code != 200 or (isinstance(body, dict) and "error" in body):
+        err = body.get("error", body) if isinstance(body, dict) else body
+        msg = err.get("message", err) if isinstance(err, dict) else err
+        raise MetaError(f"{what} failed: HTTP {resp.status_code} -- {msg}")
+    return body
+
+
+def page_credentials(s=requests):
+    """-> (page_token, ig_user_id or None)"""
+    r = s.get(f"{GRAPH}/{os.environ['FB_PAGE_ID']}",
+              params={"fields": "access_token,instagram_business_account",
+                      "access_token": os.environ["META_TOKEN"]}, timeout=TIMEOUT)
+    b = _check(r, "Page token lookup")
+    if "access_token" not in b:
+        raise MetaError("Page token lookup returned no access_token -- is the Page assigned to the system user?")
+    ig = (b.get("instagram_business_account") or {}).get("id")
+    return b["access_token"], ig
+
+
+def _upload_bytes(s, url, token, path):
+    size = os.path.getsize(path)
+    with open(path, "rb") as fh:
+        r = s.post(url, headers={"Authorization": f"OAuth {token}", "offset": "0", "file_size": str(size)},
+                   data=fh, timeout=300)
+    return _check(r, "Video upload")
+
+
+def post_facebook_reel(video_path, caption, page_token, s=requests):
+    page = os.environ["FB_PAGE_ID"]
+    b = _check(s.post(f"{GRAPH}/{page}/video_reels",
+                      params={"upload_phase": "start", "access_token": page_token}, timeout=TIMEOUT), "FB reel start")
+    vid = b["video_id"]
+    upload_url = b.get("upload_url") or f"https://rupload.facebook.com/video-upload/{GRAPH_VERSION}/{vid}"
+    _upload_bytes(s, upload_url, page_token, video_path)
+    _check(s.post(f"{GRAPH}/{page}/video_reels",
+                  params={"upload_phase": "finish", "video_id": vid, "video_state": "PUBLISHED",
+                          "description": caption, "access_token": page_token}, timeout=TIMEOUT), "FB reel publish")
+    return vid
+
+
+def post_instagram_reel(video_path, caption, ig_user_id, token, s=requests, sleep=time.sleep):
+    b = _check(s.post(f"{GRAPH}/{ig_user_id}/media",
+                      params={"media_type": "REELS", "upload_type": "resumable", "caption": caption,
+                              "share_to_feed": "true", "access_token": token}, timeout=TIMEOUT), "IG container")
+    cid = b["id"]
+    upload_url = b.get("uri") or f"https://rupload.facebook.com/ig-api-upload/{GRAPH_VERSION}/{cid}"
+    _upload_bytes(s, upload_url, token, video_path)
+    for _ in range(IG_POLL_MAX):
+        st = _check(s.get(f"{GRAPH}/{cid}", params={"fields": "status_code,status", "access_token": token},
+                          timeout=TIMEOUT), "IG status").get("status_code")
+        if st == "FINISHED":
+            break
+        if st in ("ERROR", "EXPIRED"):
+            raise MetaError(f"IG processing {st}")
+        sleep(IG_POLL_SECONDS)
+    else:
+        raise MetaError("IG processing did not finish in 5 minutes")
+    b = _check(s.post(f"{GRAPH}/{ig_user_id}/media_publish",
+                      params={"creation_id": cid, "access_token": token}, timeout=TIMEOUT), "IG publish")
+    return b.get("id")
+
+
+def build_caption(title, description, commodity, state):
+    """Instagram/Facebook caption: Hindi hook, the fact line, CTA, hashtags."""
+    hook = title.split("|")[0].strip()
+    fact = description.split("\n")[0].strip()
+    tag_c = commodity.lower().replace(" ", "")
+    tag_s = state.lower().replace(" ", "")
+    return (
+        f"{hook}\n\n{fact}\n\n"
+        "🌐 हर मंडी का पूरा भाव: taazabhav.com (लिंक बायो में)\n"
+        "🔔 रोज़ सुबह का ताज़ा भाव पाने के लिए फॉलो करें\n"
+        "💬 आपकी मंडी में आज क्या भाव है? कमेंट करें\n\n"
+        "स्रोत: Agmarknet (भारत सरकार) · थोक भाव\n\n"
+        f"#mandibhav #{tag_c}price #{tag_c}ratetoday #{tag_s} #kisan #मंडीभाव #आजकाभाव #taazabhav"
+    )[:2200]
+
+
+def publish_all(video_path, caption, s=requests, sleep=time.sleep):
+    """Posts to Facebook and Instagram independently. Returns
+    {"facebook": id|None, "instagram": id|None, "errors": [str]}."""
+    out = {"facebook": None, "instagram": None, "errors": []}
+    page_token, ig = page_credentials(s)
+    try:
+        out["facebook"] = post_facebook_reel(video_path, caption, page_token, s)
+    except Exception as e:
+        out["errors"].append(f"Facebook: {e}")
+    if ig:
+        try:
+            out["instagram"] = post_instagram_reel(video_path, caption, ig, page_token, s, sleep)
+        except Exception as e:
+            out["errors"].append(f"Instagram: {e}")
+    else:
+        out["errors"].append("Instagram: no Instagram account linked to the Page")
+    return out
