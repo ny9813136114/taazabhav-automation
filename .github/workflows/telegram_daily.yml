@@ -32,7 +32,7 @@ jobs:
     # with modest bounded concurrency, which comfortably restores headroom
     # under this same 10-minute limit even with the new retry logic added
     # on each call; see docs/RELIABILITY.md for the exact worst-case math.
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
