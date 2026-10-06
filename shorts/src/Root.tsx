@@ -2,6 +2,7 @@ import React from "react";
 import { Composition, registerRoot } from "remotion";
 import { MandiShort, totalFrames } from "./MandiShort";
 import { BhavFlash, flashFrames, type FlashProps } from "./BhavFlash";
+import { MelaAlert, melaFrames, type MelaProps } from "./MelaAlert";
 import { FPS, H, W } from "./theme";
 import type { ShortProps } from "./types";
 
@@ -19,8 +20,25 @@ const SHORT_DEFAULT: ShortProps = {
   marketsCount: 16, average: 3071, trend: null, audio: null,
 };
 
+// Sample only (layout preview); real props come from mela_video.py.
+export const MELA_SAMPLE: MelaProps = {
+  clip: null, credit: null, badge: "किसान मेला अलर्ट", countdown: "7 दिन बाकी", urgent: false,
+  name: "Sample Krishi Mela", dates: "12–15 नवंबर 2026", place: "Sample Venue, Sample City, State",
+  cta: "तारीख, पता, कैलेंडर में जोड़ें:", link: "taazabhav.com/kisan-mela/sample", seconds: 9,
+};
+
 const Root: React.FC = () => (
   <>
+  <Composition
+    id="MelaAlert"
+    component={MelaAlert as any}
+    width={W}
+    height={H}
+    fps={FPS}
+    durationInFrames={melaFrames(MELA_SAMPLE, FPS)}
+    defaultProps={MELA_SAMPLE}
+    calculateMetadata={({ props }) => ({ durationInFrames: melaFrames(props as MelaProps, FPS) })}
+  />
     <Composition id="BhavFlash" component={BhavFlash as any} width={W} height={H} fps={FPS}
       durationInFrames={flashFrames(FLASH_DEFAULT, FPS)} defaultProps={FLASH_DEFAULT}
       calculateMetadata={({ props }) => ({ durationInFrames: flashFrames(props as FlashProps, FPS) })} />
