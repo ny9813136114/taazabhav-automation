@@ -1,0 +1,607 @@
+{
+ "version": 1,
+ "generated": "2026-10-06",
+ "note": "Every number comes from the website's lib files on the date shown. Re-check items with valid_to; {src} in page_utm = youtube|facebook|instagram|telegram.",
+ "items": [
+  {
+   "id": "pmkisan-24-kab",
+   "pillar": "sarkari",
+   "page": "https://taazabhav.com/sarkari-paisa",
+   "title": "पीएम किसान 24वीं किस्त कब आएगी? | PM Kisan 24th Installment Date 2026 #Shorts",
+   "hook_hi": "पीएम किसान की 24वीं किस्त कब आएगी?",
+   "points_hi": [
+    "23वीं किस्त 20 जून 2026 को आई थी।",
+    "24वीं अक्टूबर–नवंबर में आने की उम्मीद है, तारीख अभी घोषित नहीं।",
+    "पैसा अटके नहीं, इसलिए ई-केवाईसी आज ही पूरा करें।"
+   ],
+   "cta_hi": "तारीख घोषित होते ही taazabhav.com पर अपडेट।",
+   "source": "lib/sarkari.ts (Angel One/OneIndia, pmkisan.gov.in)",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": "2026-11-30",
+   "playlist": "सरकारी योजना",
+   "page_utm": "https://taazabhav.com/sarkari-paisa?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "pmkisan-paisa-nahi-aaya",
+   "pillar": "sarkari",
+   "page": "https://taazabhav.com/sarkari-paisa",
+   "title": "पीएम किसान का पैसा नहीं आया? 4 चीज़ें जांचें | PM Kisan Status Check #Shorts",
+   "hook_hi": "पीएम किसान का ₹2,000 नहीं आया?",
+   "points_hi": [
+    "ई-केवाईसी पूरा है या नहीं।",
+    "Land Seeding: Yes है या नहीं, नहीं तो पटवारी से मिलें।",
+    "बैंक खाता आधार से जुड़ा और DBT चालू हो। हेल्पलाइन 155261।"
+   ],
+   "cta_hi": "पूरी लिस्ट taazabhav.com/sarkari-paisa पर।",
+   "source": "lib/sarkari.ts STUCK pmkisan",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "सरकारी योजना",
+   "page_utm": "https://taazabhav.com/sarkari-paisa?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "pmfby-rabi-last-date",
+   "pillar": "sarkari",
+   "page": "https://taazabhav.com/sarkari-paisa",
+   "title": "रबी फसल बीमा की आखिरी तारीख | PMFBY Rabi 2026 Last Date #Shorts",
+   "hook_hi": "गेहूं-सरसों-चने का बीमा करवाया?",
+   "points_hi": [
+    "रबी 2026-27 का पंजीकरण आम तौर पर 31 दिसंबर तक।",
+    "कुछ राज्यों में तारीख पहले, अपने बैंक या CSC से पूछें।",
+    "किसान का प्रीमियम सिर्फ़ 1.5% तक।"
+   ],
+   "cta_hi": "आखिरी तारीख और लिंक taazabhav.com पर।",
+   "source": "lib/sarkari.ts pmfby-rabi-2026 (pmfby.gov.in)",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": "2026-12-20",
+   "playlist": "सरकारी योजना",
+   "page_utm": "https://taazabhav.com/sarkari-paisa?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "pmfby-premium-kitna",
+   "pillar": "sarkari",
+   "page": "https://taazabhav.com/sarkari-paisa",
+   "title": "फसल बीमा का प्रीमियम कितना? सिर्फ़ 1.5% | Fasal Bima Premium #Shorts",
+   "hook_hi": "फसल बीमा कितने का पड़ता है?",
+   "points_hi": [
+    "रबी फसल पर किसान का हिस्सा अधिकतम 1.5%।",
+    "ख़रीफ़ पर 2%, बागवानी और नकदी फसल पर 5%।",
+    "बाकी प्रीमियम सरकार भरती है।"
+   ],
+   "cta_hi": "अपनी फसल का हिसाब taazabhav.com पर।",
+   "source": "lib/sarkari.ts (pmfby.gov.in)",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "सरकारी योजना",
+   "page_utm": "https://taazabhav.com/sarkari-paisa?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "msp-paisa-nahi-mila",
+   "pillar": "sarkari",
+   "page": "https://taazabhav.com/sarkari-paisa",
+   "title": "एमएसपी पर बेचा, पैसा नहीं मिला? | MSP Payment Status #Shorts",
+   "hook_hi": "सरकारी ख़रीद में धान बेचा, पैसा नहीं आया?",
+   "points_hi": [
+    "ख़रीद केंद्र की रसीद, जे-फ़ॉर्म या टोकन संभाल कर रखें।",
+    "पैसा आधार से जुड़े खाते में आता है, खाता नंबर जांचें।",
+    "राज्य पोर्टल पर पंजीकरण नंबर से स्थिति देखें, फिर ज़िला खाद्य अधिकारी से शिकायत करें।"
+   ],
+   "cta_hi": "राज्य पोर्टल के लिंक taazabhav.com पर।",
+   "source": "lib/sarkari.ts STUCK msp",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": "2027-01-31",
+   "playlist": "सरकारी योजना",
+   "page_utm": "https://taazabhav.com/sarkari-paisa?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "dhan-msp-registration",
+   "pillar": "sarkari",
+   "page": "https://taazabhav.com/sarkari-paisa",
+   "title": "धान ₹2,441 MSP पर कैसे बेचें? | Paddy MSP 2026 Registration #Shorts",
+   "hook_hi": "धान का सरकारी भाव ₹2,441 प्रति क्विंटल।",
+   "points_hi": [
+    "हरियाणा में ख़रीद 29 सितंबर से, पंजाब में 1 अक्टूबर से।",
+    "बेचने से पहले राज्य पोर्टल पर पंजीकरण ज़रूरी।",
+    "मंडी भाव कम हो तो सरकारी ख़रीद बेहतर।"
+   ],
+   "cta_hi": "राज्य पोर्टल और मंडी भाव की तुलना taazabhav.com पर।",
+   "source": "lib/sarkari.ts paddy-msp-2026 (lib/msp.ts)",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": "2026-12-31",
+   "playlist": "सरकारी योजना",
+   "page_utm": "https://taazabhav.com/sarkari-paisa?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "dap-sahi-rate",
+   "pillar": "khad",
+   "page": "https://taazabhav.com/khad-calculator",
+   "title": "DAP की बोरी का सही रेट ₹1,350 | DAP Price Today 2026 #Shorts",
+   "hook_hi": "डीएपी की बोरी ₹1,350 से ज़्यादा में मिली?",
+   "points_hi": [
+    "50 किलो डीएपी की कीमत सरकार ने ₹1,350 तय की है।",
+    "इससे ज़्यादा लेना गलत है, बिल ज़रूर मांगें।",
+    "शिकायत ज़िला कृषि अधिकारी से करें।"
+   ],
+   "cta_hi": "बोरी का पूरा हिसाब taazabhav.com/khad-calculator पर।",
+   "source": "lib/khad.ts (The Statesman 10 Mar 2026)",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "खेती के काम",
+   "page_utm": "https://taazabhav.com/khad-calculator?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "urea-sahi-rate",
+   "pillar": "khad",
+   "page": "https://taazabhav.com/khad-calculator",
+   "title": "यूरिया की बोरी ₹266.50 | Urea Price 45 kg 2026 #Shorts",
+   "hook_hi": "यूरिया की 45 किलो बोरी कितने की?",
+   "points_hi": [
+    "सरकारी कीमत ₹266.50 प्रति बोरी।",
+    "दुकानदार ज़्यादा मांगे या साथ में दूसरा सामान थोपे, तो मना करें।",
+    "खरीद पर बिल लें, आधार से बिक्री दर्ज होती है।"
+   ],
+   "cta_hi": "अपने खेत की बोरियाँ taazabhav.com पर गिनें।",
+   "source": "lib/khad.ts (PIB)",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "खेती के काम",
+   "page_utm": "https://taazabhav.com/khad-calculator?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "gehun-kitni-bori",
+   "pillar": "khad",
+   "page": "https://taazabhav.com/khad-calculator",
+   "title": "1 एकड़ गेहूं में कितनी यूरिया-डीएपी? | Wheat Fertilizer per Acre #Shorts",
+   "hook_hi": "एक एकड़ गेहूं में कितनी खाद?",
+   "points_hi": [
+    "सामान्य सलाह: 120:60:40 किलो NPK प्रति हेक्टेयर।",
+    "यानी एक एकड़ में लगभग 1 बोरी डीएपी, 2 बोरी यूरिया और 1 बोरी पोटाश।",
+    "मिट्टी जांच कार्ड हो तो उसी के हिसाब से डालें।"
+   ],
+   "cta_hi": "अपने रकबे का हिसाब taazabhav.com/khad-calculator पर।",
+   "source": "lib/khad.ts CROP_DOSES wheat + planFertilizer(1 acre)",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": "2026-12-15",
+   "playlist": "खेती के काम",
+   "page_utm": "https://taazabhav.com/khad-calculator?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "sarson-kitni-khad",
+   "pillar": "khad",
+   "page": "https://taazabhav.com/khad-calculator",
+   "title": "1 एकड़ सरसों में कितनी खाद? | Mustard Fertilizer per Acre #Shorts",
+   "hook_hi": "सरसों बो रहे हैं? खाद कितनी डालें?",
+   "points_hi": [
+    "सामान्य सलाह: 80:40:40 किलो NPK प्रति हेक्टेयर।",
+    "फ़ॉस्फ़ोरस के लिए एसएसपी लें, उसमें सल्फ़र भी मिलता है।",
+    "मिट्टी जांच कार्ड की सलाह सबसे ऊपर।"
+   ],
+   "cta_hi": "बोरी और ख़र्च taazabhav.com पर।",
+   "source": "lib/khad.ts CROP_DOSES mustard",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": "2026-11-15",
+   "playlist": "खेती के काम",
+   "page_utm": "https://taazabhav.com/khad-calculator?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "chana-kam-urea",
+   "pillar": "khad",
+   "page": "https://taazabhav.com/khad-calculator",
+   "title": "चने में यूरिया कम क्यों? | Chana Fertilizer Dose #Shorts",
+   "hook_hi": "चने में ज़्यादा यूरिया मत डालिए।",
+   "points_hi": [
+    "चना अपनी नाइट्रोजन खुद बनाता है।",
+    "सामान्य सलाह: सिर्फ़ 20 किलो N, 40 किलो फ़ॉस्फ़ोरस प्रति हेक्टेयर।",
+    "ज़्यादा यूरिया से पौधा बढ़ता है, दाना नहीं।"
+   ],
+   "cta_hi": "सही बोरी गिनती taazabhav.com पर।",
+   "source": "lib/khad.ts CROP_DOSES chana",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": "2026-11-30",
+   "playlist": "खेती के काम",
+   "page_utm": "https://taazabhav.com/khad-calculator?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "aadhat-commission",
+   "pillar": "hisab",
+   "page": "https://taazabhav.com/mandi-hisab",
+   "title": "आढ़ती कितना कमीशन ले सकता है? | Mandi Commission Rate #Shorts",
+   "hook_hi": "आढ़ती ने कितना कमीशन काटा?",
+   "points_hi": [
+    "अनाज पर आम तौर पर 2% तक, सब्ज़ी-फल पर 4% तक।",
+    "राज्य के नियम अलग हो सकते हैं।",
+    "पर्ची पर कमीशन ज़्यादा लगे तो पूछें।"
+   ],
+   "cta_hi": "पर्ची जांचें taazabhav.com/mandi-hisab पर।",
+   "source": "lib/hisab.ts (Model APLM Act 2017 caps)",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "मंडी भाव आज",
+   "page_utm": "https://taazabhav.com/mandi-hisab?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "parchi-wajan",
+   "pillar": "hisab",
+   "page": "https://taazabhav.com/mandi-hisab",
+   "title": "मंडी पर्ची में वज़न कम लिखा? | Mandi Parchi Check #Shorts",
+   "hook_hi": "आपकी बोरियाँ 50 किलो की, पर्ची पर कम वज़न?",
+   "points_hi": [
+    "घर से बोरियों की गिनती और वज़न लिखकर ले जाएं।",
+    "पर्ची से मिलाएं, आधा प्रतिशत से ज़्यादा फ़र्क हो तो सवाल करें।",
+    "एक क्विंटल का फ़र्क भी हज़ारों का नुकसान है।"
+   ],
+   "cta_hi": "पर्ची का हिसाब taazabhav.com पर।",
+   "source": "lib/hisab.ts weight-short",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "मंडी भाव आज",
+   "page_utm": "https://taazabhav.com/mandi-hisab?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "kg-katauti",
+   "pillar": "hisab",
+   "page": "https://taazabhav.com/mandi-hisab",
+   "title": "नमी के नाम पर किलो कटौती | Mandi Katauti Kitni Sahi #Shorts",
+   "hook_hi": "हर क्विंटल पर 2 किलो काटे गए?",
+   "points_hi": [
+    "नमी या क्वालिटी के नाम पर कटौती पर्ची पर लिखी होनी चाहिए।",
+    "100 क्विंटल पर 2 किलो = 2 क्विंटल का पैसा।",
+    "लिखित कारण मांगें।"
+   ],
+   "cta_hi": "कितना नुकसान हुआ, taazabhav.com पर देखें।",
+   "source": "lib/hisab.ts kg-cut",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "मंडी भाव आज",
+   "page_utm": "https://taazabhav.com/mandi-hisab?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "katauti-6-pratishat",
+   "pillar": "hisab",
+   "page": "https://taazabhav.com/mandi-hisab",
+   "title": "कुल कटौती 6% से ज़्यादा? | Mandi Deduction Check #Shorts",
+   "hook_hi": "मंडी में कुल कितना कटा?",
+   "points_hi": [
+    "कमीशन, मंडी शुल्क, हम्माली, बारदाना सब जोड़ें।",
+    "कुल कटौती बिक्री के 6% से ज़्यादा हो तो जांच ज़रूरी।",
+    "पर्ची का जोड़ भी खुद मिलाएं।"
+   ],
+   "cta_hi": "एक मिनट में जांच taazabhav.com/mandi-hisab पर।",
+   "source": "lib/hisab.ts DEDUCTIONS_HIGH_PCT",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "मंडी भाव आज",
+   "page_utm": "https://taazabhav.com/mandi-hisab?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "bhugtan-der",
+   "pillar": "hisab",
+   "page": "https://taazabhav.com/mandi-hisab",
+   "title": "मंडी में पैसा कब मिलना चाहिए? | Mandi Payment Delay #Shorts",
+   "hook_hi": "माल बेचे दिन हो गए, पैसा नहीं मिला?",
+   "points_hi": [
+    "ज़्यादातर मंडियों में भुगतान उसी या अगले दिन होना चाहिए।",
+    "देर हो तो पर्ची लेकर मंडी सचिव से शिकायत करें।",
+    "नकद लें तो रसीद ज़रूर लें।"
+   ],
+   "cta_hi": "अपनी पर्ची taazabhav.com पर जांचें।",
+   "source": "lib/hisab.ts payment-late (state APMC rules vary)",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "मंडी भाव आज",
+   "page_utm": "https://taazabhav.com/mandi-hisab?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "nuksan-72-ghante",
+   "pillar": "nuksan",
+   "page": "https://taazabhav.com/fasal-nuksan",
+   "title": "फसल खराब हुई? 72 घंटे में क्लेम करें | Fasal Bima Claim Kaise Kare #Shorts",
+   "hook_hi": "ओले या पानी से फसल खराब? घड़ी चालू है।",
+   "points_hi": [
+    "72 घंटे के अंदर सूचना देना ज़रूरी।",
+    "Crop Insurance ऐप पर या 14447 पर कॉल करें।",
+    "डॉकेट नंबर संभाल कर रखें।"
+   ],
+   "cta_hi": "नुकसान का सबूत बनाएं taazabhav.com/fasal-nuksan पर।",
+   "source": "lib/fasal-nuksan.ts (pmfby.gov.in)",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "सरकारी योजना",
+   "page_utm": "https://taazabhav.com/fasal-nuksan?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "nuksan-kaun-sa",
+   "pillar": "nuksan",
+   "page": "https://taazabhav.com/fasal-nuksan",
+   "title": "किस नुकसान पर अपने खेत का क्लेम बनता है? | PMFBY Claim Rules #Shorts",
+   "hook_hi": "हर नुकसान पर अलग क्लेम नहीं बनता।",
+   "points_hi": [
+    "ओले, जलभराव, बादल फटना, बिजली से आग: अपने खेत का क्लेम।",
+    "सूखा, कीट, रोग: पूरे इलाके का आकलन।",
+    "दोनों में लिखित सूचना ज़रूर दें।"
+   ],
+   "cta_hi": "पूरी लिस्ट taazabhav.com/fasal-nuksan पर।",
+   "source": "lib/fasal-nuksan.ts DAMAGE",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "सरकारी योजना",
+   "page_utm": "https://taazabhav.com/fasal-nuksan?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "kati-fasal-baarish",
+   "pillar": "nuksan",
+   "page": "https://taazabhav.com/fasal-nuksan",
+   "title": "कटी फसल पर बारिश, क्लेम मिलेगा? | Post Harvest Loss Claim #Shorts",
+   "hook_hi": "कटी फसल खेत में पड़ी थी और बारिश हो गई?",
+   "points_hi": [
+    "कटाई के 14 दिन तक नुकसान का क्लेम बनता है।",
+    "शर्त: फसल सुखाने के लिए खेत में फैली हो।",
+    "72 घंटे में सूचना दें।"
+   ],
+   "cta_hi": "सबूत का रिकॉर्ड taazabhav.com पर।",
+   "source": "lib/fasal-nuksan.ts harvest_rain",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": "2026-11-30",
+   "playlist": "सरकारी योजना",
+   "page_utm": "https://taazabhav.com/fasal-nuksan?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "neelgai-nuksan",
+   "pillar": "nuksan",
+   "page": "https://taazabhav.com/fasal-nuksan",
+   "title": "नीलगाय-जंगली सूअर से नुकसान, अब बीमा? | Wild Animal Crop Insurance #Shorts",
+   "hook_hi": "नीलगाय ने फसल चर ली? अब बीमा मिल सकता है।",
+   "points_hi": [
+    "ख़रीफ़ 2026 से नया नियम।",
+    "सिर्फ़ उन ज़िलों में जिन्हें राज्य ने चुना।",
+    "72 घंटे में ऐप पर फ़ोटो के साथ सूचना दें।"
+   ],
+   "cta_hi": "अपना ज़िला कृषि कार्यालय से पूछें, बाकी taazabhav.com पर।",
+   "source": "lib/fasal-nuksan.ts animal (MoA Nov 2025)",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "सरकारी योजना",
+   "page_utm": "https://taazabhav.com/fasal-nuksan?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "nuksan-kagaz",
+   "pillar": "nuksan",
+   "page": "https://taazabhav.com/fasal-nuksan",
+   "title": "फसल बीमा क्लेम के लिए कौन से कागज़? | PMFBY Documents #Shorts",
+   "hook_hi": "क्लेम के लिए ये कागज़ तैयार रखें।",
+   "points_hi": [
+    "पॉलिसी नंबर और डॉकेट नंबर।",
+    "आधार, बैंक पासबुक, खसरा-खतौनी।",
+    "तारीख वाली फ़ोटो, और सर्वे तक कुछ खराब पौधे रखें।"
+   ],
+   "cta_hi": "पूरी चेकलिस्ट taazabhav.com/fasal-nuksan पर।",
+   "source": "lib/fasal-nuksan.ts DOCS",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "सरकारी योजना",
+   "page_utm": "https://taazabhav.com/fasal-nuksan?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "msp-ya-mandi",
+   "pillar": "msp",
+   "page": "https://taazabhav.com/msp-vs-mandi",
+   "title": "MSP पर बेचें या मंडी में? | MSP vs Mandi Rate #Shorts",
+   "hook_hi": "सरकारी ख़रीद या मंडी, कहाँ ज़्यादा पैसा?",
+   "points_hi": [
+    "सिर्फ़ भाव मत देखिए, किराया और कटौती भी जोड़िए।",
+    "MSP केंद्र दूर हो तो भाड़ा फ़र्क खा जाता है।",
+    "दोनों का हाथ में आने वाला पैसा मिलाएं।"
+   ],
+   "cta_hi": "अपना हिसाब taazabhav.com/msp-vs-mandi पर।",
+   "source": "site tool /msp-vs-mandi",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": "2027-01-31",
+   "playlist": "मंडी भाव आज",
+   "page_utm": "https://taazabhav.com/msp-vs-mandi?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "gehun-msp-2610",
+   "pillar": "msp",
+   "page": "https://taazabhav.com/sarkari-paisa",
+   "title": "गेहूं MSP 2027-28 ₹2,610 | Wheat MSP 2027 #Shorts",
+   "hook_hi": "अगले साल गेहूं का सरकारी भाव ₹2,610 प्रति क्विंटल।",
+   "points_hi": [
+    "रबी विपणन वर्ष 2027-28 के लिए घोषित।",
+    "पंजीकरण आम तौर पर जनवरी–मार्च में।",
+    "बुवाई से पहले यह हिसाब जान लें।"
+   ],
+   "cta_hi": "बाकी फसलों का MSP taazabhav.com पर।",
+   "source": "lib/sarkari.ts (PIB 30 Sep 2026)",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": "2026-12-31",
+   "playlist": "सरकारी योजना",
+   "page_utm": "https://taazabhav.com/sarkari-paisa?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "gehun-sinchai",
+   "pillar": "kheti",
+   "page": "https://taazabhav.com/khet",
+   "title": "गेहूं में पहला पानी कब? 21 दिन | Wheat First Irrigation #Shorts",
+   "hook_hi": "गेहूं में पहला पानी कब दें?",
+   "points_hi": [
+    "बुवाई के लगभग 21 दिन बाद, जब ताज जड़ें निकलती हैं।",
+    "यह पानी चूका तो पैदावार घटती है।",
+    "बाकी पानी 42, 62, 82, 102 और 117 दिन के आसपास।"
+   ],
+   "cta_hi": "अपने खेत का रोज़ का काम Mera Khet पर, taazabhav.com/khet",
+   "source": "Mera Khet wheat rule (state-university advice)",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-20",
+   "valid_to": "2027-01-15",
+   "playlist": "खेती के काम",
+   "page_utm": "https://taazabhav.com/khet?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "chana-sinchai",
+   "pillar": "kheti",
+   "page": "https://taazabhav.com/khet",
+   "title": "चने में पानी कब दें? | Chana Irrigation Time #Shorts",
+   "hook_hi": "चने में ज़्यादा पानी नुकसान करता है।",
+   "points_hi": [
+    "पहला हल्का पानी लगभग 45 दिन पर, फूल से पहले।",
+    "दूसरा लगभग 75 दिन पर, फली भरते समय।",
+    "फूल आते समय पानी न दें।"
+   ],
+   "cta_hi": "रोज़ की सलाह Mera Khet पर।",
+   "source": "Mera Khet chana rule",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-20",
+   "valid_to": "2027-01-31",
+   "playlist": "खेती के काम",
+   "page_utm": "https://taazabhav.com/khet?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "mera-khet-intro",
+   "pillar": "kheti",
+   "page": "https://taazabhav.com/khet",
+   "title": "खेत का रोज़ का काम फ़ोन पर, मुफ़्त | Mera Khet #Shorts",
+   "hook_hi": "आज खेत में क्या करना है, फ़ोन बताएगा।",
+   "points_hi": [
+    "फसल और बुवाई की तारीख डालें।",
+    "मौसम देखकर रोज़ की सलाह मिलती है।",
+    "पूरी तरह मुफ़्त, हिंदी में।"
+   ],
+   "cta_hi": "शुरू करें taazabhav.com/khet पर।",
+   "source": "site tool /khet",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "खेती के काम",
+   "page_utm": "https://taazabhav.com/khet?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "mitti-jaanch",
+   "pillar": "kheti",
+   "page": "https://taazabhav.com/khad-calculator",
+   "title": "मिट्टी जांच कार्ड से खाद का पैसा बचाएं | Soil Health Card #Shorts",
+   "hook_hi": "बिना मिट्टी जांच के खाद डालना पैसा फेंकना है।",
+   "points_hi": [
+    "मिट्टी जांच कार्ड बताता है कौन सी खाद कम या ज़्यादा।",
+    "जांच अपने ब्लॉक कृषि कार्यालय या KVK में।",
+    "कार्ड की मात्रा कैलकुलेटर में डालें।"
+   ],
+   "cta_hi": "हिसाब taazabhav.com/khad-calculator पर।",
+   "source": "lib/khad.ts note (SHC value wins)",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "खेती के काम",
+   "page_utm": "https://taazabhav.com/khad-calculator?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "pmkisan-fake-sms",
+   "pillar": "dhokha",
+   "page": "https://taazabhav.com/sarkari-paisa",
+   "title": "पीएम किसान के नाम पर फ़र्ज़ी मैसेज | PM Kisan Fraud Alert #Shorts",
+   "hook_hi": "पीएम किसान के नाम से लिंक या APK आया? मत खोलिए।",
+   "points_hi": [
+    "सरकार कभी APK फ़ाइल नहीं भेजती।",
+    "सिर्फ़ pmkisan.gov.in पर ही स्थिति देखें।",
+    "OTP किसी को न बताएं।"
+   ],
+   "cta_hi": "सही लिंक taazabhav.com/sarkari-paisa पर।",
+   "source": "general cyber-safety advice; official site pmkisan.gov.in",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "सरकारी योजना",
+   "page_utm": "https://taazabhav.com/sarkari-paisa?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "bima-call-fraud",
+   "pillar": "dhokha",
+   "page": "https://taazabhav.com/fasal-nuksan",
+   "title": "फसल बीमा के नाम पर पैसे मांगे? धोखा | Fasal Bima Fraud #Shorts",
+   "hook_hi": "क्लेम पास कराने के लिए कोई पैसे मांगे?",
+   "points_hi": [
+    "क्लेम की सूचना मुफ़्त है: ऐप या 14447।",
+    "कोई एजेंट फ़ीस मांगे तो मना करें।",
+    "शिकायत ज़िला कृषि कार्यालय में।"
+   ],
+   "cta_hi": "सही तरीका taazabhav.com/fasal-nuksan पर।",
+   "source": "lib/fasal-nuksan.ts HELPLINE",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "सरकारी योजना",
+   "page_utm": "https://taazabhav.com/fasal-nuksan?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  },
+  {
+   "id": "khad-bundling",
+   "pillar": "dhokha",
+   "page": "https://taazabhav.com/khad-calculator",
+   "title": "यूरिया के साथ ज़बरदस्ती दूसरा सामान? | Urea Tagging Complaint #Shorts",
+   "hook_hi": "यूरिया के साथ दवा या दूसरी खाद ज़बरदस्ती?",
+   "points_hi": [
+    "सरकारी कीमत पर अकेली बोरी लेने का हक़ है।",
+    "मना करे तो बिल और दुकान का नाम नोट करें।",
+    "ज़िला कृषि अधिकारी या 1800-180-1551 पर शिकायत।"
+   ],
+   "cta_hi": "सही रेट taazabhav.com/khad-calculator पर।",
+   "source": "lib/khad.ts; KCC 1800-180-1551",
+   "checked_on": "2026-10-06",
+   "valid_from": "2026-10-06",
+   "valid_to": null,
+   "playlist": "खेती के काम",
+   "page_utm": "https://taazabhav.com/khad-calculator?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+   "voice": "edge-tts hi-IN (SwaraNeural/MadhurNeural)"
+  }
+ ]
+}

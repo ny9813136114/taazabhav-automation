@@ -1,0 +1,68 @@
+name: Daily Explainer (Sawal-Jawab)
+
+# "सवाल-जवाब" explainer Short (Batch 8): one farmer question a day from
+# content/queue.json, AI Hindi voice, to YouTube + FB/IG + Telegram channel.
+# Independent of data.gov.in. Scheduled runs only PUBLISH when the repo
+# variable SAWAL_LIVE is "1"; until then the video is sent to the owner's
+# Telegram as a preview.
+on:
+  schedule:
+    - cron: "0 7 * * *"   # 12:30 IST
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "preview = send the video to the owner on Telegram only; publish = post it"
+        type: choice
+        options: [preview, publish]
+        default: preview
+
+concurrency:
+  group: taazabhav-sawal
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  melas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: pip install -r requirements.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: shorts/package-lock.json
+      - name: Install Remotion
+        working-directory: shorts
+        run: npm ci --no-audit --no-fund && npx remotion browser ensure
+      - name: Restore YouTube credentials
+        run: |
+          echo "${{ secrets.YT_TOKEN_PICKLE_B64 }}" | base64 -d -i > token.pickle
+          echo "${{ secrets.YT_CLIENT_SECRET_B64 }}" | base64 -d -i > client_secret.json
+      - name: Make explainer video
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          META_TOKEN: ${{ secrets.META_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          SAWAL_MODE: ${{ inputs.mode }}
+          SAWAL_LIVE: ${{ vars.SAWAL_LIVE }}
+        run: python sawal_video.py
+      - name: Commit published list
+        if: always()
+        run: |
+          git config user.name "TaazaBhav Bot"
+          git config user.email "bot@taazabhav.com"
+          git add data/published_sawal.json 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "Update published explainers"
+          git pull --rebase
+          git push
