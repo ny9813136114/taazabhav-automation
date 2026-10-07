@@ -38,10 +38,24 @@ class FlashPropsTest(unittest.TestCase):
         p = flash.build_props(RECS, "Uttar Pradesh", "Onion", D, "spread", 1)
         t, d = flash.flash_metadata(p, "Onion", "Uttar Pradesh", D, 3, "Video: A / Pexels")
         self.assertLessEqual(len(t), 100)
-        self.assertIn("₹17 किलो", t)
-        self.assertIn("#Shorts", t)
-        self.assertIn("taazabhav.com", d.split("\n")[1])
+        # Plan P1-9: exact search query (crop, IST date, mandi) comes first.
+        self.assertTrue(t.startswith("प्याज का भाव आज 25 सितंबर 2026 | Konch मंडी | ₹17 किलो"), t)
+        self.assertTrue(t.endswith("#Shorts"))
+        lines = d.split("\n")
+        self.assertEqual(lines[0], "प्याज का भाव आज 25 सितंबर 2026 | Konch मंडी")
+        self.assertIn("https://taazabhav.com/hi/mandi-bhav/onion/uttar-pradesh?", lines[2])
+        self.assertIn("https://taazabhav.com/hi/mandi-bhav/state/uttar-pradesh/konch?", lines[3])
         self.assertIn("Video: A / Pexels", d)
+
+    def test_metadata_long_names_fit_with_key_phrase_first(self):
+        recs = [{"market": "Some Very Long Market Name APMC", "modal_price": "5957"},
+                {"market": "Other", "modal_price": "4000"}]
+        p = flash.build_props(recs, "Dadra and Nagar Haveli and Daman and Diu",
+                              "Bajra(Pearl Millet/Cumbu)", D, "best", 2)
+        t, _ = flash.flash_metadata(p, "Bajra(Pearl Millet/Cumbu)",
+                                    "Dadra and Nagar Haveli and Daman and Diu", D, 2)
+        self.assertLessEqual(len(t), 100)
+        self.assertTrue(t.startswith("बाजरा का भाव आज 25 सितंबर 2026 | Some Very Long Market Name मंडी"))
 
     def test_clip_folder(self):
         self.assertEqual(flash._clip_folder("Onion"), "onion")

@@ -19,6 +19,8 @@ import time
 
 import requests
 
+from hindi_names import page_url
+
 GRAPH_VERSION = os.environ.get("META_GRAPH_VERSION", "v23.0")
 GRAPH = f"https://graph.facebook.com/{GRAPH_VERSION}"
 TIMEOUT = 60
@@ -102,14 +104,23 @@ def post_instagram_reel(video_path, caption, ig_user_id, token, s=requests, slee
 
 
 def build_caption(title, description, commodity, state):
-    """Instagram/Facebook caption: Hindi hook, the fact line, CTA, hashtags."""
-    hook = title.split("|")[0].strip()
-    fact = description.split("\n")[0].strip()
+    """Instagram/Facebook caption: search line, the fact line, CTA, hashtags.
+
+    Plan P1-9 (7 Oct 2026): the first line is the exact Hindi search query
+    ("प्याज का भाव आज 8 अक्टूबर 2026 | नीमच मंडी"), which the daily
+    descriptions now carry as their own first line; older descriptions
+    without it fall back to the title's hook as before."""
+    lines = [l.strip() for l in description.split("\n")]
+    if lines and " का भाव आज " in lines[0] and len(lines) > 1:
+        hook, fact = lines[0], lines[1]
+    else:
+        hook, fact = title.split("|")[0].strip(), lines[0] if lines else ""
     tag_c = commodity.lower().replace(" ", "")
     tag_s = state.lower().replace(" ", "")
+    link = page_url(commodity, state, source=None, hi=True).replace("https://", "")
     return (
         f"{hook}\n\n{fact}\n\n"
-        "🌐 हर मंडी का पूरा भाव: taazabhav.com (लिंक बायो में)\n"
+        f"🌐 हर मंडी का पूरा भाव: {link} (लिंक बायो में)\n"
         "🔔 रोज़ सुबह का ताज़ा भाव पाने के लिए फॉलो करें\n"
         "💬 आपकी मंडी में आज क्या भाव है? कमेंट करें\n\n"
         "स्रोत: Agmarknet (भारत सरकार) · थोक भाव\n\n"

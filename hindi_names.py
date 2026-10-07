@@ -90,9 +90,100 @@ def slug(text):
     return re.sub(r"[\s-]+", "-", s).strip("-")
 
 
-def page_url(commodity, state, source="youtube", medium="shorts"):
-    return (f"{SITE}/mandi-bhav/{slug(commodity)}/{slug(state)}"
-            f"?utm_source={source}&utm_medium={medium}")
+# Crop URLs exactly as the website builds them (taazabhav-website
+# lib/slug.ts COMMODITY_SLUGS + slugify, 7 Oct 2026): the big crops get the
+# word farmers type ("dhan-paddy", "moong", "soybean"), every other bracket
+# becomes a hyphen. Keep this table in sync with the website.
+COMMODITY_SLUGS = {
+    "soyabean": "soybean",
+    "paddy(common)": "dhan-paddy",
+    "paddy(dhan)(common)": "dhan-paddy-common",
+    "paddy(basmati)": "basmati-dhan",
+    "bajra(pearl millet/cumbu)": "bajra",
+    "jowar(sorghum)": "jowar",
+    "ragi(finger millet)": "ragi",
+    "green gram(moong)(whole)": "moong",
+    "green gram dal(moong dal)": "moong-dal",
+    "bengal gram(gram)(whole)": "chana",
+    "bengal gram dal(chana dal)": "chana-dal",
+    "black gram(urd beans)(whole)": "urad",
+    "black gram dal(urd dal)": "urad-dal",
+    "red gram/arhar/tur(whole)": "arhar-tur",
+    "red gram split/arhar dal/tur dal": "arhar-dal",
+    "kulthi(horse gram)": "kulthi",
+    "bhindi(ladies finger)": "bhindi",
+    "ginger(green)": "ginger",
+    "ginger(dry)": "ginger-dry",
+}
+
+
+def site_slugify(value):
+    """lib/slug.ts slugify(): lower, drop brackets, non-alnum runs -> "-"."""
+    s = re.sub(r"[()]", "", str(value).lower())
+    return re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+
+
+def commodity_slug(commodity):
+    """lib/slug.ts commodityToSlug(): "Paddy(Common)" -> "dhan-paddy",
+    "Soyabean" -> "soybean", "Onion" -> "onion"."""
+    key = re.sub(r"\s+", " ", str(commodity).lower()).strip()
+    return COMMODITY_SLUGS.get(key) or site_slugify(re.sub(r"[()/]", " ", str(commodity)))
+
+
+def market_slug(market):
+    """lib/slug.ts marketToSlug(): "Neemuch APMC" -> "neemuch"."""
+    m = re.sub(r"^\s*APMC\s+", "", str(market), flags=re.I)
+    m = re.sub(r"\s*APMC\s*$", "", m, flags=re.I).strip()
+    return site_slugify(m)
+
+
+def _utm(source, medium):
+    return f"?utm_source={source}&utm_medium={medium}" if source else ""
+
+
+def page_url(commodity, state, source="youtube", medium="shorts", hi=False):
+    """Crop + state page (https://taazabhav.com[/hi]/mandi-bhav/<crop>/<state>)."""
+    base = f"{SITE}/hi" if hi else SITE
+    return f"{base}/mandi-bhav/{commodity_slug(commodity)}/{site_slugify(state)}{_utm(source, medium)}"
+
+
+def crop_url(commodity, source="youtube", medium="shorts", hi=False):
+    """Crop page (https://taazabhav.com[/hi]/mandi-bhav/<crop>)."""
+    base = f"{SITE}/hi" if hi else SITE
+    return f"{base}/mandi-bhav/{commodity_slug(commodity)}{_utm(source, medium)}"
+
+
+def mandi_url(state, market, source="youtube", medium="shorts", hi=False):
+    """Mandi page (https://taazabhav.com[/hi]/mandi-bhav/state/<state>/<mandi>)."""
+    base = f"{SITE}/hi" if hi else SITE
+    return f"{base}/mandi-bhav/state/{site_slugify(state)}/{market_slug(market)}{_utm(source, medium)}"
+
+
+def date_hi_full(d):
+    """date(2026, 10, 8) -> "8 अक्टूबर 2026" (pass the IST run date)."""
+    return f"{date_hi(d)} {d.year}"
+
+
+def search_phrase(commodity, d, place):
+    """The exact Hindi search query, key phrase first (plan P1-9, 7 Oct 2026):
+    "प्याज का भाव आज 8 अक्टूबर 2026 | नीमच मंडी". Google fills the top of
+    Hindi mandi-price searches with FB/YT/IG posts whose title is this
+    query, so every daily title and the first caption line start with it.
+    place: "<मंडी> मंडी" for a mandi-specific post, else the Hindi state."""
+    head = f"{commodity_hi(commodity)} का भाव आज {date_hi_full(d)}"
+    return f"{head} | {place}" if place else head
+
+
+def fit_title(key, extras=(), tail=" #Shorts", limit=100):
+    """key first, then each extra (" | extra") only while the whole title,
+    tail included, stays within limit (YouTube: 100 chars)."""
+    title = key
+    for extra in extras:
+        if extra and len(f"{title} | {extra}{tail}") <= limit:
+            title = f"{title} | {extra}"
+    if len(title + tail) > limit:
+        return (title[:limit - len(tail)].rstrip(" |") + tail) if tail else title[:limit]
+    return title + tail
 
 
 def inr(v):
