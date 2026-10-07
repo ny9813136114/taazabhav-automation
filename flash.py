@@ -16,7 +16,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from hindi_names import commodity_hi, state_hi, date_hi, spoken_market, price_int, inr, page_url
+from hindi_names import (commodity_hi, state_hi, date_hi, spoken_market, price_int, inr, page_url,
+                         mandi_url, search_phrase, fit_title)
 from fetch_clips import pick_clip, credit_for
 
 SHORTS_DIR = Path("shorts")
@@ -66,6 +67,7 @@ def build_props(records, state, commodity, run_date, story=None, slot=1, clip_na
         "perKg": round(main_q / 100, 1),
         "perQtl": main_q,
         "mandi": spoken_market(main.get("market", "")),
+        "market": str(main.get("market", "")).strip(),  # raw name, for the mandi page URL
         "stateHi": state_hi(state),
         "compare": {"mandi": spoken_market(other.get("market", "")), "perKg": round(other_q / 100, 1)},
         "dateHi": date_hi(run_date),
@@ -74,19 +76,25 @@ def build_props(records, state, commodity, run_date, story=None, slot=1, clip_na
 
 
 def flash_metadata(props, commodity, state, run_date, markets_count, credit_line=None):
+    """Title and first description line lead with the exact Hindi search
+    query (plan P1-9): "प्याज का भाव आज 8 अक्टूबर 2026 | नीमच मंडी", then the
+    per-kg hook and the English phrase only while the title fits in 100."""
     kg = int(round(props["perKg"]))
     word = props["word"].rstrip("!")
-    title = f"{props['commodityHi']} ₹{kg} किलो! {word} · {props['mandi']} मंडी | {commodity} Rate Today {state} #Shorts"
-    if len(title) > 100:
-        title = f"{props['commodityHi']} ₹{kg} किलो! {word} · {props['mandi']} | {commodity} Rate Today #Shorts"
-    title = title[:100]
-    url = page_url(commodity, state)
+    place = f"{props['mandi']} मंडी" if props.get("mandi") else props["stateHi"]
+    key = search_phrase(commodity, run_date, place)
+    title = fit_title(key, [f"₹{kg} किलो {word}", f"{commodity} Rate Today"])
+    url = page_url(commodity, state, hi=True)
+    mandi_line = (f"{props['mandi']} मंडी का भाव: {mandi_url(state, props.get('market') or props['mandi'], hi=True)}\n"
+                  if props.get("mandi") else "")
     other = props["compare"]
     description = (
-        f"{date_hi(run_date)}: {props['stateHi']} में {props['commodityHi']} का थोक भाव "
+        f"{key}\n"
+        f"{props['stateHi']} में {props['commodityHi']} का थोक भाव "
         f"{props['mandi']} मंडी में ₹{inr(props['perQtl'])}/क्विंटल (₹{kg}/किलो), "
         f"वहीं {other['mandi']} में ₹{int(round(other['perKg']))}/किलो। {markets_count} मंडियों के भाव।\n"
-        f"हर मंडी का पूरा भाव: {url}\n\n"
+        f"हर मंडी का पूरा भाव: {url}\n"
+        f"{mandi_line}\n"
         f"Source: Agmarknet / data.gov.in (Government of India). Wholesale (thok) prices; retail prices differ.\n"
         + (f"{credit_line}\n" if credit_line else "")
         + "Telegram: https://t.me/taazabhav\n"

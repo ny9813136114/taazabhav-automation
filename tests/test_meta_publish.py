@@ -59,6 +59,13 @@ class MetaTest(unittest.TestCase):
         self.assertTrue(c.startswith("प्याज ₹17 किलो! सबसे सस्ता · Konch मंडी\n\n25 सितंबर: fact line"))
         self.assertIn("#onionratetoday", c); self.assertLessEqual(len(c), 2200)
 
+    def test_caption_leads_with_search_phrase(self):
+        c = mp.build_caption("प्याज का भाव आज 8 अक्टूबर 2026 | Neemuch मंडी | ₹24 किलो सबसे सस्ता #Shorts",
+                             "प्याज का भाव आज 8 अक्टूबर 2026 | Neemuch मंडी\nfact line\nलिंक",
+                             "Onion", "Madhya Pradesh")
+        self.assertTrue(c.startswith("प्याज का भाव आज 8 अक्टूबर 2026 | Neemuch मंडी\n\nfact line\n\n"))
+        self.assertIn("taazabhav.com/hi/mandi-bhav/onion/madhya-pradesh (लिंक बायो में)", c)
+
     def test_disabled_without_secrets(self):
         with mock.patch.dict(os.environ, {"META_TOKEN": ""}):
             self.assertFalse(mp.enabled())

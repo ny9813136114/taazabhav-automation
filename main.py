@@ -23,7 +23,7 @@ from upload_youtube import upload_video
 from price_history import load_yesterday_prices, save_today_prices
 from notify import send_telegram_alert
 import publish_state
-from hindi_names import commodity_hi, state_hi, date_hi, page_url, inr, price_int
+from hindi_names import commodity_hi, state_hi, date_hi, page_url, crop_url, inr, price_int, search_phrase, fit_title
 # ---- States/commodities to cover in each daily run (items with real daily demand) ----
 TARGETS = [
     {"state": "Uttar Pradesh", "commodity": "Onion", "lang": "hi"},
@@ -101,29 +101,32 @@ def build_metadata(commodity, state, records, run_date):
     then the English search phrase vidIQ shows real demand for ("onion rate
     today" ~5.2K/month, low competition), then state and date. The
     description and comment lead with the matching taazabhav.com page.
+    7 Oct 2026 (plan P1-9): title and first description line now start with
+    the Hindi search query "<फसल> का भाव आज <D> <महीना> <YYYY> | <राज्य>".
 
     records are sorted highest modal price first (fetch_prices.clean_records).
     """
     c_hi = commodity_hi(commodity)
     s_hi = state_hi(state)
-    day = run_date.strftime("%d %b")
     prices = [p for p in (price_int(r.get("modal_price")) for r in records) if p is not None]
     high = max(prices) if prices else None
     low = min(prices) if prices else None
     top_market = str(records[0].get("market", "")).strip() if records else ""
 
+    # Plan P1-9 (7 Oct 2026): the title and the first description line
+    # start with the exact Hindi search query -- "प्याज का भाव आज 8 अक्टूबर
+    # 2026 | उत्तर प्रदेश" -- then the price range and the English phrase
+    # only while the title still fits YouTube's 100 characters.
+    key = search_phrase(commodity, run_date, s_hi)
     if high is not None and low is not None and low < high:
-        story = f"{c_hi} का भाव ₹{inr(low)}–₹{inr(high)}"
+        price_part = f"₹{inr(low)}–₹{inr(high)}"
     elif high is not None:
-        story = f"{c_hi} का भाव आज ₹{inr(high)}"
+        price_part = f"₹{inr(high)}"
     else:
-        story = f"{c_hi} का भाव आज"
-    title = f"{story} | {commodity} Rate Today {state} | {day} #Shorts"
-    if len(title) > 100:
-        title = f"{story} | {commodity} Rate Today | {day} #Shorts"
-    title = title[:100]
+        price_part = None
+    title = fit_title(key, [price_part, f"{commodity} Rate Today"])
 
-    url = page_url(commodity, state)
+    url = page_url(commodity, state, hi=True)
     market_lines = "\n".join(
         f"- {r.get('market')}: ₹{inr(r.get('modal_price'))}/क्विंटल"
         for r in records[:8]
@@ -133,9 +136,11 @@ def build_metadata(commodity, state, records, run_date):
         f"({len(prices)} मंडियाँ)।" if prices else f"{s_hi} में आज {c_hi} का भाव।"
     )
     description = (
+        f"{key}\n"
         f"{range_line}\n"
         f"हर मंडी का पूरा भाव: {url}\n\n"
-        f"{commodity} rate today in {state} mandis ({run_date.strftime('%d %b %Y')}):\n"
+        f"{commodity} rate today in {state} mandis ({run_date.strftime('%d %b %Y')}): "
+        f"{crop_url(commodity)}\n"
         f"{market_lines}\n\n"
         f"Source: Agmarknet / data.gov.in (Government of India). "
         f"Prices are per quintal; freight and commission are extra.\n"

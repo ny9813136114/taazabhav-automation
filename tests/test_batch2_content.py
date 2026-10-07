@@ -67,7 +67,8 @@ class TestHindiScript(unittest.TestCase):
 class TestMetadata(unittest.TestCase):
     def test_title_is_hindi_first_with_price_and_keyword(self):
         title, _, _, _ = main.build_metadata("Onion", "Uttar Pradesh", RECORDS, date(2026, 9, 27))
-        self.assertTrue(title.startswith("प्याज का भाव ₹3,000–₹5,983"))
+        # Plan P1-9: exact Hindi search query first, then price, then English.
+        self.assertTrue(title.startswith("प्याज का भाव आज 27 सितंबर 2026 | उत्तर प्रदेश | ₹3,000–₹5,983"))
         self.assertIn("Onion Rate Today", title)
         self.assertIn("#Shorts", title)
         self.assertLessEqual(len(title), 100)
@@ -77,11 +78,18 @@ class TestMetadata(unittest.TestCase):
             "Bajra(Pearl Millet/Cumbu)", "Dadra and Nagar Haveli and Daman and Diu",
             RECORDS, date(2026, 9, 27))
         self.assertLessEqual(len(title), 100)
+        self.assertTrue(title.startswith("बाजरा का भाव आज 27 सितंबर 2026 | "))
+        self.assertTrue(title.endswith("#Shorts"))
+
+    def test_description_starts_with_search_phrase(self):
+        _, desc, _, _ = main.build_metadata("Onion", "Uttar Pradesh", RECORDS, date(2026, 10, 8))
+        self.assertEqual(desc.splitlines()[0], "प्याज का भाव आज 8 अक्टूबर 2026 | उत्तर प्रदेश")
+        self.assertIn("https://taazabhav.com/mandi-bhav/onion?utm_source=youtube", desc)
 
     def test_description_and_comment_link_to_the_right_page(self):
         _, desc, tags, comment = main.build_metadata("Onion", "Uttar Pradesh", RECORDS, date(2026, 9, 27))
-        url = "https://taazabhav.com/mandi-bhav/onion/uttar-pradesh?utm_source=youtube&utm_medium=shorts"
-        self.assertIn(url, desc.splitlines()[1])
+        url = "https://taazabhav.com/hi/mandi-bhav/onion/uttar-pradesh?utm_source=youtube&utm_medium=shorts"
+        self.assertIn(url, desc.splitlines()[2])
         self.assertIn(url, comment)
         self.assertIn("Lakhimpur APMC", comment)  # best mandi really is the top one
         self.assertIn("onion rate today", tags)
@@ -93,6 +101,31 @@ class TestHindiNames(unittest.TestCase):
         self.assertEqual(hindi_names.slug("Uttar Pradesh"), "uttar-pradesh")
         self.assertEqual(hindi_names.slug("Onion Green"), "onion-green")
         self.assertEqual(hindi_names.slug("Paddy(Common)"), "paddycommon")
+
+    def test_crop_slugs_match_website_lib_slug(self):
+        # taazabhav-website lib/slug.ts commodityToSlug / marketToSlug
+        self.assertEqual(hindi_names.commodity_slug("Soyabean"), "soybean")
+        self.assertEqual(hindi_names.commodity_slug("Paddy(Common)"), "dhan-paddy")
+        self.assertEqual(hindi_names.commodity_slug("Green Gram(Moong)(Whole)"), "moong")
+        self.assertEqual(hindi_names.commodity_slug("Onion"), "onion")
+        self.assertEqual(hindi_names.commodity_slug("Onion Green"), "onion-green")
+        self.assertEqual(hindi_names.commodity_slug("Tomato(Hybrid)"), "tomato-hybrid")
+        self.assertEqual(hindi_names.market_slug("Neemuch APMC"), "neemuch")
+        self.assertEqual(hindi_names.market_slug("APMC Vaijpur"), "vaijpur")
+        self.assertEqual(hindi_names.crop_url("Paddy(Common)", source=None, hi=True),
+                         "https://taazabhav.com/hi/mandi-bhav/dhan-paddy")
+        self.assertEqual(hindi_names.mandi_url("Madhya Pradesh", "Neemuch APMC", source=None),
+                         "https://taazabhav.com/mandi-bhav/state/madhya-pradesh/neemuch")
+
+    def test_search_phrase_and_fit_title(self):
+        d = date(2026, 10, 8)
+        self.assertEqual(hindi_names.search_phrase("Onion", d, "Neemuch मंडी"),
+                         "प्याज का भाव आज 8 अक्टूबर 2026 | Neemuch मंडी")
+        t = hindi_names.fit_title("क" * 90, ["extra that does not fit"])
+        self.assertEqual(t, "क" * 90 + " #Shorts")
+        t = hindi_names.fit_title("क" * 120)
+        self.assertEqual(len(t), 100)
+        self.assertTrue(t.endswith(" #Shorts"))
 
     def test_spoken_market(self):
         self.assertEqual(hindi_names.spoken_market("Mukerian(Talwara) APMC"), "Mukerian")
