@@ -294,7 +294,7 @@ def build_c(feed, today, recent):
         under = [i for i in msp["data"].get("items", []) if i["typical"] < i["msp"]]
         if under:
             names = ", ".join(i["nameHi"] for i in under[:3])
-            news.append({"label": "MSP से नीचे", "big": f"{len(under)} फ़सलें", "count": None, "tone": "down", "sub": names,
+            news.append({"label": "MSP से नीचे", "big": (f"{len(under)} फ़सलें" if len(under) > 1 else "1 फ़सल"), "count": None, "tone": "down", "sub": names,
                          "say": f"{names} का आम मंडी भाव एमएसपी से नीचे", "path": msp["path"]})
     kist = {k["key"]: k for k in feed.get("kist", [])}.get("pmkisan")
     if kist:
