@@ -1,15 +1,8 @@
 name: Daily TaazaBhav Upload
 
 on:
-  schedule:
-    # Kisan/vyapari subah jaldi bhav dekhte hain, isliye sab 5 videos
-    # 6:00 AM IST se PEHLE ban kar upload ho jaane chahiye. IST is UTC+5:30,
-    # so these UTC times land at 5:00 - 5:40 AM IST.
-    - cron: "30 23 * * *"  # 05:00 IST -- Uttar Pradesh, Onion
-    - cron: "40 23 * * *"  # 05:10 IST -- Maharashtra, Onion
-    - cron: "50 23 * * *"  # 05:20 IST -- West Bengal, Potato
-    - cron: "0 0 * * *"    # 05:30 IST -- Karnataka, Tomato
-    - cron: "10 0 * * *"   # 05:40 IST -- Punjab, Potato
+  # Old 5 bhav readouts retired 17 Oct 2026 (replaced by engine.yml).
+  # Kept for manual runs only.
   workflow_dispatch:
     inputs:
       slot:

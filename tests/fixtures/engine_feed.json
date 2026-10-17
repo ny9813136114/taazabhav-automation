@@ -1,0 +1,879 @@
+{
+ "generatedAt": "2026-10-17T06:30:00.000Z",
+ "latestDate": "2026-10-17",
+ "reports": [
+  {
+   "date": "2026-10-17",
+   "slug": "teji-mandi-report",
+   "kind": "teji-mandi",
+   "path": "/samachar/2026-10-17/teji-mandi-report",
+   "title": "तेज़ी-मंदी रिपोर्ट 17 अक्टूबर 2026",
+   "summary": "",
+   "advice": [],
+   "data": {
+    "kind": "teji-mandi",
+    "date": "2026-10-17",
+    "prevDate": "2026-10-16",
+    "steady": 20,
+    "up": [
+     {
+      "commodity": "Garlic",
+      "slug": "garlic",
+      "nameHi": "लहसुन",
+      "nameEn": "Garlic",
+      "today": 9200,
+      "prev": 8100,
+      "pct": 13.6
+     }
+    ],
+    "down": [
+     {
+      "commodity": "Tomato",
+      "slug": "tomato",
+      "nameHi": "टमाटर",
+      "nameEn": "Tomato",
+      "today": 1600,
+      "prev": 1760,
+      "pct": -9.1
+     }
+    ]
+   }
+  },
+  {
+   "date": "2026-10-17",
+   "slug": "msp-se-neeche-fasal",
+   "kind": "msp",
+   "path": "/samachar/2026-10-17/msp-se-neeche-fasal",
+   "title": "MSP से नीचे बिक रही फसलें — 17 अक्टूबर 2026: 1 फसल का आम भाव MSP से कम",
+   "summary": "17 अक्टूबर 2026 को सोयाबीन का आम मंडी भाव सरकार के MSP से नीचे रहा।",
+   "advice": [
+    "जिस फसल का मंडी भाव MSP से नीचे है, उसके लिए सरकारी खरीद केंद्र पर बेचने का विकल्प देखें — पंजीकरण की तारीखें सरकारी पैसा कैलेंडर में हैं।",
+    "मंडी में बेचें तो पर्ची में कटौती ज़रूर जांचें — मंडी हिसाब चेकर से।"
+   ],
+   "data": {
+    "kind": "msp",
+    "date": "2026-10-17",
+    "items": [
+     {
+      "commodity": "Soyabean",
+      "slug": "soybean",
+      "nameHi": "सोयाबीन",
+      "nameEn": "Soyabean",
+      "msp": 5708,
+      "season": "Kharif",
+      "year": "2026-27",
+      "typical": 5701,
+      "markets": 8,
+      "below": 5
+     }
+    ]
+   }
+  },
+  {
+   "date": "2026-10-17",
+   "slug": "mandi-bhav-uchhal-giravat-alert",
+   "kind": "alert",
+   "path": "/samachar/2026-10-17/mandi-bhav-uchhal-giravat-alert",
+   "title": "मंडी भाव alert 17 अक्टूबर 2026: उछाल और गिरावट",
+   "summary": "17 अक्टूबर 2026 को किसी मंडी में भाव 5% से ज़्यादा नहीं बदला। 4 फसलों की सबसे ऊंचे भाव वाली मंडी नीचे है।",
+   "advice": [
+    "एक मंडी में अचानक उछाल अक्सर एक-दो दिन का होता है (कम आवक या अच्छा माल)। माल ले जाने से पहले उस मंडी का आज का भाव फिर से देख लें।",
+    "सबसे ऊंचे भाव वाली मंडी दूर हो तो भाड़ा और मंडी शुल्क घटाकर ही फैसला करें।"
+   ],
+   "data": {
+    "kind": "alert",
+    "date": "2026-10-17",
+    "jumps": [
+     {
+      "commodity": "Soyabean",
+      "slug": "soybean",
+      "nameHi": "सोयाबीन",
+      "nameEn": "Soyabean",
+      "market": "Indore",
+      "marketHi": "इंदौर",
+      "state": "Madhya Pradesh",
+      "stateHi": "मध्य प्रदेश",
+      "path": "/mandi-bhav/state/madhya-pradesh/indore-market",
+      "modal": 5180,
+      "prev": 4700,
+      "prevDate": "2026-10-16",
+      "pct": 10.2
+     }
+    ],
+    "falls": [
+     {
+      "commodity": "Onion",
+      "slug": "onion",
+      "nameHi": "प्याज़",
+      "nameEn": "Onion",
+      "market": "Lasalgaon",
+      "marketHi": "लासलगांव",
+      "state": "Maharashtra",
+      "stateHi": "महाराष्ट्र",
+      "path": "/mandi-bhav/state/maharashtra/lasalgaon-market",
+      "modal": 1450,
+      "prev": 1700,
+      "prevDate": "2026-10-16",
+      "pct": -14.7
+     }
+    ],
+    "highs": [
+     {
+      "commodity": "Onion",
+      "slug": "onion",
+      "nameHi": "प्याज़",
+      "nameEn": "Onion",
+      "market": "Athirampuzha",
+      "marketHi": "Athirampuzha",
+      "state": "Keralam",
+      "stateHi": "केरल",
+      "path": "/mandi-bhav/state/keralam/athirampuzha-market",
+      "modal": 8500
+     },
+     {
+      "commodity": "Potato",
+      "slug": "potato",
+      "nameHi": "आलू",
+      "nameEn": "Potato",
+      "market": "Athirampuzha",
+      "marketHi": "Athirampuzha",
+      "state": "Keralam",
+      "stateHi": "केरल",
+      "path": "/mandi-bhav/state/keralam/athirampuzha-market",
+      "modal": 3700
+     },
+     {
+      "commodity": "Tomato",
+      "slug": "tomato",
+      "nameHi": "टमाटर",
+      "nameEn": "Tomato",
+      "market": "Ahmedgarh",
+      "marketHi": "Ahmedgarh",
+      "state": "Punjab",
+      "stateHi": "पंजाब",
+      "path": "/mandi-bhav/state/punjab/ahmedgarh",
+      "modal": 3500
+     },
+     {
+      "commodity": "Soyabean",
+      "slug": "soybean",
+      "nameHi": "सोयाबीन",
+      "nameEn": "Soyabean",
+      "market": "Vaijpur",
+      "marketHi": "Vaijpur",
+      "state": "Maharashtra",
+      "stateHi": "महाराष्ट्र",
+      "path": "/mandi-bhav/state/maharashtra/vaijpur",
+      "modal": 6105
+     }
+    ]
+   }
+  },
+  {
+   "date": "2026-10-17",
+   "slug": "onion-bhav-aaj",
+   "kind": "crop",
+   "path": "/samachar/2026-10-17/onion-bhav-aaj",
+   "title": "प्याज़ का भाव आज 17 अक्टूबर 2026: आम भाव ₹5,050/क्विंटल, सबसे ऊंचा Athirampuzha में",
+   "summary": "17 अक्टूबर 2026 को 8 मंडियां में प्याज़ का आम भाव ₹5,050 प्रति क्विंटल (₹51 किलो) रहा, रेंज ₹3,500–₹8,500।",
+   "advice": [
+    "सबसे ऊंचे भाव वाली मंडी दूर हो तो भाड़ा और मंडी शुल्क घटाकर ही फैसला करें।",
+    "मंडियों में भाव का फ़र्क बड़ा है (₹5,000 प्रति क्विंटल) — मंडी चुनना ही मुनाफ़ा तय करेगा।"
+   ],
+   "data": {
+    "kind": "crop",
+    "commodity": "Onion",
+    "slug": "onion",
+    "nameHi": "प्याज़",
+    "nameEn": "Onion",
+    "date": "2026-10-17",
+    "typical": 5050,
+    "lo": 3500,
+    "hi": 8500,
+    "markets": 8,
+    "top": [
+     {
+      "market": "Athirampuzha",
+      "marketHi": "Athirampuzha",
+      "state": "Keralam",
+      "stateHi": "केरल",
+      "path": "/mandi-bhav/state/keralam/athirampuzha-market",
+      "modal": 8500
+     },
+     {
+      "market": "Kallachi",
+      "marketHi": "Kallachi",
+      "state": "Keralam",
+      "stateHi": "केरल",
+      "path": "/mandi-bhav/state/keralam/kallachi-market",
+      "modal": 5500
+     },
+     {
+      "market": "Perambra",
+      "marketHi": "Perambra",
+      "state": "Keralam",
+      "stateHi": "केरल",
+      "path": "/mandi-bhav/state/keralam/perambra-market",
+      "modal": 5200
+     },
+     {
+      "market": "Balliah",
+      "marketHi": "Balliah",
+      "state": "Bihar",
+      "stateHi": "बिहार",
+      "path": "/mandi-bhav/state/bihar/balliah",
+      "modal": 5100
+     },
+     {
+      "market": "Khanna",
+      "marketHi": "Khanna",
+      "state": "Punjab",
+      "stateHi": "पंजाब",
+      "path": "/mandi-bhav/state/punjab/khanna",
+      "modal": 5000
+     }
+    ],
+    "bottom": [
+     {
+      "market": "Kalaburagi",
+      "marketHi": "Kalaburagi",
+      "state": "Karnataka",
+      "stateHi": "कर्नाटक",
+      "path": "/mandi-bhav/state/karnataka/kalaburagi",
+      "modal": 3500
+     },
+     {
+      "market": "Ahmedabad (Vasana)",
+      "marketHi": "Ahmedabad (Vasana)",
+      "state": "Gujarat",
+      "stateHi": "गुजरात",
+      "path": "/mandi-bhav/state/gujarat/ahmedabad-vasana",
+      "modal": 4750
+     },
+     {
+      "market": "Radaur",
+      "marketHi": "Radaur",
+      "state": "Haryana",
+      "stateHi": "हरियाणा",
+      "path": "/mandi-bhav/state/haryana/radaur",
+      "modal": 4800
+     },
+     {
+      "market": "Khanna",
+      "marketHi": "Khanna",
+      "state": "Punjab",
+      "stateHi": "पंजाब",
+      "path": "/mandi-bhav/state/punjab/khanna",
+      "modal": 5000
+     },
+     {
+      "market": "Balliah",
+      "marketHi": "Balliah",
+      "state": "Bihar",
+      "stateHi": "बिहार",
+      "path": "/mandi-bhav/state/bihar/balliah",
+      "modal": 5100
+     }
+    ],
+    "states": [
+     {
+      "state": "Keralam",
+      "stateHi": "केरल",
+      "stateSlug": "keralam",
+      "typical": 5500,
+      "markets": 3
+     },
+     {
+      "state": "Karnataka",
+      "stateHi": "कर्नाटक",
+      "stateSlug": "karnataka",
+      "typical": 3500,
+      "markets": 1
+     },
+     {
+      "state": "Gujarat",
+      "stateHi": "गुजरात",
+      "stateSlug": "gujarat",
+      "typical": 4750,
+      "markets": 1
+     },
+     {
+      "state": "Haryana",
+      "stateHi": "हरियाणा",
+      "stateSlug": "haryana",
+      "typical": 4800,
+      "markets": 1
+     },
+     {
+      "state": "Punjab",
+      "stateHi": "पंजाब",
+      "stateSlug": "punjab",
+      "typical": 5000,
+      "markets": 1
+     },
+     {
+      "state": "Bihar",
+      "stateHi": "बिहार",
+      "stateSlug": "bihar",
+      "typical": 5100,
+      "markets": 1
+     }
+    ],
+    "pct": null,
+    "prevDate": null,
+    "msp": null,
+    "belowMsp": 0,
+    "perishable": true,
+    "jumps": [],
+    "falls": []
+   }
+  },
+  {
+   "date": "2026-10-17",
+   "slug": "potato-bhav-aaj",
+   "kind": "crop",
+   "path": "/samachar/2026-10-17/potato-bhav-aaj",
+   "title": "आलू का भाव आज 17 अक्टूबर 2026: आम भाव ₹950/क्विंटल, सबसे ऊंचा Athirampuzha में",
+   "summary": "17 अक्टूबर 2026 को 8 मंडियां में आलू का आम भाव ₹950 प्रति क्विंटल (₹10 किलो) रहा, रेंज ₹500–₹3,700।",
+   "advice": [
+    "सबसे ऊंचे भाव वाली मंडी दूर हो तो भाड़ा और मंडी शुल्क घटाकर ही फैसला करें।",
+    "मंडियों में भाव का फ़र्क बड़ा है (₹3,200 प्रति क्विंटल) — मंडी चुनना ही मुनाफ़ा तय करेगा।"
+   ],
+   "data": {
+    "kind": "crop",
+    "commodity": "Potato",
+    "slug": "potato",
+    "nameHi": "आलू",
+    "nameEn": "Potato",
+    "date": "2026-10-17",
+    "typical": 950,
+    "lo": 500,
+    "hi": 3700,
+    "markets": 8,
+    "top": [
+     {
+      "market": "Athirampuzha",
+      "marketHi": "Athirampuzha",
+      "state": "Keralam",
+      "stateHi": "केरल",
+      "path": "/mandi-bhav/state/keralam/athirampuzha-market",
+      "modal": 3700
+     },
+     {
+      "market": "Jalore",
+      "marketHi": "Jalore",
+      "state": "Rajasthan",
+      "stateHi": "राजस्थान",
+      "path": "/mandi-bhav/state/rajasthan/jalore",
+      "modal": 1300
+     },
+     {
+      "market": "Uparhali Pmy",
+      "marketHi": "Uparhali Pmy",
+      "state": "Assam",
+      "stateHi": "असम",
+      "path": "/mandi-bhav/state/assam/uparhali-pmy",
+      "modal": 1200
+     },
+     {
+      "market": "Kosli",
+      "marketHi": "Kosli",
+      "state": "Haryana",
+      "stateHi": "हरियाणा",
+      "path": "/mandi-bhav/state/haryana/kosli",
+      "modal": 1000
+     },
+     {
+      "market": "Ghanaur",
+      "marketHi": "Ghanaur",
+      "state": "Punjab",
+      "stateHi": "पंजाब",
+      "path": "/mandi-bhav/state/punjab/ghanaur",
+      "modal": 900
+     }
+    ],
+    "bottom": [
+     {
+      "market": "Quadian",
+      "marketHi": "Quadian",
+      "state": "Punjab",
+      "stateHi": "पंजाब",
+      "path": "/mandi-bhav/state/punjab/quadian",
+      "modal": 500
+     },
+     {
+      "market": "Khanna",
+      "marketHi": "Khanna",
+      "state": "Punjab",
+      "stateHi": "पंजाब",
+      "path": "/mandi-bhav/state/punjab/khanna",
+      "modal": 500
+     },
+     {
+      "market": "F.G.Churian",
+      "marketHi": "F.G.Churian",
+      "state": "Punjab",
+      "stateHi": "पंजाब",
+      "path": "/mandi-bhav/state/punjab/f-g-churian",
+      "modal": 900
+     },
+     {
+      "market": "Ghanaur",
+      "marketHi": "Ghanaur",
+      "state": "Punjab",
+      "stateHi": "पंजाब",
+      "path": "/mandi-bhav/state/punjab/ghanaur",
+      "modal": 900
+     },
+     {
+      "market": "Kosli",
+      "marketHi": "Kosli",
+      "state": "Haryana",
+      "stateHi": "हरियाणा",
+      "path": "/mandi-bhav/state/haryana/kosli",
+      "modal": 1000
+     }
+    ],
+    "states": [
+     {
+      "state": "Punjab",
+      "stateHi": "पंजाब",
+      "stateSlug": "punjab",
+      "typical": 700,
+      "markets": 4
+     },
+     {
+      "state": "Haryana",
+      "stateHi": "हरियाणा",
+      "stateSlug": "haryana",
+      "typical": 1000,
+      "markets": 1
+     },
+     {
+      "state": "Assam",
+      "stateHi": "असम",
+      "stateSlug": "assam",
+      "typical": 1200,
+      "markets": 1
+     },
+     {
+      "state": "Rajasthan",
+      "stateHi": "राजस्थान",
+      "stateSlug": "rajasthan",
+      "typical": 1300,
+      "markets": 1
+     },
+     {
+      "state": "Keralam",
+      "stateHi": "केरल",
+      "stateSlug": "keralam",
+      "typical": 3700,
+      "markets": 1
+     }
+    ],
+    "pct": null,
+    "prevDate": null,
+    "msp": null,
+    "belowMsp": 0,
+    "perishable": true,
+    "jumps": [],
+    "falls": []
+   }
+  },
+  {
+   "date": "2026-10-17",
+   "slug": "tomato-bhav-aaj",
+   "kind": "crop",
+   "path": "/samachar/2026-10-17/tomato-bhav-aaj",
+   "title": "टमाटर का भाव आज 17 अक्टूबर 2026: आम भाव ₹2,525/क्विंटल, सबसे ऊंचा Ahmedgarh में",
+   "summary": "17 अक्टूबर 2026 को 8 मंडियां में टमाटर का आम भाव ₹2,525 प्रति क्विंटल (₹25 किलो) रहा, रेंज ₹800–₹3,500।",
+   "advice": [
+    "सबसे ऊंचे भाव वाली मंडी दूर हो तो भाड़ा और मंडी शुल्क घटाकर ही फैसला करें।",
+    "मंडियों में भाव का फ़र्क बड़ा है (₹2,700 प्रति क्विंटल) — मंडी चुनना ही मुनाफ़ा तय करेगा।"
+   ],
+   "data": {
+    "kind": "crop",
+    "commodity": "Tomato",
+    "slug": "tomato",
+    "nameHi": "टमाटर",
+    "nameEn": "Tomato",
+    "date": "2026-10-17",
+    "typical": 2525,
+    "lo": 800,
+    "hi": 3500,
+    "markets": 8,
+    "top": [
+     {
+      "market": "Ahmedgarh",
+      "marketHi": "Ahmedgarh",
+      "state": "Punjab",
+      "stateHi": "पंजाब",
+      "path": "/mandi-bhav/state/punjab/ahmedgarh",
+      "modal": 3500
+     },
+     {
+      "market": "Sirsa",
+      "marketHi": "Sirsa",
+      "state": "Haryana",
+      "stateHi": "हरियाणा",
+      "path": "/mandi-bhav/state/haryana/sirsa",
+      "modal": 3400
+     },
+     {
+      "market": "Goluwala",
+      "marketHi": "Goluwala",
+      "state": "Rajasthan",
+      "stateHi": "राजस्थान",
+      "path": "/mandi-bhav/state/rajasthan/goluwala",
+      "modal": 3000
+     },
+     {
+      "market": "Bhadara",
+      "marketHi": "Bhadara",
+      "state": "Rajasthan",
+      "stateHi": "राजस्थान",
+      "path": "/mandi-bhav/state/rajasthan/bhadara",
+      "modal": 2850
+     },
+     {
+      "market": "Rajpura",
+      "marketHi": "Rajpura",
+      "state": "Punjab",
+      "stateHi": "पंजाब",
+      "path": "/mandi-bhav/state/punjab/rajpura",
+      "modal": 2200
+     }
+    ],
+    "bottom": [
+     {
+      "market": "Hospet",
+      "marketHi": "Hospet",
+      "state": "Karnataka",
+      "stateHi": "कर्नाटक",
+      "path": "/mandi-bhav/state/karnataka/hospet",
+      "modal": 800
+     },
+     {
+      "market": "Shankarapally",
+      "marketHi": "Shankarapally",
+      "state": "Telangana",
+      "stateHi": "तेलंगाना",
+      "path": "/mandi-bhav/state/telangana/shankarapally",
+      "modal": 1000
+     },
+     {
+      "market": "Mukkom",
+      "marketHi": "Mukkom",
+      "state": "Keralam",
+      "stateHi": "केरल",
+      "path": "/mandi-bhav/state/keralam/mukkom-market",
+      "modal": 2100
+     },
+     {
+      "market": "Rajpura",
+      "marketHi": "Rajpura",
+      "state": "Punjab",
+      "stateHi": "पंजाब",
+      "path": "/mandi-bhav/state/punjab/rajpura",
+      "modal": 2200
+     },
+     {
+      "market": "Bhadara",
+      "marketHi": "Bhadara",
+      "state": "Rajasthan",
+      "stateHi": "राजस्थान",
+      "path": "/mandi-bhav/state/rajasthan/bhadara",
+      "modal": 2850
+     }
+    ],
+    "states": [
+     {
+      "state": "Punjab",
+      "stateHi": "पंजाब",
+      "stateSlug": "punjab",
+      "typical": 2850,
+      "markets": 2
+     },
+     {
+      "state": "Rajasthan",
+      "stateHi": "राजस्थान",
+      "stateSlug": "rajasthan",
+      "typical": 2925,
+      "markets": 2
+     },
+     {
+      "state": "Karnataka",
+      "stateHi": "कर्नाटक",
+      "stateSlug": "karnataka",
+      "typical": 800,
+      "markets": 1
+     },
+     {
+      "state": "Telangana",
+      "stateHi": "तेलंगाना",
+      "stateSlug": "telangana",
+      "typical": 1000,
+      "markets": 1
+     },
+     {
+      "state": "Keralam",
+      "stateHi": "केरल",
+      "stateSlug": "keralam",
+      "typical": 2100,
+      "markets": 1
+     },
+     {
+      "state": "Haryana",
+      "stateHi": "हरियाणा",
+      "stateSlug": "haryana",
+      "typical": 3400,
+      "markets": 1
+     }
+    ],
+    "pct": null,
+    "prevDate": null,
+    "msp": null,
+    "belowMsp": 0,
+    "perishable": true,
+    "jumps": [],
+    "falls": []
+   }
+  },
+  {
+   "date": "2026-10-17",
+   "slug": "soybean-bhav-aaj",
+   "kind": "crop",
+   "path": "/samachar/2026-10-17/soybean-bhav-aaj",
+   "title": "सोयाबीन का भाव आज 17 अक्टूबर 2026: आम भाव ₹5,701/क्विंटल, सबसे ऊंचा Vaijpur में",
+   "summary": "17 अक्टूबर 2026 को 8 मंडियां में सोयाबीन का आम भाव ₹5,701 प्रति क्विंटल (₹57 किलो) रहा, रेंज ₹4,500–₹6,105।",
+   "advice": [
+    "सबसे ऊंचे भाव वाली मंडी दूर हो तो भाड़ा और मंडी शुल्क घटाकर ही फैसला करें।",
+    "आम भाव MSP (₹5,708) से नीचे है — 5 मंडियों में MSP से कम मिला। सरकारी खरीद केंद्र पर बेचने का विकल्प देखें।"
+   ],
+   "data": {
+    "kind": "crop",
+    "commodity": "Soyabean",
+    "slug": "soybean",
+    "nameHi": "सोयाबीन",
+    "nameEn": "Soyabean",
+    "date": "2026-10-17",
+    "typical": 5701,
+    "lo": 4500,
+    "hi": 6105,
+    "markets": 8,
+    "top": [
+     {
+      "market": "Vaijpur",
+      "marketHi": "Vaijpur",
+      "state": "Maharashtra",
+      "stateHi": "महाराष्ट्र",
+      "path": "/mandi-bhav/state/maharashtra/vaijpur",
+      "modal": 6105
+     },
+     {
+      "market": "Zaheerabad",
+      "marketHi": "Zaheerabad",
+      "state": "Telangana",
+      "stateHi": "तेलंगाना",
+      "path": "/mandi-bhav/state/telangana/zaheerabad",
+      "modal": 5914
+     },
+     {
+      "market": "Malkapur",
+      "marketHi": "Malkapur",
+      "state": "Maharashtra",
+      "stateHi": "महाराष्ट्र",
+      "path": "/mandi-bhav/state/maharashtra/malkapur",
+      "modal": 5750
+     },
+     {
+      "market": "Badnagar",
+      "marketHi": "Badnagar",
+      "state": "Madhya Pradesh",
+      "stateHi": "मध्य प्रदेश",
+      "path": "/mandi-bhav/state/madhya-pradesh/badnagar",
+      "modal": 5701
+     },
+     {
+      "market": "Khirakiya",
+      "marketHi": "Khirakiya",
+      "state": "Madhya Pradesh",
+      "stateHi": "मध्य प्रदेश",
+      "path": "/mandi-bhav/state/madhya-pradesh/khirakiya",
+      "modal": 5700
+     }
+    ],
+    "bottom": [
+     {
+      "market": "Khamgaon",
+      "marketHi": "Khamgaon",
+      "state": "Maharashtra",
+      "stateHi": "महाराष्ट्र",
+      "path": "/mandi-bhav/state/maharashtra/khamgaon",
+      "modal": 4500
+     },
+     {
+      "market": "Jaora",
+      "marketHi": "Jaora",
+      "state": "Madhya Pradesh",
+      "stateHi": "मध्य प्रदेश",
+      "path": "/mandi-bhav/state/madhya-pradesh/jaora",
+      "modal": 5182
+     },
+     {
+      "market": "Sengoan",
+      "marketHi": "Sengoan",
+      "state": "Maharashtra",
+      "stateHi": "महाराष्ट्र",
+      "path": "/mandi-bhav/state/maharashtra/sengoan",
+      "modal": 5600
+     },
+     {
+      "market": "Khirakiya",
+      "marketHi": "Khirakiya",
+      "state": "Madhya Pradesh",
+      "stateHi": "मध्य प्रदेश",
+      "path": "/mandi-bhav/state/madhya-pradesh/khirakiya",
+      "modal": 5700
+     },
+     {
+      "market": "Badnagar",
+      "marketHi": "Badnagar",
+      "state": "Madhya Pradesh",
+      "stateHi": "मध्य प्रदेश",
+      "path": "/mandi-bhav/state/madhya-pradesh/badnagar",
+      "modal": 5701
+     }
+    ],
+    "states": [
+     {
+      "state": "Maharashtra",
+      "stateHi": "महाराष्ट्र",
+      "stateSlug": "maharashtra",
+      "typical": 5675,
+      "markets": 4
+     },
+     {
+      "state": "Madhya Pradesh",
+      "stateHi": "मध्य प्रदेश",
+      "stateSlug": "madhya-pradesh",
+      "typical": 5700,
+      "markets": 3
+     },
+     {
+      "state": "Telangana",
+      "stateHi": "तेलंगाना",
+      "stateSlug": "telangana",
+      "typical": 5914,
+      "markets": 1
+     }
+    ],
+    "pct": null,
+    "prevDate": null,
+    "msp": 5708,
+    "belowMsp": 5,
+    "perishable": false,
+    "jumps": [],
+    "falls": []
+   }
+  }
+ ],
+ "signals": [
+  {
+   "commodity": "Soyabean",
+   "slug": "soybean",
+   "date": "2026-10-17",
+   "tone": "good",
+   "pctWeek": 6.1,
+   "belowMsp": true
+  },
+  {
+   "commodity": "Onion",
+   "slug": "onion",
+   "date": "2026-10-17",
+   "tone": "low",
+   "pctWeek": -9.4,
+   "belowMsp": false
+  }
+ ],
+ "kist": [
+  {
+   "key": "pmkisan",
+   "nameHi": "पीएम किसान",
+   "path": "/pm-kisan-kist",
+   "amount": 2000,
+   "perYear": 6000,
+   "checkedOn": "2026-10-07",
+   "next": {
+    "n": 24,
+    "officialDate": null,
+    "windowStart": "2026-10-01",
+    "windowEnd": "2026-11-30",
+    "windowEn": "October–November 2026",
+    "windowHi": "अक्टूबर–नवंबर 2026"
+   },
+   "last": {
+    "n": 23,
+    "date": "2026-06-20",
+    "placeEn": "Tarakeswar, Hooghly (West Bengal)",
+    "placeHi": "तारकेश्वर, हुगली (पश्चिम बंगाल)",
+    "crore": 18880,
+    "farmersCrore": 9.44,
+    "source": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2274616"
+   },
+   "statusUrl": "https://pmkisan.gov.in/"
+  },
+  {
+   "key": "mpkalyan",
+   "nameHi": "मुख्यमंत्री किसान कल्याण योजना",
+   "stateHi": "मध्य प्रदेश",
+   "path": "/mp-kisan-kalyan-kist",
+   "amount": 2000,
+   "perYear": 6000,
+   "checkedOn": "2026-10-17",
+   "next": {
+    "n": 16,
+    "officialDate": null,
+    "windowHi": "अक्टूबर–दिसंबर 2026",
+    "windowEn": "October–December 2026"
+   },
+   "last": {
+    "label": "14-15",
+    "date": "2026-07-27",
+    "placeHi": "बलराम कृषि महोत्सव, खंडवा",
+    "placeEn": "Balram Krishi Mahotsav, Khandwa",
+    "perFarmer": 4000,
+    "crore": 3300,
+    "lakhFarmers": 82.7,
+    "source": "https://www.india.com/hindi-news/madhya-pradesh/cm-mohan-yadav-announces-over-3300-crore-4000-each-transferred-to-the-accounts-of-82-lakh-70-thousand-farmers-8485685/"
+   },
+   "statusUrl": "https://saara.mp.gov.in/"
+  },
+  {
+   "key": "rajsamman",
+   "nameHi": "मुख्यमंत्री किसान सम्मान निधि",
+   "stateHi": "राजस्थान",
+   "path": "/rajasthan-kisan-samman-kist",
+   "amount": 1000,
+   "perYear": 3000,
+   "checkedOn": "2026-10-17",
+   "next": {
+    "n": 7,
+    "officialDate": null,
+    "windowHi": "अक्टूबर–दिसंबर 2026",
+    "windowEn": "October–December 2026"
+   },
+   "last": {
+    "label": "6",
+    "date": "2026-04-22",
+    "placeHi": "ओसियां, जोधपुर",
+    "placeEn": "Osian, Jodhpur",
+    "perFarmer": 1000,
+    "crore": 665,
+    "lakhFarmers": 66,
+    "source": "https://www.krishakjagat.org/news/rajasthan-sixth-installment-of-chief-minister-kisan-samman-nidhi-to-be-released-today-6-6-million-farmers-to-receive-a-gift/"
+   },
+   "statusUrl": "https://rajkisan.rajasthan.gov.in/"
+  }
+ ]
+}
