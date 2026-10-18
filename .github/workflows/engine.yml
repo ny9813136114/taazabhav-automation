@@ -3,8 +3,13 @@ name: Content Engine (4 series)
 # New YouTube engine (17 Oct 2026), data from taazabhav.com/api/yt-feed:
 #   A भाव धमाका   07:30 IST   B किस्त का सच 20:30 IST
 #   C किसान खबर   18:30 IST   D टूल से हल  12:30 IST
-# Scheduled runs only PUBLISH when the repo variable ENGINE_LIVE is "1";
+# Runs only PUBLISH when the repo variable ENGINE_LIVE is "1" (mode auto);
 # until then each video goes to the owner's Telegram as a preview.
+#
+# Exact times come from the Supabase clock (ops/supabase-clock.sql), which
+# starts this workflow with mode "auto". GitHub's own schedule below starts
+# runs hours late, so it is only a backup: engine/slot_gate.py lets each
+# series run once per slot and tells the owner when the clock missed one.
 on:
   schedule:
     - cron: "0 2 * * *"    # 07:30 IST  A
@@ -19,9 +24,9 @@ on:
         options: [A, B, C, D]
         default: A
       mode:
-        description: "preview = owner's Telegram only; publish = post it"
+        description: "auto = follow ENGINE_LIVE, once per slot; preview = owner's Telegram only; publish = post it"
         type: choice
-        options: [preview, publish]
+        options: [auto, preview, publish]
         default: preview
 
 concurrency:
@@ -37,6 +42,9 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
+      - name: Latest state
+        # A run that waited in the queue must see what the run before it saved.
+        run: git pull --ff-only origin main
       - name: Pick series
         id: s
         run: |
@@ -48,29 +56,49 @@ jobs:
             *) S="${{ inputs.series }}" ;;
           esac
           echo "series=$S" >> "$GITHUB_OUTPUT"
+      - name: Once per slot
+        id: g
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ inputs.mode }}" = "auto" ]; then
+            python3 -m engine.slot_gate check ${{ steps.s.outputs.series }}
+            echo "gated=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/setup-python@v5
+        if: steps.g.outputs.run == 'true'
         with:
           python-version: "3.11"
           cache: "pip"
           cache-dependency-path: requirements.txt
       - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+        if: steps.g.outputs.run == 'true'
       - run: pip install -r requirements.txt
+        if: steps.g.outputs.run == 'true'
       - name: Browser for screen recording
-        if: steps.s.outputs.series == 'D'
+        if: steps.g.outputs.run == 'true' && steps.s.outputs.series == 'D'
         run: python -m playwright install --with-deps chromium
       - uses: actions/setup-node@v4
+        if: steps.g.outputs.run == 'true'
         with:
           node-version: "20"
           cache: "npm"
           cache-dependency-path: shorts/package-lock.json
       - name: Install Remotion
+        if: steps.g.outputs.run == 'true'
         working-directory: shorts
         run: npm ci --no-audit --no-fund && npx remotion browser ensure
       - name: Restore YouTube credentials
+        if: steps.g.outputs.run == 'true'
         run: |
           echo "${{ secrets.YT_TOKEN_PICKLE_B64 }}" | base64 -d -i > token.pickle
           echo "${{ secrets.YT_CLIENT_SECRET_B64 }}" | base64 -d -i > client_secret.json
       - name: Make video
+        id: v
+        if: steps.g.outputs.run == 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -78,8 +106,11 @@ jobs:
           ENGINE_MODE: ${{ inputs.mode }}
           ENGINE_LIVE: ${{ vars.ENGINE_LIVE }}
         run: python -m engine.run ${{ steps.s.outputs.series }}
+      - name: Mark slot done
+        if: success() && steps.g.outputs.run == 'true' && steps.g.outputs.gated == 'true'
+        run: python3 -m engine.slot_gate done ${{ steps.s.outputs.series }}
       - name: Commit engine state
-        if: always()
+        if: always() && steps.g.outputs.run == 'true'
         run: |
           git config user.name "TaazaBhav Bot"
           git config user.email "bot@taazabhav.com"
@@ -87,3 +118,14 @@ jobs:
           git diff --staged --quiet || git commit -m "Engine: update published list"
           git pull --rebase
           git push
+      - name: Tell the owner it failed
+        # engine.run sends its own alert; this covers every other step.
+        if: failure() && steps.v.outcome != 'failure'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: >
+          curl -sS -m 20 "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage"
+          --data-urlencode chat_id="${TELEGRAM_CHAT_ID}"
+          --data-urlencode text="TaazaBhav ALERT: video engine (series ${{ steps.s.outputs.series }}) failed. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          || true

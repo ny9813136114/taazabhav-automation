@@ -1,0 +1,66 @@
+{
+ "byState": {
+  "Bhindi(Ladies Finger)": {
+   "typical": 2000,
+   "lo": 1800,
+   "hi": 3200,
+   "count": 3,
+   "latestDate": "2026-10-18"
+  },
+  "Bitter gourd": {
+   "typical": 2500,
+   "lo": 1500,
+   "hi": 3120,
+   "count": 2,
+   "latestDate": "2026-10-17"
+  },
+  "Ginger(Green)": {
+   "typical": 4000,
+   "lo": 3529.41,
+   "hi": 7000,
+   "count": 5,
+   "latestDate": "2026-10-18"
+  },
+  "Onion": {
+   "typical": 2400,
+   "lo": 1850,
+   "hi": 3500,
+   "count": 40,
+   "latestDate": "2026-10-18"
+  },
+  "Potato": {
+   "typical": 1200,
+   "lo": 361.32,
+   "hi": 1900,
+   "count": 30,
+   "latestDate": "2026-10-18"
+  },
+  "Ginger(Dry)": {
+   "typical": 9000,
+   "count": 1,
+   "latestDate": "2026-10-18"
+  }
+ },
+ "stateMoves": [
+  [
+   "Bhindi(Ladies Finger)",
+   3.2,
+   null,
+   2000,
+   "2026-10-17",
+   "2026-10-18",
+   "",
+   3
+  ],
+  [
+   "Onion",
+   null,
+   1.0,
+   2400,
+   "",
+   "2026-10-18",
+   "2026-10-13",
+   40
+  ]
+ ]
+}

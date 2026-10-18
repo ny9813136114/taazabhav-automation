@@ -1,11 +1,13 @@
 name: Daily Telegram Mandi Bhav Broadcast
 
+# Prices come from taazabhav.com (18 Oct 2026), so the run waits until the
+# site has the day's prices (data.gov.in posts ~11:30 IST). The Supabase
+# clock (ops/supabase-clock.sql) starts it at 13:00 and 16:00 IST; the
+# GitHub schedule is a late backup. Each day is posted once
+# (data/telegram_history/_last_post.json), whoever starts it.
 on:
   schedule:
-    # 05:45 IST = 00:15 UTC -- runs after the YouTube videos are already
-    # kicked off (those start at 05:00 IST), so it doesn't compete with
-    # them for data.gov.in calls at the exact same moment.
-    - cron: "15 0 * * *"
+    - cron: "30 7 * * *"   # 13:00 IST backup
   workflow_dispatch:
 
 concurrency:
@@ -18,23 +20,12 @@ permissions:
 jobs:
   broadcast:
     runs-on: ubuntu-latest
-    # Without this, a run that hangs (network stall, an infinite retry,
-    # anything) sits "in progress" forever. Because cancel-in-progress is
-    # false above, every SUBSEQUENT scheduled run then just queues up
-    # behind it and never actually starts -- from the outside this looks
-    # exactly like "automate nahi ho raha", even though the workflow file
-    # is fine, until someone notices and manually cancels/reruns it.
-    #
-    # Phase 1A: this script used to make ~125 fully-sequential upstream
-    # calls (5 states x 25 commodities) and was observed in production
-    # actually hitting this 10-minute ceiling and getting cancelled. It now
-    # batches by commodity (25 calls, not 125 -- see telegram_broadcast.py)
-    # with modest bounded concurrency, which comfortably restores headroom
-    # under this same 10-minute limit even with the new retry logic added
-    # on each call; see docs/RELIABILITY.md for the exact worst-case math.
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - name: Latest state
+        # A run that waited in the queue must see what the run before it saved.
+        run: git pull --ff-only origin main
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -45,13 +36,10 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run Telegram broadcast
         env:
-          DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python telegram_broadcast.py
-      # if: always() -- same reasoning as daily.yml: telegram_broadcast.py
-      # now exits non-zero on a real failure, and states that DID succeed
-      # earlier in the same run must still have their history committed.
+      # if: always(): states posted before a failure keep their history.
       - name: Commit Telegram broadcast price history
         if: always()
         run: |
@@ -61,3 +49,13 @@ jobs:
           git diff --staged --quiet || git commit -m "Update Telegram broadcast price history"
           git pull --rebase
           git push
+      - name: Tell the owner it failed
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: >
+          curl -sS -m 20 "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage"
+          --data-urlencode chat_id="${TELEGRAM_CHAT_ID}"
+          --data-urlencode text="TaazaBhav ALERT: Telegram channel broadcast failed. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          || true

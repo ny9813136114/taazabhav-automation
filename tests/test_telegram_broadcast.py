@@ -1,61 +1,85 @@
-"""Covers a review finding on the Phase 1A branch: _fetch_all_commodities()
-had narrowed its exception handling to `except DataFetchError` only, with
-no surrounding try/except at its call site in main() -- so any OTHER
-exception type from a single commodity's concurrent fetch (e.g. a
-malformed/non-JSON response) crashed the entire broadcast for all 5
-states, silently, before any Telegram alert could fire. Fixed by
-broadening back to `except Exception`, matching the original
-_fetch_commodity()'s "one item's failure never stops the whole run"
-guarantee. These tests would have failed against the pre-fix code.
-"""
+# -*- coding: utf-8 -*-
+"""The channel broadcast reads taazabhav.com (18 Oct 2026), not data.gov.in."""
+import datetime as dt
+import json
 import os
+import tempfile
 import unittest
 from unittest.mock import patch
 
-os.environ.setdefault("DATA_GOV_API_KEY", "test-key-not-real")
+import telegram_broadcast as tb
 
-import telegram_broadcast  # noqa: E402
-
-
-class TestFetchAllCommoditiesResilience(unittest.TestCase):
-    def test_non_data_fetch_error_exception_does_not_crash(self):
-        """A commodity fetch raising something other than DataFetchError
-        (e.g. a JSONDecodeError from a malformed response body) must be
-        caught and recorded as None for that commodity only -- every other
-        commodity must still be fetched."""
-        commodity_names = [name for name, _, _ in telegram_broadcast.COMMODITY_POOL]
-        failing_name = commodity_names[0]
-
-        def fake_fetch(name):
-            if name == failing_name:
-                raise ValueError("Expecting value: line 1 column 1 (char 0)")
-            return [{"state": "Uttar Pradesh", "market": "Test APMC", "modal_price": "1000"}]
-
-        with patch("telegram_broadcast.fetch_all_states", side_effect=fake_fetch):
-            results = telegram_broadcast._fetch_all_commodities()
-
-        self.assertIsNone(results[failing_name])
-        other_names = [n for n in commodity_names if n != failing_name]
-        self.assertTrue(all(results[n] is not None for n in other_names))
-        self.assertEqual(len(results), len(commodity_names))
+SITE = json.load(open(os.path.join(os.path.dirname(__file__), "fixtures", "site_state_up.json"), encoding="utf-8"))
 
 
-class TestMainDoesNotCrashOnFetchException(unittest.TestCase):
-    def test_main_completes_and_reports_failure_instead_of_crashing(self):
-        """Integration-level check on the actual regression: main() itself
-        must not raise even if every commodity fetch raises unexpectedly --
-        it should complete, report the failures, and return a non-zero
-        exit code, not propagate an uncaught exception out of the process."""
-        with patch.dict(os.environ, {"TELEGRAM_BOT_TOKEN": "test-token"}), \
-             patch("telegram_broadcast.fetch_all_states", side_effect=ValueError("boom")), \
-             patch("telegram_broadcast._post_to_channel") as mock_post, \
-             patch("telegram_broadcast.send_telegram_alert") as mock_alert, \
-             patch("telegram_broadcast.time.sleep", return_value=None):
-            exit_code = telegram_broadcast.main()
+class SitePricesTest(unittest.TestCase):
+    def test_pool_names_map_to_site_names(self):
+        prices, counts, pct, newest = tb.state_prices(SITE)
+        self.assertEqual(prices["Bhindi"], 2000)          # "Bhindi(Ladies Finger)"
+        self.assertEqual(prices["Bitter Gourd"], 2500)    # site writes "Bitter gourd"
+        self.assertEqual(prices["Ginger"], 4000)          # Green, not Dry
+        self.assertEqual(counts["Onion"], 40)
+        self.assertEqual(pct["Bhindi"], 3.2)
+        self.assertNotIn("Onion", pct)                    # null change is not a change
+        self.assertNotIn("Apple", prices)                 # not on the site for this state
+        self.assertEqual(newest, "2026-10-18")
 
-        self.assertEqual(exit_code, 1)
-        mock_post.assert_not_called()  # no data for any commodity -- nothing to post
-        mock_alert.assert_called()  # the maintainer must still be notified
+    def test_message_uses_site_change(self):
+        prices, counts, pct, _ = tb.state_prices(SITE)
+        m = tb._build_message("Uttar Pradesh", "18 Oct 2026", prices, {}, counts, pct)
+        self.assertIn("Bhindi: ₹20/kg (₹2,000/qtl) · 3 mandi (+3% kal se)", m)
+        self.assertIn("TRENDING", m)
+
+    def test_fetch_retries_then_raises(self):
+        class R:
+            status_code = 503
+        with patch.object(tb.requests, "get", return_value=R()) as g, patch.object(tb.time, "sleep"):
+            with self.assertRaises(RuntimeError):
+                tb.fetch_state("Uttar Pradesh")
+        self.assertEqual(g.call_count, 3)
+        self.assertIn("/api/home-tools/state/uttar-pradesh", g.call_args[0][0])
+
+
+class MainTest(unittest.TestCase):
+    def run_main(self, fetch, d):
+        with patch.dict(os.environ, {"TELEGRAM_BOT_TOKEN": "t"}), \
+             patch.object(tb, "HISTORY_DIR", d), patch.object(tb, "LAST_POST", os.path.join(d, "_last.json")), \
+             patch.object(tb, "fetch_state", side_effect=fetch), \
+             patch.object(tb, "_post_to_channel") as post, \
+             patch.object(tb, "send_telegram_alert") as alert, \
+             patch.object(tb.time, "sleep"):
+            code = tb.main()
+        return code, post, alert
+
+    def test_posts_every_state_once_a_day(self):
+        with tempfile.TemporaryDirectory() as d:
+            code, post, alert = self.run_main(lambda s: SITE, d)
+            self.assertEqual(code, 0)
+            self.assertEqual(post.call_count, len(tb.STATES))
+            alert.assert_not_called()
+            code, post, alert = self.run_main(lambda s: SITE, d)  # late fallback run
+            self.assertEqual(code, 0)
+            post.assert_not_called()
+
+    def test_site_down_alerts_owner(self):
+        def boom(state):
+            raise RuntimeError("HTTP 502")
+        with tempfile.TemporaryDirectory() as d:
+            code, post, alert = self.run_main(boom, d)
+        self.assertEqual(code, 1)
+        post.assert_not_called()
+        alert.assert_called_once()
+
+    def test_one_state_failing_still_posts_others(self):
+        def one_bad(state):
+            if state == "Punjab":
+                raise RuntimeError("HTTP 502")
+            return SITE
+        with tempfile.TemporaryDirectory() as d:
+            code, post, alert = self.run_main(one_bad, d)
+        self.assertEqual(code, 1)
+        self.assertEqual(post.call_count, len(tb.STATES) - 1)
+        self.assertIn("Punjab", alert.call_args[0][0])
 
 
 if __name__ == "__main__":
