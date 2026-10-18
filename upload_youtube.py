@@ -19,7 +19,10 @@ def upload_video(video_path, title, description, tags, thumbnail_path=None, comm
         "status": {
             "privacyStatus": "public",
             "selfDeclaredMadeForKids": False,
-            "containsSyntheticMedia": True,
+            # Generic TTS voice over graphics and real stock clips: no realistic
+            # fake person or event, so the "altered or synthetic" label is not
+            # required. Owner chose to drop it on 18 Oct 2026.
+            "containsSyntheticMedia": False,
         },
     }
 
