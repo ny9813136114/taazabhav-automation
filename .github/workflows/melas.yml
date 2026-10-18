@@ -21,6 +21,9 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      - name: Latest state
+        # A run that waited in the queue must see what the run before it saved.
+        run: git pull --ff-only origin main
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -57,3 +60,13 @@ jobs:
           git diff --staged --quiet || git commit -m "Update published mela alerts"
           git pull --rebase
           git push
+      - name: Tell the owner it failed
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: >
+          curl -sS -m 20 "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage"
+          --data-urlencode chat_id="${TELEGRAM_CHAT_ID}"
+          --data-urlencode text="TaazaBhav ALERT: Kisan Mela video run failed. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          || true

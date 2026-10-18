@@ -1,42 +1,22 @@
 """
 Standalone daily script: posts a state-wise "trending mandi bhav" message to
-a single shared PUBLIC Telegram channel.
+the public Telegram channel @taazabhav, one message per state.
 
-This is completely independent from main.py / the YouTube pipeline -- if
-this script fails, video uploads are unaffected (and vice versa). It
-fetches its own wider pool of commodities (not just the 5 YouTube
-targets) so the channel shows a richer, "today's biggest movers" picture
-instead of a fixed onion/potato/tomato list.
+18 Oct 2026: prices now come from taazabhav.com itself
+(/api/home-tools/state/<state>, the same numbers the site shows), not from
+data.gov.in. data.gov.in refuses GitHub's (non-Indian) runners, so every run
+from 24 Sep to 18 Oct 2026 failed and the channel got nothing. The site
+saves the day's prices from an Indian server, and that route is cached for a
+day and refreshed after each price pull, so this costs no extra database
+reads. Each state's message uses the site's state median per crop and the
+site's own "since the previous report day" change.
 
-Needs these environment variables (same secrets already used elsewhere in
-this repo):
-  DATA_GOV_API_KEY   -- used internally by fetch_prices.fetch_all_states()
-  TELEGRAM_BOT_TOKEN -- the existing TaazaBhavAlerts_bot token
+Started at a fixed time by the Supabase clock (ops/supabase-clock.sql). The
+GitHub schedule is only a fallback and posts nothing if today's broadcast
+already went out (data/telegram_history/_last_post.json).
 
-The bot must be added as an ADMIN (with "Post Messages" permission) in
-the single public channel named below. It's public with a fixed
-@username, so no numeric chat_id lookup is needed -- the @username
-itself works as the chat_id.
-
-One channel, 5 states: every morning the bot posts 5 separate messages
-(one per state) into this same channel, one after another.
-
---- Reliability note (Phase 1A) ---
-This used to call fetch_prices(state=state, commodity=commodity_name) once
-per (state, commodity) pair: 5 states x 25 commodities = 125 sequential
-upstream calls. But fetch_prices() itself already fetches ALL states for a
-given commodity in a single request before filtering locally to one state
--- so the old loop order (state outer, commodity inner) was calling the
-network for the SAME commodity's all-state data 5 times over, once per
-state, purely because of loop order. This version fetches each of the 25
-commodities' all-state data exactly ONCE (see _fetch_all_commodities()),
-then filters to each state locally in memory -- an 80% reduction in
-upstream calls, with no change to what gets posted. Those 25 fetches run
-with modest bounded concurrency (MAX_CONCURRENT_FETCHES) and each one
-retries transient failures internally (see fetch_prices.py's retry
-policy), which is what actually keeps this workflow inside its 10-minute
-budget: the previous, fully-serial version had already been observed
-exceeding it and getting cancelled by GitHub Actions.
+Needs TELEGRAM_BOT_TOKEN (the bot is an admin of the channel) and, for
+alerts, TELEGRAM_CHAT_ID.
 """
 import os
 import sys
@@ -44,11 +24,10 @@ import json
 import time
 import traceback
 from datetime import datetime, timedelta, timezone
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from urllib.parse import quote
 
 import requests
 
-from fetch_prices import fetch_all_states, filter_by_state, clean_records
 from notify import send_telegram_alert
 from hindi_names import inr
 
@@ -58,23 +37,15 @@ CHANNEL = "@taazabhav"
 # ---- States covered (same 5 as the YouTube pipeline's TARGETS). -----------
 STATES = ["Uttar Pradesh", "Maharashtra", "West Bengal", "Karnataka", "Punjab"]
 
-# How many commodity fetches run in flight at once. data.gov.in has
-# confirmed intermittent 5xx errors in production, so this is deliberately
-# modest (not "fetch all 25 at once") -- enough to fit comfortably inside
-# the workflow's 10-minute timeout without hammering an already-flaky
-# upstream harder than necessary.
-MAX_CONCURRENT_FETCHES = 8
+SITE = os.environ.get("TAAZABHAV_SITE", "https://taazabhav.com")
 
 # ---- Wider commodity pool for the channel broadcast (kept separate from
 # main.py's TARGETS -- this can grow independently of the YouTube side).
 # Tuples are (name passed to fetch_prices, Hindi display name, emoji).
 #
-# IMPORTANT: the first value must match data.gov.in's Agmarknet commodity
-# spelling exactly, or that item just returns no data. A wrong spelling
-# does NOT crash anything -- _fetch_all_commodities() below treats "no
-# records" as "skip this item" and moves on. After the first real run,
-# check the Action log / Telegram alert for a summary of which names
-# returned zero data, and fix just those entries here.
+# The first value is the Agmarknet name. Where the site's crop name differs
+# (a bracketed variety or different case), SITE_NAMES says which one to use;
+# a crop the site doesn't have for a state is simply left out.
 COMMODITY_POOL = [
     ("Onion", "Pyaz", "\U0001F9C5"),
     ("Potato", "Aloo", "\U0001F954"),
@@ -103,6 +74,14 @@ COMMODITY_POOL = [
     ("Apple", "Seb", "\U0001F34E"),
 ]
 
+SITE_NAMES = {
+    "Ginger": "Ginger(Green)",
+    "Bhindi": "Bhindi(Ladies Finger)",
+    "Coriander": "Coriander(Leaves)",
+    "Cucumbar": "Cucumbar(Kheera)",
+    "French Beans": "French Beans(Frasbean)",
+}
+
 HISTORY_DIR = "data/telegram_history"
 TOP_N = 15
 
@@ -110,66 +89,65 @@ TOP_N = 15
 IST = timezone(timedelta(hours=5, minutes=30))
 
 
-def _state_price(state_records):
-    """(Batch 5, 27 Sep 2026) The state's representative price: the MEDIAN
-    of one-row-per-mandi modal prices, plus the mandi count.
-
-    Before: this took state_records[0] -- simply the first raw row the API
-    returned (any mandi, any variety, often with paise). So "Pyaz Rs.X" was
-    a random mandi's price, and the "+N% kal se" compared one random mandi
-    today with a DIFFERENT random mandi yesterday -- fake movers."""
-    rows = clean_records(state_records)
-    if not rows:
-        return None, 0
-    prices = sorted(r["modal_price"] for r in rows)
-    n = len(prices)
-    median = prices[n // 2] if n % 2 else (prices[n // 2 - 1] + prices[n // 2] + 1) // 2
-    return median, n
+def _slug(state):
+    return state.lower().replace(" ", "-")
 
 
-def _data_date(records):
-    """Latest arrival_date (dd/mm/yyyy) in the rows, as a date, or None."""
-    best = None
-    for r in records:
+def _site_name(name, available):
+    want = SITE_NAMES.get(name, name)
+    if want in available:
+        return want
+    low = want.lower()
+    return next((n for n in available if n.lower() == low), None)
+
+
+def fetch_state(state, attempts=3):
+    """The site's data for one state: {"byState": {crop: {typical, count,
+    latestDate, ...}}, "stateMoves": [[crop, dayPct, weekPct, ...], ...]}.
+    Retries a few times; raises on a persistent failure."""
+    url = f"{SITE}/api/home-tools/state/{quote(_slug(state))}"
+    last = None
+    for i in range(attempts):
         try:
-            d = datetime.strptime(str(r.get("arrival_date", "")).strip(), "%d/%m/%Y").date()
-        except ValueError:
+            r = requests.get(url, timeout=30, headers={"User-Agent": "taazabhav-telegram"})
+            if r.status_code == 200:
+                data = r.json()
+                if isinstance(data.get("byState"), dict) and data["byState"]:
+                    return data
+                last = RuntimeError(f"{url}: no prices in the answer")
+            else:
+                last = RuntimeError(f"{url}: HTTP {r.status_code}")
+        except Exception as e:  # network error or bad JSON
+            last = e
+        if i < attempts - 1:
+            time.sleep(10 * (i + 1))
+    raise last
+
+
+def state_prices(data):
+    """-> (prices {pool name: median Rs/qtl}, counts, pct {pool name: % since
+    the previous report day}, newest data date)."""
+    by_state = data.get("byState") or {}
+    moves = {}
+    for row in data.get("stateMoves") or []:
+        if isinstance(row, list) and len(row) >= 2 and row[1] is not None:
+            moves[row[0]] = row[1]
+    prices, counts, pct, newest = {}, {}, {}, None
+    for name, _, _ in COMMODITY_POOL:
+        site = _site_name(name, by_state)
+        if not site:
             continue
-        if best is None or d > best:
-            best = d
-    return best
-
-
-def _fetch_all_commodities(skip=None):
-    """Fetches ALL-STATE records for every pooled commodity exactly once,
-    with bounded concurrency. Returns {commodity_name: list[record] or None}
-    -- None means that commodity's fetch permanently failed; callers must
-    treat None as "skip this commodity everywhere today", the same way a
-    per-item empty result was already treated before this change, while
-    also surfacing it as a real failure (see main()).
-
-    Catches Exception broadly, not just DataFetchError: this preserves the
-    original _fetch_commodity()'s "one item's failure never stops the
-    whole run" guarantee for ANY exception a single commodity's fetch can
-    raise (e.g. a malformed/non-JSON response body), not only the ones
-    fetch_prices.py happens to classify as DataFetchError. This function
-    has no surrounding try/except at its own call site in main(), so an
-    exception escaping here would otherwise crash the entire broadcast for
-    all 5 states, silently (before any per-state Telegram alert fires)."""
-    results = dict(skip or {})
-    with ThreadPoolExecutor(max_workers=MAX_CONCURRENT_FETCHES) as pool:
-        future_to_name = {
-            pool.submit(fetch_all_states, name): name
-            for name, _, _ in COMMODITY_POOL if name not in results
-        }
-        for future in as_completed(future_to_name):
-            name = future_to_name[future]
-            try:
-                results[name] = future.result()
-            except Exception as e:
-                print(f"[telegram_broadcast] Permanent fetch failure for commodity '{name}': {e}")
-                results[name] = None
-    return results
+        s = by_state[site]
+        if not s.get("typical"):
+            continue
+        prices[name] = int(round(s["typical"]))
+        counts[name] = s.get("count")
+        if site in moves:
+            pct[name] = moves[site]
+        d = s.get("latestDate") or ""
+        if d and (newest is None or d > newest):
+            newest = d
+    return prices, counts, pct, newest
 
 
 def _history_path(state):
@@ -212,8 +190,9 @@ def _post_to_channel(bot_token, channel, text):
         )
 
 
-def _build_message(state, date_str, today_prices, yesterday_prices, counts=None):
+def _build_message(state, date_str, today_prices, yesterday_prices, counts=None, pct_by_name=None):
     """today_prices / yesterday_prices: {commodity_name: median modal (int, Rs/quintal)}.
+    pct_by_name: the site's own % change, used before yesterday_prices.
     Returns the message text, or None if there's nothing to show at all."""
     rows = []
     for commodity_name, hindi_name, emoji in COMMODITY_POOL:
@@ -221,7 +200,10 @@ def _build_message(state, date_str, today_prices, yesterday_prices, counts=None)
         if today_p is None:
             continue
         yday_p = yesterday_prices.get(commodity_name)
-        pct = (today_p - yday_p) / yday_p * 100 if yday_p else None
+        if pct_by_name and commodity_name in pct_by_name:
+            pct = pct_by_name[commodity_name]
+        else:
+            pct = (today_p - yday_p) / yday_p * 100 if yday_p else None
         n = (counts or {}).get(commodity_name)
         rows.append((hindi_name, emoji, today_p, pct, n))
 
@@ -258,8 +240,8 @@ def _build_message(state, date_str, today_prices, yesterday_prices, counts=None)
         "",
         "━" * 12,
         footer_note,
-        "ℹ️ Bhav = sabhi mandiyon ka beech ka (median) thok bhav. Source: Agmarknet (Govt of India)",
-        "✅ Roz subah yahi update yahin milega",
+        "ℹ️ Bhav = sabhi mandiyon ka beech ka (median) thok bhav, pichhle report din se badlav. Source: Agmarknet (Govt of India)",
+        "✅ Roz dopahar yahi update yahin milega",
         # Was youtube.com/@TaazaBhav -- that handle is a DIFFERENT (2023)
         # mandi channel, not ours. Ours is @TaazaBhavIN (fixed 26 Sep 2026).
         "🌐 Har mandi ka poora bhav: taazabhav.com",
@@ -270,111 +252,97 @@ def _build_message(state, date_str, today_prices, yesterday_prices, counts=None)
     return "\n".join(lines)
 
 
-def run_for_state(state, channel, bot_token, date_str, all_commodity_records, today=None):
-    """all_commodity_records: the dict returned by _fetch_all_commodities()
-    -- {commodity_name: list[record] or None}, already fetched once for
-    every state, filtered here locally (no network calls in this
-    function)."""
+LAST_POST = os.path.join(HISTORY_DIR, "_last_post.json")
+
+
+def _already_posted(data_date):
+    try:
+        with open(LAST_POST, encoding="utf-8") as f:
+            return json.load(f).get("date") == data_date
+    except (OSError, ValueError, AttributeError):
+        return False
+
+
+def _mark_posted(data_date):
+    os.makedirs(HISTORY_DIR, exist_ok=True)
+    with open(LAST_POST, "w", encoding="utf-8") as f:
+        json.dump({"date": data_date}, f)
+
+
+def run_for_state(state, channel, bot_token, date_str, data, today=None):
+    """data: this state's answer from fetch_state(). Posts one message."""
     today = today or datetime.now(IST).date()
     yesterday = _load_previous(state, today)
-    today_prices = {}
-    counts = {}
-    missing = []
-    for commodity_name, hindi_name, emoji in COMMODITY_POOL:
-        all_state_records = all_commodity_records.get(commodity_name)
-        if all_state_records is None:
-            missing.append(f"{commodity_name} (fetch failed)")
-            continue
-        state_records = filter_by_state(all_state_records, state)
-        if not state_records:
-            missing.append(commodity_name)
-            continue
-        price, n = _state_price(state_records)
-        if price is None:
-            missing.append(commodity_name)
-            continue
-        today_prices[commodity_name] = price
-        counts[commodity_name] = n
-
-    if missing:
-        print(f"[{state}] No data for: {', '.join(missing)} (skipped, not a state-level failure).")
-
+    today_prices, counts, pct, _ = state_prices(data)
     if not today_prices:
-        print(f"[{state}] No data at all for any pooled commodity today -- skipping broadcast.")
-        return
-
-    message = _build_message(state, date_str, today_prices, yesterday, counts)
+        print(f"[{state}] No pooled crop on the site for this state today -- skipping.")
+        return False
+    message = _build_message(state, date_str, today_prices, yesterday, counts, pct)
     if message is None:
-        print(f"[{state}] Nothing to post.")
-        return
-
+        return False
     _post_to_channel(bot_token, channel, message)
-    print(f"[{state}] Posted to {channel} ({len(today_prices)} items fetched).")
+    print(f"[{state}] Posted to {channel} ({len(today_prices)} crops).")
     _save_today(state, today, today_prices)
+    return True
 
 
 def main():
-    """Returns a process exit code: 0 if the broadcast completed with no
-    real failures, non-zero if at least one commodity's fetch permanently
-    failed or at least one state's post failed. A day with legitimately no
-    data for some/all commodities (a normal, expected outcome -- see
-    run_for_state()'s `missing` handling) is NOT a failure. Every state is
-    still attempted regardless of how an earlier one ended."""
+    """0 when every state was posted (or today's post already went out),
+    1 when the site could not be read or a post failed. The owner gets a
+    Telegram alert for every failure."""
     bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
     if not bot_token:
         print("TELEGRAM_BOT_TOKEN not set -- skipping Telegram broadcast entirely.")
         return 0
 
     today = datetime.now(IST).date()  # runner clock is UTC
-
-    # Fail fast (Batch 5): one probe before 25 commodities x up to 12 pages.
-    # When data.gov.in is down, the old code spent 6+ minutes timing out on
-    # every commodity (and with the 60 s timeout it would pass the job's
-    # limit and be cancelled), then sent a 25-name alert. Now: one clear
-    # alert, exit in about 3 minutes.
-    try:
-        probe = fetch_all_states(COMMODITY_POOL[0][0])
-    except Exception as e:  # any failure -- never crash the process
-        print(f"[telegram_broadcast] data.gov.in is not responding, skipping today: {e}")
-        send_telegram_alert(f"TaazaBhav ALERT: data.gov.in down -- Telegram broadcast skipped today.\n\n{e}")
+    data, failed = {}, []
+    for state in STATES:
+        try:
+            data[state] = fetch_state(state)
+        except Exception as e:
+            print(f"[{state}] could not read the site: {e}")
+            failed.append(state)
+    if not data:
+        send_telegram_alert(
+            "TaazaBhav ALERT: Telegram channel broadcast skipped -- taazabhav.com prices could not be read.\n\n"
+            + ", ".join(failed))
         return 1
 
-    all_commodity_records = _fetch_all_commodities(skip={COMMODITY_POOL[0][0]: probe})
-
-    # Label the post with the DATA's date, not the run date: if the API is
-    # serving an older day, readers must see that.
-    data_day = _data_date(r for recs in all_commodity_records.values() if recs for r in recs)
+    newest = max((state_prices(d)[3] or "" for d in data.values()), default="")
+    if newest and _already_posted(newest):
+        print(f"Broadcast for {newest} already posted -- nothing to do.")
+        return 0
+    try:
+        data_day = datetime.strptime(newest, "%Y-%m-%d").date()
+    except ValueError:
+        data_day = None
+    # Label the post with the DATA's date, not the run date.
     date_str = (data_day or today).strftime("%d %b %Y")
     if data_day and data_day < today - timedelta(days=1):
         date_str += " (latest available)"
-    failed_commodities = [name for name, recs in all_commodity_records.items() if recs is None]
-    if failed_commodities:
-        print(f"[telegram_broadcast] {len(failed_commodities)} commodity fetch(es) permanently failed: {failed_commodities}")
 
-    failed_states = []
+    posted = 0
     for i, state in enumerate(STATES):
+        if state not in data:
+            continue
         try:
-            run_for_state(state, CHANNEL, bot_token, date_str, all_commodity_records, today)
+            if run_for_state(state, CHANNEL, bot_token, date_str, data[state], today):
+                posted += 1
         except Exception as e:
             print(f"Error broadcasting for {state}: {e}")
             traceback.print_exc()
-            send_telegram_alert(
-                f"TaazaBhav ALERT: Telegram channel broadcast failed for {state}\n\n{e}"
-            )
-            failed_states.append(state)
+            failed.append(state)
         if i < len(STATES) - 1:
             time.sleep(3)  # small gap between back-to-back posts to the same channel
 
-    if failed_commodities or failed_states:
-        if failed_commodities:
-            send_telegram_alert(
-                "TaazaBhav ALERT: Telegram broadcast had permanent data fetch failures for: "
-                + ", ".join(failed_commodities)
-            )
-        print(f"\nTelegram broadcast finished with failures. failed_commodities={failed_commodities} failed_states={failed_states}")
+    if posted and newest:
+        _mark_posted(newest)
+    if failed:
+        send_telegram_alert("TaazaBhav ALERT: Telegram channel broadcast failed for: " + ", ".join(failed))
+        print(f"\nTelegram broadcast finished with failures: {failed}")
         return 1
-
-    print("\nTelegram broadcast finished successfully.")
+    print(f"\nTelegram broadcast finished: {posted} state(s) posted.")
     return 0
 
 

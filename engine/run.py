@@ -61,6 +61,15 @@ def main(series):
     work = Path("engine-out")
     work.mkdir(exist_ok=True)
     out = work / f"{series}-{today.isoformat()}.mp4"
+    if run_mode != "dry":
+        from engine.publish import youtube_login_problem
+        problem = youtube_login_problem()
+        if problem:
+            alert("TaazaBhav: YouTube login band ho gaya hai, video upload nahi hoga.\n"
+                  "Fix: PC par `python authorize.py` chalao, phir naya token.pickle base64 karke "
+                  "GitHub secret YT_TOKEN_PICKLE_B64 mein daalo.\n\n" + problem[:300])
+            if run_mode == "publish":
+                return 1
     try:
         ep = build(series, today, state)
         if not ep:

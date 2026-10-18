@@ -42,6 +42,22 @@ def _youtube():
         return build("youtube", "v3", credentials=pickle.load(f))
 
 
+def youtube_login_problem():
+    """None when the saved YouTube login still works, else the reason.
+    Checked on every run, previews too, so an expired login shows up before
+    a publish day instead of on it (18 Oct 2026)."""
+    try:
+        with open("token.pickle", "rb") as f:
+            creds = pickle.load(f)
+        from google.auth.transport.requests import Request
+        if not getattr(creds, "refresh_token", None):
+            return "token.pickle has no refresh token"
+        creds.refresh(Request())
+        return None
+    except Exception as e:
+        return f"{type(e).__name__}: {e}"
+
+
 def playlist_id(youtube, series):
     ids = json.loads(PLAYLISTS.read_text(encoding="utf-8")) if PLAYLISTS.exists() else {}
     if ids.get(series):
