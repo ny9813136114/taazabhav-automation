@@ -14,7 +14,7 @@ import requests
 from engine.text import spoken
 
 FPS = 30
-VOICE = os.environ.get("ENGINE_VOICE", "hi-IN-SwaraNeural")
+VOICE = os.environ.get("ENGINE_VOICE", "hi-IN-MadhurNeural")
 SHORTS = Path("shorts")
 PUBLIC = SHORTS / "public"
 
