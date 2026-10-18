@@ -6,8 +6,7 @@ name: Daily Explainer (Sawal-Jawab)
 # variable SAWAL_LIVE is "1"; until then the video is sent to the owner's
 # Telegram as a preview.
 on:
-  schedule:
-    - cron: "0 7 * * *"   # 12:30 IST
+  # Schedule retired 17 Oct 2026: the 12:30 slot is now engine.yml series D.
   workflow_dispatch:
     inputs:
       mode:

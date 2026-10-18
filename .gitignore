@@ -11,3 +11,7 @@ thumb.jpg
 preview.mp3
 preview.mp4
 preview_thumb.jpg
+
+engine-out/
+shorts/props.json
+__pycache__/
