@@ -115,9 +115,29 @@ def synth(texts, out_dir):
         secs = _duration(f)
         return {"audio": f"voice/s{i}.mp3", "secs": secs, "words": words or _estimate_words(say, secs)}
 
+    def fallback(i, text):
+        # gTTS (Google) when the Edge voice is refused; word times are estimated.
+        from gtts import gTTS
+        say = spoken(text)
+        raw = out_dir / f"g{i}.mp3"
+        gTTS(say, lang="hi").save(str(raw))
+        f = out_dir / f"s{i}.mp3"
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw), "-filter:a", "atempo=1.15", str(f)], check=True)
+        raw.unlink(missing_ok=True)
+        secs = _duration(f)
+        return {"audio": f"voice/s{i}.mp3", "secs": secs, "words": _estimate_words(say, secs)}
+
     async def go():
-        return [await one(i, t) for i, t in enumerate(texts)]
-    return asyncio.run(go())
+        res = []
+        for i, t in enumerate(texts):
+            try:
+                res.append(await one(i, t))
+            except Exception as e:
+                print(f"[engine] Edge voice failed ({e}); using Google voice")
+                return None
+        return res
+    res = asyncio.run(go())
+    return res if res is not None else [fallback(i, t) for i, t in enumerate(texts)]
 
 
 # ---------------------------------------------------------------- props + render
