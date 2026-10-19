@@ -81,7 +81,7 @@ def publish(path, ep, alert):
     except Exception as e:
         alert(f"TaazaBhav engine: playlist add failed ({ep['series']}): {e}")
     try:
-        _tg("sendMessage", {"chat_id": CHANNEL, "text": f"{ep['title'].replace(' #Shorts', '')}\n\n▶️ https://youtu.be/{vid}\n🌐 {ep['link'].replace('utm_source=youtube', 'utm_source=telegram')}",
+        _tg("sendMessage", {"chat_id": CHANNEL, "text": f"{ep['title'].replace(' #Shorts', '')}\n\n▶️ https://youtu.be/{vid}\n🌐 {ep['link']}",
                             "disable_web_page_preview": "false"})
     except Exception as e:
         alert(f"TaazaBhav engine: Telegram channel post failed: {e}")
@@ -90,11 +90,10 @@ def publish(path, ep, alert):
 
 
 def meta_caption(ep):
-    """Reel caption: the title without #Shorts, then the YouTube description
-    with links tagged for Instagram. Meta's limit is 2200 characters."""
+    """Reel caption: the title without #Shorts, then the YouTube description.
+    Meta's limit is 2200 characters."""
     title = ep["title"].replace(" #Shorts", "").strip()
-    desc = ep["description"].replace("utm_source=youtube", "utm_source=instagram")
-    return f"{title}\n\n{desc}"[:2200]
+    return f"{title}\n\n{ep['description']}"[:2200]
 
 
 def meta_reels(path, ep, alert):

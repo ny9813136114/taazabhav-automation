@@ -84,11 +84,12 @@ class TestMetadata(unittest.TestCase):
     def test_description_starts_with_search_phrase(self):
         _, desc, _, _ = main.build_metadata("Onion", "Uttar Pradesh", RECORDS, date(2026, 10, 8))
         self.assertEqual(desc.splitlines()[0], "प्याज का भाव आज 8 अक्टूबर 2026 | उत्तर प्रदेश")
-        self.assertIn("https://taazabhav.com/mandi-bhav/onion?utm_source=youtube", desc)
+        self.assertIn("https://taazabhav.com/mandi-bhav/onion\n", desc + "\n")
+        self.assertNotIn("utm_", desc)
 
     def test_description_and_comment_link_to_the_right_page(self):
         _, desc, tags, comment = main.build_metadata("Onion", "Uttar Pradesh", RECORDS, date(2026, 9, 27))
-        url = "https://taazabhav.com/hi/mandi-bhav/onion/uttar-pradesh?utm_source=youtube&utm_medium=shorts"
+        url = "https://taazabhav.com/hi/mandi-bhav/onion/uttar-pradesh"
         self.assertIn(url, desc.splitlines()[2])
         self.assertIn(url, comment)
         self.assertIn("Lakhimpur APMC", comment)  # best mandi really is the top one
