@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Preview to the owner, or publish: YouTube upload + playlist + comment,
-then the Telegram channel."""
+then the Telegram channel, then the same video as a Facebook + Instagram Reel."""
 import json
 import os
 import pickle
@@ -85,4 +85,27 @@ def publish(path, ep, alert):
                             "disable_web_page_preview": "false"})
     except Exception as e:
         alert(f"TaazaBhav engine: Telegram channel post failed: {e}")
+    meta_reels(path, ep, alert)
     return vid
+
+
+def meta_caption(ep):
+    """Reel caption: the title without #Shorts, then the YouTube description
+    with links tagged for Instagram. Meta's limit is 2200 characters."""
+    title = ep["title"].replace(" #Shorts", "").strip()
+    desc = ep["description"].replace("utm_source=youtube", "utm_source=instagram")
+    return f"{title}\n\n{desc}"[:2200]
+
+
+def meta_reels(path, ep, alert):
+    """Never changes the YouTube result: any Meta error is only alerted."""
+    import meta_publish
+    if not meta_publish.enabled():
+        return None
+    try:
+        res = meta_publish.publish_all(path, meta_caption(ep))
+    except Exception as e:
+        res = {"errors": [str(e)]}
+    if res.get("errors"):
+        alert(f"TaazaBhav engine: FB/IG Reel ({ep['series']}) failed:\n" + "\n".join(res["errors"])[:500])
+    return res
