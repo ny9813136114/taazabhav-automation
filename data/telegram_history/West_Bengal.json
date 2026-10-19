@@ -1,24 +1,24 @@
 {
-  "date": "2026-10-18",
+  "date": "2026-10-19",
   "prices": {
-    "Onion": 4500,
-    "Potato": 680,
-    "Tomato": 3450,
+    "Onion": 4700,
+    "Potato": 1150,
+    "Tomato": 3700,
     "Garlic": 12400,
     "Ginger": 8500,
-    "Green Chilli": 7925,
+    "Green Chilli": 6000,
     "Cabbage": 2900,
-    "Cauliflower": 3150,
+    "Cauliflower": 3100,
     "Brinjal": 4600,
-    "Bhindi": 4400,
+    "Bhindi": 4100,
     "Capsicum": 9000,
-    "Carrot": 4200,
+    "Carrot": 4300,
     "Cucumbar": 4500,
     "Raddish": 3300,
-    "Pumpkin": 2025,
-    "Bitter Gourd": 4500,
-    "Bottle Gourd": 1600,
+    "Pumpkin": 2000,
+    "Bitter Gourd": 4000,
+    "Bottle Gourd": 1700,
     "Banana": 2200,
-    "Apple": 15800
+    "Apple": 16000
   }
 }
