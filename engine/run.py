@@ -84,10 +84,18 @@ def main(series):
         if series == "D":
             rec = tools.record(ep["tool"], ep["case"], work / "rec.mp4")
             rec_secs = media._duration(rec)
-        voice = media.synth([s["say"] for s in ep["scenes"]], media.PUBLIC / "voice")
         clip = media.fetch_clip(ep["clip"], f"{today}-{series}", work / "clip.mp4")
-        props = media.build_props(ep, voice, clip, rec_secs)
-        seconds = props["frames"] / media.FPS
+        while True:
+            voice = media.synth([s["say"] for s in ep["scenes"]], media.PUBLIC / "voice")
+            props = media.build_props(ep, voice, clip, rec_secs)
+            seconds = props["frames"] / media.FPS
+            # Too long: drop one optional scene and voice it again, rather than skip the slot.
+            spare = next((s for s in ep["scenes"] if s.get("optional")), None)
+            if seconds > qa.BOUNDS[series][1] and spare:
+                print(f"[engine] {seconds:.1f}s too long, dropping the {spare['kind']} scene")
+                ep["scenes"].remove(spare)
+                continue
+            break
         qa.check_length(ep, seconds)
         media.render(props, out, clip, rec)
         if run_mode == "dry":
