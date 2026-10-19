@@ -98,6 +98,67 @@ class PropsTest(unittest.TestCase):
         self.assertTrue(any(s.get("optional") for s in ep["scenes"]))
 
 
+# Real Madhur voice speed at +8%, measured on the 19 Oct 2026 B run: about
+# 315 spoken characters gave 31.9 s of video. Kept slightly pessimistic.
+CHARS_PER_SEC = 10.0
+
+
+def estimate_secs(ep):
+    total = 0.5
+    for s in ep["scenes"]:
+        total += max(len(spoken(s["say"])) / CHARS_PER_SEC + 0.25, media.MIN_SCENE_S.get(s["kind"], 1.4))
+    return total
+
+
+def fitted(ep):
+    """What engine.run does at normal speed: drop optional scenes while too long."""
+    ep = {**ep, "scenes": list(ep["scenes"])}
+    while estimate_secs(ep) > qa.BOUNDS[ep["series"]][1]:
+        spare = next((s for s in ep["scenes"] if s.get("optional")), None)
+        if not spare:
+            break
+        ep["scenes"].remove(spare)
+    return ep
+
+
+class LengthTest(unittest.TestCase):
+    """19 Oct 2026: A (30.7 s) and then B (31.9 s) were skipped for running over
+    their limit. Every series and variant must fit at normal voice speed, so the
+    faster-voice fallback in engine.run is only a safety net."""
+
+    def episodes(self):
+        feed = load()
+        yield stories.build_a(feed, TODAY, set())
+        yield stories.build_b(feed, TODAY, set(), claim={"date": "2026-10-25", "count": 7})
+        yield stories.build_b(feed, TODAY, set())
+        announced = load()
+        announced["kist"][0]["next"]["officialDate"] = "2026-10-25"
+        yield stories.build_b(announced, TODAY, set())
+        yield stories.build_c(feed, TODAY, set())
+        seen = set()
+        while True:
+            ep = tools.build_d(TODAY, seen)
+            if not ep or ep["key"] in seen:
+                break
+            seen.add(ep["key"])
+            yield ep
+
+    def test_every_series_fits_at_normal_speed(self):
+        n = 0
+        for ep in self.episodes():
+            n += 1
+            secs = estimate_secs(fitted(ep))
+            lo, hi = qa.BOUNDS[ep["series"]]
+            self.assertLessEqual(secs, hi, f"{ep['series']} {ep['key']}: about {secs:.1f}s, limit {hi}s")
+            self.assertGreaterEqual(secs, lo, f"{ep['series']} {ep['key']}: about {secs:.1f}s, minimum {lo}s")
+        self.assertGreater(n, 5)
+
+    def test_speed_fallback_steps(self):
+        from engine.run import SPEEDS
+        self.assertEqual(SPEEDS[0], "+8%")
+        self.assertEqual([media._speed(r) for r in SPEEDS], [1.08, 1.18, 1.28])
+
+
 class StateTest(unittest.TestCase):
     def test_recent_keys_window(self):
         state = {"episodes": []}
