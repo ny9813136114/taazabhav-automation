@@ -71,7 +71,7 @@ def _slide(s, i, n):
     elif k == "list":
         body = f"<h2>{_e(s['title'])}</h2><ul>{''.join(f'<li>{_e(x)}</li>' for x in s['items'])}</ul>"
     elif k == "cta":
-        body = (f"<div class=label>पूरा हिसाब अपने आंकड़ों से</div><div class=big>{_e(s['big'])}</div>"
+        body = (f"<div class=label>{_e(s.get('label', 'पूरा हिसाब अपने आंकड़ों से'))}</div><div class=big>{_e(s['big'])}</div>"
                 f"<div><span class=url>{_e(s['url'])}</span></div><div class=sub>लिंक बायो में · सेव करें, शेयर करें</div>")
     else:
         raise ValueError(f"unknown slide kind {k}")
