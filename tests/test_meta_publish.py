@@ -73,3 +73,14 @@ class MetaTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class StripUtmTest(unittest.TestCase):
+    def test_removes_utm_keeps_other_params(self):
+        from meta_publish import strip_utm
+        self.assertEqual(strip_utm("देखें: https://taazabhav.com/x?utm_source=youtube&utm_medium=shorts&utm_campaign=engine\nअगली"),
+                         "देखें: https://taazabhav.com/x\nअगली")
+        self.assertEqual(strip_utm("https://t.com/a?utm_source=ig&id=5"), "https://t.com/a?id=5")
+        self.assertEqual(strip_utm("https://t.com/a?id=5&utm_source=ig"), "https://t.com/a?id=5")
+        self.assertEqual(strip_utm("https://t.com/a?utm_source=ig #मंडी"), "https://t.com/a #मंडी")
+        self.assertEqual(strip_utm("no link"), "no link")
