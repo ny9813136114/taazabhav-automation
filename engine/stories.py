@@ -220,31 +220,32 @@ def build_b(feed, today, recent, claim=None):
     last_label = _kist_label(k)
     today_hi = day_hi(today)
     scenes = [{"kind": "headline", "label": name, "big": f"{n}वीं किस्त कब?", "sub": inr(k["amount"]),
-               "tone": "white", "say": f"{name} की {n}वीं किस्त कब आएगी? सच सुनिए"}]
+               "tone": "white", "say": f"{name} की {n}वीं किस्त कब? सच सुनिए"}]
     if announced:
         od = k["next"]["officialDate"]
         scenes.append({"kind": "stamp", "label": "सरकारी घोषणा", "big": f"पक्का: {day_hi(od)}", "sub": f"{n}वीं किस्त, {inr(k['amount'])}", "tone": "good",
-                       "say": f"सरकार ने घोषणा कर दी है, {n}वीं किस्त {day_hi(od)} को आएगी"})
+                       "say": f"पक्का, {n}वीं किस्त {day_hi(od)} को आएगी"})
         scenes.append({"kind": "timeline", "label": "पैसा न आए तो", "items": [
             {"label": "1", "value": "eKYC पूरा करें", "tone": "good"},
             {"label": "2", "value": "बैंक-आधार लिंक देखें", "tone": "good"},
             {"label": "3", "value": "स्टेटस चेक करें", "tone": "good"}],
-            "say": "पैसा न आए तो ई-केवाईसी, बैंक से आधार लिंक और स्टेटस ज़रूर देखें"})
+            "say": "पैसा न आए तो ई-केवाईसी और बैंक-आधार लिंक देखें", "optional": True})
         key = f"{k['key']}|announced|{od}"
     else:
         if claim and k["key"] == "pmkisan":
             scenes.append({"kind": "claim", "label": "यूट्यूब पर चल रहा है", "big": f"{day_hi(claim['date'])}?", "sub": f"{claim['count']} वीडियो में यही तारीख",
-                           "say": f"यूट्यूब पर {day_hi(claim['date'])} की तारीख चल रही है"})
+                           "say": f"यूट्यूब पर {day_hi(claim['date'])} बताई जा रही है"})
         scenes.append({"kind": "stamp", "label": "सरकारी घोषणा", "big": "अभी नहीं ❌", "sub": f"{today_hi} तक कोई तारीख घोषित नहीं", "tone": "low",
-                       "say": f"ताज़ा भाव के किस्त ट्रैकर के मुताबिक, {today_hi} तक सरकार ने कोई तारीख घोषित नहीं की"})
+                       "say": f"{today_hi} तक सरकार ने तारीख घोषित नहीं की"})
         window = k["next"].get("windowHi")
         items = [{"label": f"{last_label}वीं किस्त आई", "value": day_hi(last["date"], True), "tone": "good"},
                  {"label": f"{n}वीं किस्त", "value": f"{window} (संभावित)" if window else "तारीख घोषित नहीं", "tone": "steady"}]
-        say = f"पिछली किस्त {day_hi(last['date'])} को आई थी" + (f", अगली {window} में संभावित" if window else "")
-        scenes.append({"kind": "timeline", "label": "अब तक का हाल", "items": items, "say": say})
+        say = f"पिछली किस्त {day_hi(last['date'])} को आई थी"
+        # optional: dropped first if the voice runs too long (engine.run).
+        scenes.append({"kind": "timeline", "label": "अब तक का हाल", "items": items, "say": say, "optional": True})
         key = f"{k['key']}|status|{today.isoformat()}"
     scenes.append({"kind": "cta", "label": "तारीख आते ही 🔔", "big": "किस्त घंटी लगाएँ", "sub": f"taazabhav.com{k['path']}",
-                   "say": "तारीख घोषित होते ही ताज़ा भाव की किस्त घंटी आपको फ़ोन पर बताएगी, लिंक कमेंट में"})
+                   "say": "तारीख आते ही किस्त घंटी फ़ोन पर बताएगी"})
 
     en_name = {"pmkisan": "PM Kisan", "mpkalyan": "MP Kisan Kalyan", "rajsamman": "Rajasthan Kisan Samman Nidhi"}[k["key"]]
     if announced:

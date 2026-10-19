@@ -17,6 +17,8 @@ from engine import media, qa, stories, tools
 
 IST = timezone(timedelta(hours=5, minutes=30))
 RECENT_DAYS = {"A": 7, "B": 1, "C": 1, "D": 21}
+# Voice speeds tried in turn when a video is over its length limit.
+SPEEDS = ("+8%", "+18%", "+28%")
 
 
 def mode():
@@ -85,17 +87,23 @@ def main(series):
             rec = tools.record(ep["tool"], ep["case"], work / "rec.mp4")
             rec_secs = media._duration(rec)
         clip = media.fetch_clip(ep["clip"], f"{today}-{series}", work / "clip.mp4")
+        rates = list(SPEEDS)
         while True:
-            voice = media.synth([s["say"] for s in ep["scenes"]], media.PUBLIC / "voice")
+            voice = media.synth([s["say"] for s in ep["scenes"]], media.PUBLIC / "voice", rate=rates[0])
             props = media.build_props(ep, voice, clip, rec_secs)
             seconds = props["frames"] / media.FPS
-            # Too long: drop one optional scene and voice it again, rather than skip the slot.
+            if seconds <= qa.BOUNDS[series][1]:
+                break
+            # Too long: drop optional scenes first, then speak faster, rather than skip the slot.
             spare = next((s for s in ep["scenes"] if s.get("optional")), None)
-            if seconds > qa.BOUNDS[series][1] and spare:
+            if spare:
                 print(f"[engine] {seconds:.1f}s too long, dropping the {spare['kind']} scene")
                 ep["scenes"].remove(spare)
-                continue
-            break
+            elif len(rates) > 1:
+                rates.pop(0)
+                print(f"[engine] {seconds:.1f}s too long, voice speed {rates[0]}")
+            else:
+                break
         qa.check_length(ep, seconds)
         media.render(props, out, clip, rec)
         if run_mode == "dry":

@@ -85,16 +85,22 @@ def _estimate_words(text, secs):
     return out
 
 
-def synth(texts, out_dir):
+def _speed(rate):
+    """"+8%" -> 1.08"""
+    return 1 + int(rate.strip("%")) / 100
+
+
+def synth(texts, out_dir, rate="+8%"):
     """One mp3 per scene. Returns [{"audio", "secs", "words": [{"w", "t"}]}]
     with word start times from edge-tts (WordBoundary). ENGINE_SILENT=1
-    writes silent clips of estimated length (local previews only)."""
+    writes silent clips of estimated length (local previews only). `rate` is
+    the edge-tts speed; engine.run raises it when a video runs too long."""
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     res = []
     if os.environ.get("ENGINE_SILENT") == "1":
         for i, t in enumerate(texts):
-            secs = max(1.0, len(t) / 13.5)
+            secs = max(1.0, len(t) / 13.5 / _speed(rate))
             f = out_dir / f"s{i}.mp3"
             subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", f"{secs:.2f}", str(f)], check=True)
             res.append({"audio": f"voice/s{i}.mp3", "secs": secs, "words": _estimate_words(t, secs)})
@@ -103,7 +109,7 @@ def synth(texts, out_dir):
 
     async def one(i, text):
         say = spoken(text)
-        comm = edge_tts.Communicate(say, VOICE, rate="+8%", boundary="WordBoundary")
+        comm = edge_tts.Communicate(say, VOICE, rate=rate, boundary="WordBoundary")
         audio, words = bytearray(), []
         async for ch in comm.stream():
             if ch["type"] == "audio":
@@ -122,7 +128,7 @@ def synth(texts, out_dir):
         raw = out_dir / f"g{i}.mp3"
         gTTS(say, lang="hi").save(str(raw))
         f = out_dir / f"s{i}.mp3"
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw), "-filter:a", "atempo=1.15", str(f)], check=True)
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw), "-filter:a", f"atempo={1.15 * _speed(rate) / 1.08:.3f}", str(f)], check=True)
         raw.unlink(missing_ok=True)
         secs = _duration(f)
         return {"audio": f"voice/s{i}.mp3", "secs": secs, "words": _estimate_words(say, secs)}
