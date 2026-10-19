@@ -1,7 +1,9 @@
 name: Check Meta connection
 
 # Manual only. Verifies META_TOKEN + FB_PAGE_ID can reach the Facebook Page
-# and its linked Instagram account. Posts NOTHING.
+# and its linked Instagram account. Posts NOTHING. On failure it prints who
+# the token belongs to, its granted permissions and the Pages it can see
+# (with their real ids), so the fix is obvious from the log.
 on:
   workflow_dispatch:
 
@@ -22,11 +24,34 @@ jobs:
         run: |
           python - <<'PY'
           import os, requests, meta_publish as mp
-          tok, ig = mp.page_credentials()
-          page = requests.get(f"{mp.GRAPH}/{os.environ['FB_PAGE_ID']}", params={"fields": "name", "access_token": tok}, timeout=30).json()
+          tok, pid = os.environ.get("META_TOKEN", "").strip(), os.environ.get("FB_PAGE_ID", "").strip()
+          if not tok or not pid:
+              raise SystemExit("META_TOKEN or FB_PAGE_ID secret missing.")
+          if not pid.isdigit():
+              print("WARNING: FB_PAGE_ID is not all digits -- must be the numeric Page id, not a URL/username.")
+          get = lambda path, **p: requests.get(f"{mp.GRAPH}/{path}", params={**p, "access_token": tok}, timeout=30).json()
+
+          me = get("me", fields="id,name")
+          print("Token belongs to:", me.get("name"), me.get("id"), "| error:", (me.get("error") or {}).get("message"))
+          perms = get("me/permissions").get("data", [])
+          granted = sorted(p["permission"] for p in perms if p.get("status") == "granted")
+          print("Granted permissions:", ", ".join(granted) or "(none / page token)")
+          need = {"pages_show_list", "pages_read_engagement", "pages_manage_posts", "instagram_basic", "instagram_content_publish"}
+          if granted and need - set(granted):
+              print("MISSING permissions:", ", ".join(sorted(need - set(granted))))
+          pages = get("me/accounts", fields="id,name,instagram_business_account{id,username}").get("data", [])
+          print("Pages this token can manage:")
+          for p in pages:
+              ig = p.get("instagram_business_account") or {}
+              print(f"  id={p['id']}  name={p['name']}  instagram=@{ig.get('username')}" + ("  <-- matches FB_PAGE_ID" if p["id"] == pid else ""))
+          if not pages:
+              print("  (none) -- token has no Page access: assign the Page to the system user / pick the Page when generating the token.")
+
+          tok_page, ig = mp.page_credentials()
+          page = requests.get(f"{mp.GRAPH}/{pid}", params={"fields": "name", "access_token": tok_page}, timeout=30).json()
           print("Facebook Page OK:", page.get("name"))
           if ig:
-              u = requests.get(f"{mp.GRAPH}/{ig}", params={"fields": "username", "access_token": tok}, timeout=30).json()
+              u = requests.get(f"{mp.GRAPH}/{ig}", params={"fields": "username", "access_token": tok_page}, timeout=30).json()
               print("Instagram OK: @" + str(u.get("username")), "(id", ig + ")")
           else:
               raise SystemExit("Instagram NOT linked to this Page (or token lacks instagram_basic).")
