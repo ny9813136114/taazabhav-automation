@@ -18,7 +18,7 @@ import sawal_video as sv
 def item(id_, frm="2026-10-06", to=None, **kw):
     base = {
         "id": id_, "pillar": "khad", "page": "https://taazabhav.com/khad-calculator",
-        "page_utm": "https://taazabhav.com/khad-calculator?utm_source={src}&utm_medium=social&utm_campaign=sawal-jawab",
+        "page_utm": "https://taazabhav.com/khad-calculator",
         "title": "DAP की बोरी का सही रेट ₹1,350 | DAP Price Today 2026 #Shorts",
         "hook_hi": "डीएपी की बोरी ₹1,350 से ज़्यादा में मिली?",
         "points_hi": ["a", "b", "c"], "cta_hi": "हिसाब taazabhav.com/khad-calculator पर।",
@@ -37,7 +37,7 @@ class TestQueue(unittest.TestCase):
             self.assertIn(i["pillar"], sv.PILLAR)
             self.assertLessEqual(len(i["title"]), 100, i["id"])
             self.assertEqual(len(i["points_hi"]), 3, i["id"])
-            self.assertIn("{src}", i["page_utm"])
+            self.assertNotIn("utm_", i["page_utm"])
             self.assertTrue(i["page"].startswith("https://taazabhav.com/"))
             date.fromisoformat(i["checked_on"])
 
@@ -77,14 +77,15 @@ class TestOutputs(unittest.TestCase):
     def test_metadata(self):
         title, desc, tags, comment = sv.metadata(item("c"), date(2026, 10, 6))
         self.assertLessEqual(len(title), 100)
-        self.assertIn("utm_source=youtube", desc)
+        self.assertIn("taazabhav.com/", desc)
+        self.assertNotIn("utm_", desc)
         self.assertIn("6 अक्टूबर 2026", desc)
         self.assertIn("https://t.me/taazabhav", desc)
         self.assertIn("DAP Price Today 2026", tags)
-        self.assertIn("utm_source=youtube", comment)
+        self.assertNotIn("utm_", comment)
 
     def test_telegram_and_caption_links(self):
-        self.assertIn("utm_source=telegram", sv.telegram_text(item("c")))
+        self.assertNotIn("utm_", sv.telegram_text(item("c")))
         cap = sv.meta_caption(item("c"))
         self.assertIn("taazabhav.com/khad-calculator", cap)
         self.assertNotIn("utm_", cap)

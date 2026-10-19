@@ -48,7 +48,7 @@ class MelaTest(unittest.TestCase):
         self.assertEqual(p["countdown"], "कल से शुरू!"); self.assertTrue(p["urgent"])
         t, d, tags, c = mv.metadata(e, 7)
         self.assertLessEqual(len(t), 100); self.assertIn("7 दिन बाद", t); self.assertIn("#Shorts", t)
-        self.assertIn("utm_campaign=kisan-mela", d.split("\n")[1])
+        self.assertNotIn("utm_", d)
         self.assertIn("पुष्टि", d)
 
     def test_cancelled_skipped(self):

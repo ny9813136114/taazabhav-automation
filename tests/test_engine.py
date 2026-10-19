@@ -119,15 +119,15 @@ if __name__ == "__main__":
 
 class MetaReelsTest(unittest.TestCase):
     EP = {"series": "A", "title": "₹4,500 सोयाबीन! | Soybean Rate Today #Shorts",
-          "description": "भाव: https://taazabhav.com/x?utm_source=youtube\n#मंडीभाव"}
+          "description": "भाव: https://taazabhav.com/x\n#मंडीभाव"}
 
-    def test_caption_drops_shorts_tag_and_retags_links(self):
+    def test_caption_drops_shorts_tag_keeps_plain_links(self):
         from engine.publish import meta_caption
         cap = meta_caption(self.EP)
         self.assertTrue(cap.startswith("₹4,500 सोयाबीन! | Soybean Rate Today\n\n"))
         self.assertNotIn("#Shorts", cap)
-        self.assertIn("utm_source=instagram", cap)
-        self.assertNotIn("utm_source=youtube", cap)
+        self.assertIn("https://taazabhav.com/x\n", cap)
+        self.assertNotIn("utm_", cap)
 
     def test_meta_error_only_alerts(self):
         from unittest import mock

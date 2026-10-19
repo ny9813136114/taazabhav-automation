@@ -138,7 +138,8 @@ def market_slug(market):
 
 
 def _utm(source, medium):
-    return f"?utm_source={source}&utm_medium={medium}" if source else ""
+    # Owner, 19 Oct 2026: no UTM tags on links. Kept so callers need no change.
+    return ""
 
 
 def page_url(commodity, state, source="youtube", medium="shorts", hi=False):

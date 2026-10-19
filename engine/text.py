@@ -38,9 +38,9 @@ def pct_spoken(p):
     return f"{a:.0f}" if a >= 10 else f"{a:.1f}".rstrip("0").rstrip(".")
 
 
-def link(path, src="youtube"):
-    sep = "&" if "?" in path else "?"
-    return f"{SITE}{path}{sep}utm_source={src}&utm_medium=shorts&utm_campaign=engine"
+def link(path, src=None):
+    """Plain site link. Owner, 19 Oct 2026: no UTM tags on links."""
+    return f"{SITE}{path}"
 
 
 def spoken(text):

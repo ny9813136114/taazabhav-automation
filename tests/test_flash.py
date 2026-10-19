@@ -43,8 +43,9 @@ class FlashPropsTest(unittest.TestCase):
         self.assertTrue(t.endswith("#Shorts"))
         lines = d.split("\n")
         self.assertEqual(lines[0], "प्याज का भाव आज 25 सितंबर 2026 | Konch मंडी")
-        self.assertIn("https://taazabhav.com/hi/mandi-bhav/onion/uttar-pradesh?", lines[2])
-        self.assertIn("https://taazabhav.com/hi/mandi-bhav/state/uttar-pradesh/konch?", lines[3])
+        self.assertIn("https://taazabhav.com/hi/mandi-bhav/onion/uttar-pradesh", lines[2])
+        self.assertIn("https://taazabhav.com/hi/mandi-bhav/state/uttar-pradesh/konch", lines[3])
+        self.assertNotIn("utm_", d)
         self.assertIn("Video: A / Pexels", d)
 
     def test_metadata_long_names_fit_with_key_phrase_first(self):

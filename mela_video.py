@@ -183,7 +183,7 @@ def metadata(ev, days):
     if len(title) > 100:
         title = f"{ev['name']} {when}! | Kisan Mela {ev['start'].year} #Shorts"
     title = title[:100]
-    link = f"{ev['url']}?utm_source=youtube&utm_medium=shorts&utm_campaign=kisan-mela"
+    link = ev["url"]
     desc = (
         f"{ev['name']} — {date_range_hi(ev['start'], ev['end'])}, {place(ev)}.\n"
         f"पूरी जानकारी, नक्शा और कैलेंडर में जोड़ें: {link}\n\n"

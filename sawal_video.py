@@ -115,7 +115,8 @@ def short_link(item):
 
 
 def link_for(item, src):
-    return item["page_utm"].replace("{src}", src)
+    # Owner, 19 Oct 2026: no UTM tags on links.
+    return item["page"]
 
 
 def metadata(item, today):
