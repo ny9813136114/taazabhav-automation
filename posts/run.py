@@ -156,11 +156,12 @@ def publish(post, slides):
         raise RuntimeError("META_TOKEN / FB_PAGE_ID not set")
     out = {"facebook": None, "instagram": None, "errors": []}
     token, ig = mp.page_credentials()
-    fb_id, photo_ids = post_facebook(slides, post["caption"], token)
+    caption = mp.strip_utm(post["caption"])
+    fb_id, photo_ids = post_facebook(slides, caption, token)
     out["facebook"] = fb_id
     if ig:
         try:
-            out["instagram"] = post_instagram(photo_ids, post["caption"], ig, token)
+            out["instagram"] = post_instagram(photo_ids, caption, ig, token)
         except Exception as e:
             out["errors"].append(f"Instagram: {e}")
     else:
@@ -169,9 +170,10 @@ def publish(post, slides):
 
 
 def share_kit(post, fb_id):
+    from meta_publish import strip_utm
     link = f"https://www.facebook.com/{fb_id}"
     text = (f"आज की पोस्ट शेयर करें (3-4 ग्रुप, रोज़ अलग ग्रुप):\n{link}\n\n"
-            f"ग्रुप में ये लिखें:\n{post['group']}")
+            f"ग्रुप में ये लिखें:\n{strip_utm(post['group'])}")
     _tg("sendMessage", {"chat_id": _owner(), "text": text, "disable_web_page_preview": "false"})
 
 

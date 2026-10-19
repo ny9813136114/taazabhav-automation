@@ -15,6 +15,7 @@ Called by main.py ONLY after the YouTube upload succeeded. Any error here is
 reported (Telegram alert) but never changes the YouTube result.
 """
 import os
+import re
 import time
 
 import requests
@@ -30,6 +31,20 @@ IG_POLL_MAX = 30  # 5 minutes
 
 class MetaError(RuntimeError):
     pass
+
+
+_URL = re.compile(r"https?://[^\s?#]+\?[^\s#]*")
+
+
+def _drop_utm(m):
+    base, query = m.group(0).split("?", 1)
+    keep = [p for p in query.split("&") if p and not p.startswith("utm_")]
+    return base + ("?" + "&".join(keep) if keep else "")
+
+
+def strip_utm(text):
+    """Owner, 19 Oct 2026: no UTM tags in FB/IG post links for now."""
+    return _URL.sub(_drop_utm, text)
 
 
 def enabled():
@@ -132,6 +147,7 @@ def publish_all(video_path, caption, s=requests, sleep=time.sleep):
     """Posts to Facebook and Instagram independently. Returns
     {"facebook": id|None, "instagram": id|None, "errors": [str]}."""
     out = {"facebook": None, "instagram": None, "errors": []}
+    caption = strip_utm(caption)
     page_token, ig = page_credentials(s)
     try:
         out["facebook"] = post_facebook_reel(video_path, caption, page_token, s)

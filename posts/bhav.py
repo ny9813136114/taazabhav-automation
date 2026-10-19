@@ -105,7 +105,7 @@ def build(feed, today):
         top = d.get("top") or []
         hi = f" (सबसे ऊंचा {top[0]['marketHi']} {rs(top[0]['modal'])})" if top else ""
         lines.append(f"• {d['nameHi']}: {rs(d['typical'])}{hi}")
-    link = f"{SITE}/?utm_source=facebook&utm_medium=social&utm_campaign=bhav_post"
+    link = SITE
     caption = (f"आज के मंडी भाव, {hi_date(today)} {today.year} (₹/क्विंटल, आम भाव)\n\n" + "\n".join(lines) +
                f"\n\nअपनी मंडी का भाव: {link}\n\nभाव मंडी रिपोर्ट से हैं, बेचने से पहले अपनी मंडी में पक्का कर लें।\n\n"
                "#मंडीभाव #आजकाभाव #किसान #mandibhav #taazabhav")[:2200]
