@@ -1,0 +1,52 @@
+name: Daily Tool Post (FB + IG)
+
+# One "tool se hal" carousel a day on the Facebook Page + Instagram, from
+# content/tool_posts.json. PREVIEW (owner's Telegram only) until the repo
+# variable POSTS_LIVE is "1". Manual run can force preview or publish.
+on:
+  schedule:
+    - cron: "0 4 * * *"   # 09:30 IST
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "auto = follow POSTS_LIVE; preview = owner's Telegram only; publish = post it"
+        default: auto
+        type: choice
+        options: [auto, preview, publish]
+
+concurrency:
+  group: taazabhav-posts
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Latest state
+        run: git pull --ff-only origin main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests==2.* playwright==1.56.0 && python -m playwright install --with-deps chromium
+      - name: Post
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          META_TOKEN: ${{ secrets.META_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          POSTS_LIVE: ${{ vars.POSTS_LIVE }}
+        run: python -m posts.run ${{ (inputs.mode && inputs.mode != 'auto') && inputs.mode || '' }}
+      - name: Commit state
+        if: always()
+        run: |
+          git config user.name "TaazaBhav Bot"
+          git config user.email "bot@taazabhav.com"
+          git add data/posts 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "Posts: update state"
+          git pull --rebase
+          git push
