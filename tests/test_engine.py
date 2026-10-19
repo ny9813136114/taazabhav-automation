@@ -90,6 +90,13 @@ class PropsTest(unittest.TestCase):
         self.assertEqual(props["scenes"][-1]["frames"], 15)
         qa.check_length(ep, props["frames"] / media.FPS)
 
+    def test_a_voice_is_short(self):
+        # 19 Oct 2026: A ran 30.7 s with the Madhur voice (limit 26 s) and the
+        # slot was skipped. About 13 spoken characters a second, so stay near 12-15 s.
+        ep = stories.build_a(load(), TODAY, set())
+        self.assertLess(sum(len(spoken(s["say"])) for s in ep["scenes"]), 160)
+        self.assertTrue(any(s.get("optional") for s in ep["scenes"]))
+
 
 class StateTest(unittest.TestCase):
     def test_recent_keys_window(self):

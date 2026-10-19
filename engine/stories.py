@@ -140,27 +140,29 @@ def build_a(feed, today, recent):
     tone = "up" if up else "down"
     scenes = [
         {"kind": "number", "label": crop, "big": inr(m["modal"]), "count": m["modal"], "sub": f"{mandi} मंडी", "tone": tone,
-         "say": f"{crop}, {m['modal']} रुपये क्विंटल!"},
+         "say": f"{crop}, {m['modal']} रुपये!"},
     ]
     if kind in ("jump", "fall"):
         word = "ऊपर" if m["pct"] > 0 else "नीचे"
         scenes.append({"kind": "move", "big": pct_text(m["pct"]), "label": f"{mandi} मंडी", "sub": m["stateHi"], "tone": tone,
-                       "say": f"{m['stateHi']} की {mandi} मंडी में, {day_hi(m['prevDate'])} से {pct_spoken(m['pct'])} प्रतिशत {word}"})
+                       "say": f"{mandi} मंडी में {pct_spoken(m['pct'])} प्रतिशत {word}"})
     else:
         scenes.append({"kind": "move", "big": "सबसे ऊँचा भाव", "label": f"{mandi} मंडी", "sub": m["stateHi"], "tone": "up",
-                       "say": f"{m['stateHi']} की {mandi} मंडी में, आज {crop} का सबसे ऊँचा भाव"})
+                       "say": f"{mandi} मंडी में आज का सबसे ऊँचा भाव"})
     if data.get("typical"):
         bars = [{"label": "देश का आम भाव", "value": data["typical"], "text": inr(data["typical"]), "tone": "steady"}]
-        say = f"पर देश की मंडियों का आम भाव {data['typical']} रुपये"
+        say = f"देश का आम भाव {data['typical']}"
         if data.get("msp"):
             below = data["typical"] < data["msp"]
             bars[0]["tone"] = "low" if below else "good"
             bars.append({"label": "MSP", "value": data["msp"], "text": inr(data["msp"]), "tone": "white"})
-            say += f", एमएसपी {data['msp']} से {'नीचे' if below else 'ऊपर'}"
-        scenes.append({"kind": "compare", "label": f"{crop}: देश भर में", "bars": bars, "say": say})
-    pos, line, vsay, vtone = verdict(sig, crop, perishable)
-    scenes.append({"kind": "meter", "label": "फ़ैसला", "pos": pos, "sub": line, "tone": vtone, "left": "रुकें", "right": "बेचें", "say": vsay})
-    scenes.append({"kind": "cta", "label": "आपकी मंडी का भाव?", "big": "कमेंट करें 👇", "sub": "taazabhav.com", "say": "कल किस मंडी का भाव चाहिए? कमेंट में लिखें"})
+            say += f", एमएसपी से {'नीचे' if below else 'ऊपर'}"
+        # optional: the first scene dropped if the voice runs too long (engine.run).
+        scenes.append({"kind": "compare", "label": f"{crop}: देश भर में", "bars": bars, "say": say, "optional": True})
+    # A is a 12-15 s short: the verdict speaks its short screen line, not the long one.
+    pos, line, _vsay, vtone = verdict(sig, crop, perishable)
+    scenes.append({"kind": "meter", "label": "फ़ैसला", "pos": pos, "sub": line, "tone": vtone, "left": "रुकें", "right": "बेचें", "say": line})
+    scenes.append({"kind": "cta", "label": "आपकी मंडी का भाव?", "big": "कमेंट करें 👇", "sub": "taazabhav.com", "say": "अपनी मंडी कमेंट में लिखें"})
 
     en = _en(m["commodity"])
     change = f" {pct_text(m['pct'])}" if kind != "high" else " सबसे ऊँचा"
