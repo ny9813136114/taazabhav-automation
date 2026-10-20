@@ -62,6 +62,21 @@ class SeriesBTest(unittest.TestCase):
         ep = stories.build_b(feed, TODAY, set())
         self.assertEqual(ep["key"], "mpkalyan|announced|2026-10-25")
 
+    def test_never_repeats_a_scheme_the_same_day(self):
+        # 20 Oct (Tue): a post-midnight run already posted MP Kisan Kalyan,
+        # so that evening's B must pick another scheme.
+        tue = date(2026, 10, 20)
+        feed = load()
+        ep = stories.build_b(feed, tue, set())
+        self.assertEqual(ep["key"], "mpkalyan|status|2026-10-20")
+        ep = stories.build_b(feed, tue, {"mpkalyan|status|2026-10-20"})
+        self.assertEqual(ep["key"], "pmkisan|status|2026-10-20")
+        ep = stories.build_b(feed, tue, {"mpkalyan|status|2026-10-20", "pmkisan|status|2026-10-20"})
+        self.assertEqual(ep["key"], "rajsamman|status|2026-10-20")
+        qa.check_episode(ep)
+        done = {f"{k}|status|2026-10-20" for k in ("pmkisan", "mpkalyan", "rajsamman")}
+        self.assertIsNone(stories.build_b(feed, tue, done))
+
 
 class SeriesCTest(unittest.TestCase):
     def test_three_news_items(self):

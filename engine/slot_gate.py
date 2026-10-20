@@ -11,7 +11,8 @@ the same series twice:
 
 A slot is the series' latest start time that has passed. A run more than
 MAX_LATE hours after its slot is skipped: an evening video at 3 a.m. is
-worse than none. A fallback run that finds its slot not done means the
+worse than none. Nothing posts between 23:00 and 06:00 IST either (20 Oct:
+a late backup posted the 20:30 B video at 01:48 IST, titled for the next day). A fallback run that finds its slot not done means the
 Supabase clock did not fire, so it alerts the owner (and still runs).
 """
 import json
@@ -23,6 +24,7 @@ from pathlib import Path
 IST = timezone(timedelta(hours=5, minutes=30))
 SLOTS = {"A": (7, 30), "D": (12, 30), "C": (18, 30), "B": (20, 30)}  # IST
 MAX_LATE = timedelta(hours=6)
+NIGHT = (23, 6)  # IST hours [23:00, 06:00): no posting
 STATE = Path("data/engine/slots.json")
 
 
@@ -48,7 +50,8 @@ def decide(series, now, done, fallback):
     slot = start.date().isoformat()
     if done.get(series) == slot:
         return False, slot, "already done"
-    if now - start > MAX_LATE:
+    hour = now.astimezone(IST).hour
+    if now - start > MAX_LATE or hour >= NIGHT[0] or hour < NIGHT[1]:
         return False, slot, "too late"
     return True, slot, "clock missed" if fallback else ""
 
