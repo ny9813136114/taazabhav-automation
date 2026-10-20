@@ -9,6 +9,9 @@ from pathlib import Path
 import requests
 
 PLAYLISTS = Path("data/engine/playlists.json")
+# Videos whose playlist add failed even after retries; every publish tries
+# them again first (20 Oct 2026: B HSgV2jIHyOw hit YouTube's 409).
+PLAYLIST_PENDING = Path("data/engine/playlist_pending.json")
 PLAYLIST_NAMES = {
     "A": ("भाव धमाका – आज के मंडी भाव | Mandi Bhav Today", "रोज़ सुबह 7:30 बजे: आज का सबसे बड़ा मंडी भाव, उछाल-गिरावट और फ़ैसला। सरकारी आँकड़े, ताज़ा भाव।"),
     "B": ("किस्त का सच – PM Kisan, MP, Rajasthan | Kist Date", "किस्त की सिर्फ़ सरकारी तारीख। वायरल दावों का सच। ताज़ा भाव किस्त ट्रैकर।"),
@@ -63,23 +66,55 @@ def playlist_id(youtube, series):
     if ids.get(series):
         return ids[series]
     title, desc = PLAYLIST_NAMES[series]
-    r = youtube.playlists().insert(part="snippet,status", body={
-        "snippet": {"title": title, "description": desc, "defaultLanguage": "hi"}, "status": {"privacyStatus": "public"}}).execute()
+    from upload_youtube import execute
+    r = execute(youtube.playlists().insert(part="snippet,status", body={
+        "snippet": {"title": title, "description": desc, "defaultLanguage": "hi"}, "status": {"privacyStatus": "public"}}))
     ids[series] = r["id"]
     PLAYLISTS.parent.mkdir(parents=True, exist_ok=True)
     PLAYLISTS.write_text(json.dumps(ids, indent=1), encoding="utf-8")
     return r["id"]
 
 
+def _pending():
+    try:
+        return json.loads(PLAYLIST_PENDING.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+
+
+def add_to_playlists(series, vid, alert, youtube=None):
+    """Adds vid, plus any earlier video still pending, to its series playlist.
+    A pending video is checked first so it is never added twice. Only a
+    failure of today's video is alerted, once; it stays pending."""
+    from upload_youtube import execute
+    todo = [p for p in _pending() if p["video"] != vid] + [{"series": series, "video": vid}]
+    left = []
+    try:
+        yt = youtube or _youtube()
+    except Exception as e:
+        yt, err = None, e
+    for p in todo:
+        try:
+            if yt is None:
+                raise err
+            pl = playlist_id(yt, p["series"])
+            if p["video"] != vid and execute(yt.playlistItems().list(part="id", playlistId=pl, videoId=p["video"])).get("items"):
+                continue
+            execute(yt.playlistItems().insert(part="snippet", body={"snippet": {
+                "playlistId": pl, "resourceId": {"kind": "youtube#video", "videoId": p["video"]}}}))
+        except Exception as e:
+            left.append(p)
+            if p["video"] == vid:
+                alert(f"TaazaBhav engine: playlist add failed ({series}) after retries, will retry on the next video: {e}"[:600])
+    PLAYLIST_PENDING.parent.mkdir(parents=True, exist_ok=True)
+    PLAYLIST_PENDING.write_text(json.dumps(left, indent=1), encoding="utf-8")
+    return left
+
+
 def publish(path, ep, alert):
     from upload_youtube import upload_video
     vid = upload_video(path, ep["title"], ep["description"], ep["tags"], thumbnail_path=None, comment_text=ep["comment"])
-    try:
-        yt = _youtube()
-        yt.playlistItems().insert(part="snippet", body={"snippet": {"playlistId": playlist_id(yt, ep["series"]),
-                                                                    "resourceId": {"kind": "youtube#video", "videoId": vid}}}).execute()
-    except Exception as e:
-        alert(f"TaazaBhav engine: playlist add failed ({ep['series']}): {e}")
+    add_to_playlists(ep["series"], vid, alert)
     try:
         _tg("sendMessage", {"chat_id": CHANNEL, "text": f"{ep['title'].replace(' #Shorts', '')}\n\n▶️ https://youtu.be/{vid}\n🌐 {ep['link']}",
                             "disable_web_page_preview": "false"})

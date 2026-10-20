@@ -86,8 +86,8 @@ def main(argv):
     print(f"[slot] {series} slot {slot}: {'run' if run else 'skip'} {note}".strip())
     if note in ("clock missed", "too late") and fallback:
         tell_owner(
-            f"TaazaBhav: engine series {series} ({slot}) was not made at its exact time "
-            "(the Supabase clock did not start it, or that run failed). "
+            f"TaazaBhav: engine series {series} ({slot}) was not finished at its exact time "
+            "(that run failed, see its own alert, or the Supabase clock did not start it). "
             + ("GitHub's late backup run is making it now." if run else "It is too late now, so this slot is skipped.")
             + " Check the Supabase clock and its GitHub token (ops/supabase-clock.sql).")
     out = os.environ.get("GITHUB_OUTPUT")
