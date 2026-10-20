@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  AbsoluteFill, Audio, OffthreadVideo, Img, Sequence, staticFile, useCurrentFrame, useVideoConfig, interpolate, spring, Easing,
+  AbsoluteFill, Audio, OffthreadVideo, Img, Loop, Sequence, staticFile, useCurrentFrame, useVideoConfig, interpolate, spring, Easing,
 } from "remotion";
 import { loadFont } from "@remotion/fonts";
 import { D, SERIES, SAFE_D, toneColor } from "./theme";
@@ -274,7 +274,10 @@ export const Desk: React.FC<DeskProps> = (p) => {
   return (
     <AbsoluteFill style={{ background: D.bg, overflow: "hidden" }}>
       {p.clip ? (
-        <OffthreadVideo src={staticFile(p.clip)} muted loop style={{ position: "absolute", width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})` }} />
+        // OffthreadVideo ignores `loop` when rendering; <Loop> repeats the ~8 s clip.
+        <Loop durationInFrames={p.clipFrames ?? 8 * 30 - 1}>
+          <OffthreadVideo src={staticFile(p.clip)} muted style={{ position: "absolute", width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})` }} />
+        </Loop>
       ) : p.photo ? (
         <Img src={staticFile(p.photo)} style={{ position: "absolute", width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})` }} />
       ) : (
