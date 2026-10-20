@@ -25,6 +25,7 @@ export type DeskScene = {
 export type DeskProps = {
   series: "A" | "B" | "C" | "D";
   clip?: string | null;
+  clipFrames?: number | null;
   photo?: string | null;
   credit?: string | null;
   stamp?: string | null;

@@ -60,7 +60,7 @@ def fetch_clip(folder, seed, out_path, session=requests):
                     for chunk in r.iter_content(1 << 16):
                         fh.write(chunk)
             trim(raw, out_path)
-            return {"path": str(out_path), "credit": f"Video: {c['author']} / Pexels"}
+            return {"path": str(out_path), "credit": f"Video: {c['author']} / Pexels", "frames": clip_frames(out_path)}
         except Exception as e:
             print(f"[engine] clip download failed: {e}")
         finally:
@@ -146,6 +146,18 @@ def synth(texts, out_dir, rate="+8%"):
     return res if res is not None else [fallback(i, t) for i, t in enumerate(texts)]
 
 
+def clip_frames(path):
+    """Length of the trimmed clip in frames, so Remotion can loop it. The
+    clip is only ~8 s and a Short runs 20-45 s: without a loop the picture
+    froze on its last frame for the rest of the video (owner, 20 Oct 2026)."""
+    try:
+        out = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(path)],
+                             capture_output=True, text=True, check=True, timeout=30).stdout
+        return max(1, int(float(out.strip()) * FPS) - 1)
+    except Exception:
+        return None
+
+
 # ---------------------------------------------------------------- props + render
 def build_props(ep, voice, clip=None, rec_secs=None):
     scenes, frame = [], 0
@@ -167,7 +179,8 @@ def build_props(ep, voice, clip=None, rec_secs=None):
     scenes.append(first)
     frame += 15
     return {
-        "series": ep["series"], "clip": "clip.mp4" if clip else None, "credit": (clip or {}).get("credit"),
+        "series": ep["series"], "clip": "clip.mp4" if clip else None,
+        "clipFrames": (clip or {}).get("frames") or (clip_frames(clip["path"]) if clip else None), "credit": (clip or {}).get("credit"),
         "stamp": ep.get("stamp"), "stampTop": ep.get("stampTop"), "scenes": scenes, "frames": frame,
     }
 
