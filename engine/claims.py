@@ -42,6 +42,7 @@ def fetch_titles(n_next, youtube=None):
         with open("token.pickle", "rb") as f:
             youtube = build("youtube", "v3", credentials=pickle.load(f))
     after = (datetime.now(timezone.utc) - timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%SZ")
-    r = youtube.search().list(part="snippet", q=f"PM Kisan {n_next}th installment date", type="video", regionCode="IN",
-                              relevanceLanguage="hi", publishedAfter=after, maxResults=25).execute()
+    from upload_youtube import execute
+    r = execute(youtube.search().list(part="snippet", q=f"PM Kisan {n_next}th installment date", type="video", regionCode="IN",
+                              relevanceLanguage="hi", publishedAfter=after, maxResults=25))
     return [i["snippet"]["title"] for i in r.get("items", [])]
