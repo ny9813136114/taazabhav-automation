@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
-from engine.slot_gate import decide
+from engine.slot_gate import IST, SLOTS, decide
 
 
 def utc(h, m=0, day=18):
@@ -20,9 +20,28 @@ class SlotGateTest(unittest.TestCase):
         self.assertEqual(decide("D", utc(11, 54), {"D": "2026-10-17"}, True), (True, "2026-10-18", "clock missed"))
 
     def test_evening_slot_after_midnight_belongs_to_yesterday(self):
-        # B is 20:30 IST (15:00 UTC); 19:00 UTC is 00:30 IST next day.
-        self.assertEqual(decide("B", utc(19, 0), {}, True), (True, "2026-10-18", "clock missed"))
+        # B is 20:30 IST (15:00 UTC); 19:00 UTC is 00:30 IST next day: night, skipped.
+        self.assertEqual(decide("B", utc(19, 0), {}, True), (False, "2026-10-18", "too late"))
         self.assertEqual(decide("B", utc(19, 0), {"B": "2026-10-18"}, True)[0], False)
+
+    def test_late_evening_backup_before_23_ist_still_runs(self):
+        # 17:00 UTC = 22:30 IST, two hours after B's slot.
+        self.assertEqual(decide("B", utc(17, 0), {}, True), (True, "2026-10-18", "clock missed"))
+
+    def test_no_series_posts_at_night(self):
+        # 20 Oct: GitHub backup at 20:18 UTC (01:48 IST) posted B. Every
+        # series, every quarter hour from 23:00 to 05:45 IST, must skip.
+        for series in ("A", "B", "C", "D"):
+            for minutes in range(0, 7 * 60, 15):
+                now = utc(17, 30) + timedelta(minutes=minutes)
+                run, _, note = decide(series, now, {}, True)
+                self.assertFalse(run, f"{series} at {now.astimezone(IST):%H:%M} IST")
+                self.assertEqual(note, "too late")
+
+    def test_every_slot_runs_on_time(self):
+        for series, (h, m) in SLOTS.items():
+            now = datetime(2026, 10, 18, h, m, tzinfo=IST)
+            self.assertEqual(decide(series, now, {}, False), (True, "2026-10-18", ""), series)
 
     def test_too_late_is_skipped(self):
         self.assertEqual(decide("B", utc(22, 0), {}, True), (False, "2026-10-18", "too late"))

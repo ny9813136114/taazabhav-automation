@@ -212,7 +212,13 @@ def build_b(feed, today, recent, claim=None):
             chosen, announced = k, True
             break
     if not chosen:
-        chosen = kist.get(SCHEME_DAY.get(today.weekday(), "pmkisan")) or kist.get("pmkisan")
+        # Day's scheme first, then PM Kisan, then any other; never one already
+        # posted today (20 Oct: a post-midnight run had used Tuesday's MP slot).
+        order = [SCHEME_DAY.get(today.weekday(), "pmkisan"), "pmkisan", *kist]
+        fresh = [kist[s] for s in order if s in kist and f"{s}|status|{today.isoformat()}" not in recent]
+        if not fresh:
+            return None
+        chosen = fresh[0]
     k = chosen
     n = k["next"]["n"]
     name = k["nameHi"]
