@@ -1,15 +1,16 @@
 name: Daily Tool Post (FB + IG)
 
-# One "tool se hal" carousel a day on the Facebook Page + Instagram, from
-# content/tool_posts.json. PREVIEW (owner's Telegram only) until the repo
-# variable POSTS_LIVE is "1". Manual run can force preview or publish.
+# 09:30 IST pillar post (content/calendar/<YYYY-MM>.json, posts/pillar.py).
+# Until the repo variable PILLAR_LIVE is "1" the pillar post goes to the
+# owner's Telegram only and the old "tool se hal" carousel
+# (content/tool_posts.json) posts as before, following POSTS_LIVE.
 on:
   schedule:
     - cron: "0 4 * * *"   # 09:30 IST
   workflow_dispatch:
     inputs:
       mode:
-        description: "auto = follow POSTS_LIVE; preview = owner's Telegram only; publish = post it"
+        description: "auto = follow PILLAR_LIVE; preview = pillar to owner's Telegram; publish = post the pillar"
         default: auto
         type: choice
         options: [auto, preview, publish]
@@ -40,7 +41,8 @@ jobs:
           META_TOKEN: ${{ secrets.META_TOKEN }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           POSTS_LIVE: ${{ vars.POSTS_LIVE }}
-        run: python -m posts.run ${{ (inputs.mode && inputs.mode != 'auto') && inputs.mode || '' }}
+          PILLAR_LIVE: ${{ vars.PILLAR_LIVE }}
+        run: python -m posts.pillar ${{ (inputs.mode && inputs.mode != 'auto') && inputs.mode || '' }}
       - name: Commit state
         if: always()
         run: |
