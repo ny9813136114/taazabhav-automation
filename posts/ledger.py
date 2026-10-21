@@ -53,9 +53,9 @@ def topic_key(e):
     return "|".join(str(p or "").lower() for p in parts)
 
 
-def load(root=DIR):
+def load(root=None):
     out = []
-    for f in sorted(Path(root).glob("*.json")):
+    for f in sorted(Path(root or DIR).glob("*.json")):
         try:
             out.append(json.loads(f.read_text(encoding="utf-8")))
         except (OSError, ValueError):
@@ -110,8 +110,8 @@ def next_state(ledger, pillar, states=STATES):
     return min(states, key=lambda s: (last.get(s, ""), states.index(s)))
 
 
-def record(e, root=DIR):
-    root = Path(root)
+def record(e, root=None):
+    root = Path(root or DIR)
     root.mkdir(parents=True, exist_ok=True)
     name = re.sub(r"[^a-z0-9-]+", "-", f"{e['date']}-{e.get('slot', '')}-{e.get('pillar', '')}-{e.get('id', '')}".lower()).strip("-")
     path = root / f"{name}.json"
@@ -119,7 +119,7 @@ def record(e, root=DIR):
     return path
 
 
-def safe_record(e, root=DIR):
+def safe_record(e, root=None):
     """Recording must never break a post that already went out."""
     try:
         return record(e, root)

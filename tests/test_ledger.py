@@ -108,8 +108,7 @@ class ToolQueueTest(unittest.TestCase):
         from engine import publish
         ep = {"series": "D", "key": "khad|2", "title": "खाद का हिसाब #Shorts", "tool": "khad"}
         with tempfile.TemporaryDirectory() as d, mock.patch.object(L, "DIR", Path(d)):
-            with mock.patch("posts.ledger.safe_record", side_effect=lambda e, root=Path(d): L.record(e, root)):
-                publish.ledger_record(ep, {"facebook": "f1", "instagram": None}, TODAY)
+            publish.ledger_record(ep, {"facebook": "f1", "instagram": None}, TODAY)
             (e,) = L.load(d)
         self.assertEqual((e["format"], e["pillar"], e["tool"], e["slot"], e["hook"]), ("reel", "D", "khad", "12:30", "खाद का हिसाब"))
 
