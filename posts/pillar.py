@@ -357,6 +357,12 @@ def main():
     if not plan:
         alert(f"TaazaBhav pillar post: no calendar for {day:%Y-%m} (content/calendar). Tool carousel posted instead.")
         return legacy("no calendar day", run_mode) if run_mode != "dry" else 1
+    if cal.get("previewOnly") and run_mode == "publish":
+        # A part month (built with a start date) is for watching the format only.
+        run_mode, key = "preview", "preview"
+        if any(h["date"] == day.isoformat() for h in state.get(key, [])):
+            print("[pillar] preview: already done today")
+            return 0
 
     def feed_loader():
         from engine.feed import load_feed
