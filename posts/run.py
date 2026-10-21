@@ -51,9 +51,23 @@ def d_tool(today):
     return ids[today.toordinal() % len(ids)]
 
 
-def pick(posts, history, today):
+# The 49 tool posts cover only 8 tools, one a day, so the 14-day tool rule
+# can't hold for this queue; the pillar engine replaces it.
+LEDGER_SKIP = ("tool_days",)
+
+
+def ledger_entry(post, today, res=None):
+    from posts.ledger import entry
+    res = res or {}
+    return entry(day=today, slot="09:30", fmt="photo", pillar="tool", post_id=post["id"], caption=post.get("caption", ""),
+                 tool=post.get("tool"), angle=post["id"], facebook=res.get("facebook"), instagram=res.get("instagram"))
+
+
+def pick(posts, history, today, ledger=()):
     """Next post after the last one used, skipping expired posts, today's D
-    tool and anything posted in the last len(posts)-1 days' worth."""
+    tool, anything posted in the last len(posts)-1 days' worth and anything
+    the no-repeat ledger rejects. None when nothing passes."""
+    from posts.ledger import problems
     live = [p for p in posts if not p.get("validUntil") or date.fromisoformat(p["validUntil"]) >= today]
     if not live:
         return None
@@ -63,11 +77,12 @@ def pick(posts, history, today):
     start = ids.index(last) + 1 if last in ids else 0
     avoid = d_tool(today)
     order = [posts[(start + i) % len(posts)] for i in range(len(posts))]
+    ok = [p for p in order if p in live and not problems(ledger_entry(p, today), ledger, today, LEDGER_SKIP)]
     for strict in (True, False):
-        for p in order:
-            if p in live and p["id"] not in recent and (not strict or p["tool"] != avoid):
+        for p in ok:
+            if p["id"] not in recent and (not strict or p["tool"] != avoid):
                 return p
-    return live[0]
+    return ok[0] if ok else None
 
 
 def _tg(method, data, files=None):
@@ -186,9 +201,10 @@ def main():
         print("[posts] already posted today")
         return 0
     key = "history" if run_mode == "publish" else "preview"
-    post = pick(posts, state.get(key, []), today)
+    from posts import ledger
+    post = pick(posts, state.get(key, []), today, ledger.load())
     if not post:
-        alert("TaazaBhav posts: no post left in content/tool_posts.json (all expired).")
+        alert("TaazaBhav posts: no post in content/tool_posts.json passes the no-repeat ledger (all expired or used); nothing posted.")
         return 1
     print(f"[posts] {run_mode}: {post['id']}")
     try:
@@ -206,6 +222,7 @@ def main():
         res = publish(post, slides)
         state.setdefault("history", []).append({"date": today.isoformat(), "id": post["id"], "facebook": res["facebook"], "instagram": res["instagram"]})
         save_state(state)
+        ledger.safe_record(ledger_entry(post, today, res))
         if res["errors"]:
             alert(f"TaazaBhav posts ({post['id']}): " + "\n".join(res["errors"])[:500])
         try:

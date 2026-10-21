@@ -145,4 +145,23 @@ def meta_reels(path, ep, alert):
         print(f"[engine] Meta error: {err}")
     if res.get("errors"):
         alert(f"TaazaBhav engine: FB/IG Reel ({ep['series']}) failed:\n" + "\n".join(res["errors"])[:500])
+    if res.get("facebook") or res.get("instagram"):
+        ledger_record(ep, res)
     return res
+
+
+SLOTS = {"A": "07:30", "D": "12:30", "C": "18:30", "B": "20:30"}
+
+
+def ledger_record(ep, res, today=None):
+    """Logs the Reel in the FB/IG no-repeat ledger, so the day's photo posts
+    don't repeat its tool or crop (posts/ledger.py)."""
+    from datetime import datetime
+    from posts import ledger
+    from posts.run import IST
+    day = today or datetime.now(IST).date()
+    crop = ep["key"].split("|")[0].lower() if ep["series"] == "A" else None
+    return ledger.safe_record(ledger.entry(
+        day=day, slot=SLOTS.get(ep["series"], ""), fmt="reel", pillar=ep["series"], post_id=ep["key"],
+        hook=ep["title"].replace(" #Shorts", "").strip(), tool=ep.get("tool"), crop=crop,
+        facebook=res.get("facebook"), instagram=res.get("instagram")))

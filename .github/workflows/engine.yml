@@ -116,7 +116,7 @@ jobs:
         run: |
           git config user.name "TaazaBhav Bot"
           git config user.email "bot@taazabhav.com"
-          git add data/engine 2>/dev/null || true
+          git add data/engine data/posts 2>/dev/null || true
           git diff --staged --quiet || git commit -m "Engine: update published list"
           git pull --rebase
           git push
