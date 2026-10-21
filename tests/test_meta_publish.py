@@ -53,6 +53,30 @@ class MetaTest(unittest.TestCase):
         with self.assertRaises(mp.MetaError):
             mp.post_instagram_reel(self.video, "c", "ig1", "pt", s, sleep=lambda _: None)
 
+    def test_ig_error_reason_in_message(self):
+        s = mock.Mock()
+        s.get.side_effect = [resp({"status_code": "ERROR", "status": "Error: 2207026"})]
+        s.post.side_effect = [resp({"id": "c1"}), resp({"success": True})]
+        with self.assertRaisesRegex(mp.MetaError, "2207026"):
+            mp.post_instagram_reel(self.video, "c", "ig1", "pt", s, sleep=lambda _: None)
+
+    def test_ig_publish_retried_when_not_ready(self):
+        s = mock.Mock()
+        s.get.side_effect = [resp({"status_code": "FINISHED"})]
+        s.post.side_effect = [resp({"id": "c1"}), resp({"success": True}),
+                              resp({"error": {"message": "Media ID is not available"}}, 400), resp({"id": "m1"})]
+        self.assertEqual(mp.post_instagram_reel(self.video, "c", "ig1", "pt", s, sleep=lambda _: None), "m1")
+
+    def test_ig_retried_once_with_new_container(self):
+        s = mock.Mock()
+        s.get.side_effect = [resp({"access_token": "pt", "instagram_business_account": {"id": "ig1"}}),
+                             resp({"status_code": "ERROR"}), resp({"status_code": "FINISHED"})]
+        s.post.side_effect = [resp({"video_id": "v1"}), resp({"success": True}), resp({"success": True}),
+                              resp({"id": "c1"}), resp({"success": True}),
+                              resp({"id": "c2"}), resp({"success": True}), resp({"id": "m2"})]
+        out = mp.publish_all(self.video, "cap", s, sleep=lambda _: None)
+        self.assertEqual(out, {"facebook": "v1", "instagram": "m2", "errors": []})
+
     def test_caption(self):
         c = mp.build_caption("प्याज ₹17 किलो! सबसे सस्ता · Konch मंडी | Onion Rate Today Uttar Pradesh #Shorts",
                              "25 सितंबर: fact line\nलिंक", "Onion", "Uttar Pradesh")

@@ -141,6 +141,8 @@ def meta_reels(path, ep, alert):
     except Exception as e:
         res = {"errors": [str(e)]}
     print(f"[engine] Meta Reel: FB {res.get('facebook')} IG {res.get('instagram')}")
+    for err in res.get("errors") or []:
+        print(f"[engine] Meta error: {err}")
     if res.get("errors"):
         alert(f"TaazaBhav engine: FB/IG Reel ({ep['series']}) failed:\n" + "\n".join(res["errors"])[:500])
     return res
