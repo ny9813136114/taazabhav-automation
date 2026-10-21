@@ -6,6 +6,10 @@ name: Check Meta connection
 # (with their real ids), so the fix is obvious from the log.
 on:
   workflow_dispatch:
+    inputs:
+      ids:
+        description: "Optional comma-separated FB post/video ids to inspect"
+        required: false
 
 jobs:
   check:
@@ -21,6 +25,7 @@ jobs:
         env:
           META_TOKEN: ${{ secrets.META_TOKEN }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          CHECK_IDS: ${{ inputs.ids }}
         run: |
           python - <<'PY'
           import os, requests, meta_publish as mp
@@ -55,4 +60,19 @@ jobs:
               print("Instagram OK: @" + str(u.get("username")), "(id", ig + ")")
           else:
               raise SystemExit("Instagram NOT linked to this Page (or token lacks instagram_basic).")
+
+          # Are the posts really public? (App in Development mode = only app roles see them.)
+          gp = lambda path, **p: requests.get(f"{mp.GRAPH}/{path}", params={**p, "access_token": tok_page}, timeout=30).json()
+          info = gp(pid, fields="name,link,username,fan_count,followers_count,is_published,verification_status")
+          print("Page details:", info)
+          dbg = get("debug_token", input_token=tok).get("data", {})
+          print("Token app:", dbg.get("application"), dbg.get("app_id"), "| type:", dbg.get("type"), "| valid:", dbg.get("is_valid"))
+          print("Recent Page posts:")
+          for x in gp(f"{pid}/posts", fields="id,created_time,permalink_url,is_published,is_hidden,privacy,status_type,application", limit=8).get("data", []):
+              print("  ", x)
+          print("Recent Reels:")
+          for x in gp(f"{pid}/video_reels", fields="id,created_time,permalink_url,published,status,privacy", limit=8).get("data", []):
+              print("  ", x)
+          for vid in [v for v in os.environ.get("CHECK_IDS", "").split(",") if v]:
+              print("Object", vid, gp(vid, fields="id,created_time,permalink_url,published,status,privacy"))
           PY
