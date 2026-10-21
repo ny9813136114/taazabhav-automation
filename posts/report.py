@@ -31,6 +31,15 @@ from posts.run import IST, _owner, _tg
 SLOTS = [("07:30", "Bhav Dhamaka Reel"), ("09:30", "09:30 post"), ("12:30", "Tool se hal Reel"),
          ("14:30", "Bhav carousel"), ("17:13", "Mela alert Reel"), ("18:30", "Kisan Khabar Reel"),
          ("20:30", "Kist ka Sach Reel")]
+# Ledger pillar (posts/ledger.py) -> format name.
+PILLAR_NAMES = {"A": "Bhav Dhamaka Reel", "D": "Tool se hal Reel", "C": "Kisan Khabar Reel", "B": "Kist ka Sach Reel",
+                "mela": "Mela alert Reel", "bhav": "Bhav carousel", "tool": "Tool carousel",
+                "P1": "P1 Aapki Mandi Report", "P2": "P2 Parchi Doctor", "P3": "P3 Kisan ka Hisaab",
+                "P4": "P4 Rokun ya Bechun", "P5": "P5 Sach ya Jhooth", "P6": "P6 Hisaab Challenge",
+                "P7": "P7 Khet Alarm", "P8": "P8 Deadline Ghanti"}
+# Posts from before the ledger: their own first words say what they are.
+HOOK_NAMES = [("आज के मंडी भाव", "Bhav carousel"), ("किसान खबर", "Kisan Khabar Reel"), ("किस्त", "Kist ka Sach Reel"),
+              ("30 सेकंड में", "Tool se hal Reel"), ("मेला", "Mela alert Reel")]
 # Candidate reach metrics, newest first: Meta renamed several of them in 2025.
 FB_REACH = ["post_total_media_view_unique", "post_impressions_unique"]
 IG_METRICS = ["reach", "shares", "saved", "views", "total_interactions"]
@@ -49,6 +58,29 @@ def slot_of(ts):
     mins = t.hour * 60 + t.minute
     best = min(SLOTS, key=lambda s: abs(int(s[0][:2]) * 60 + int(s[0][3:]) - mins))
     return best[1]
+
+
+def ledger_index(led):
+    """FB/IG id -> format name. A Reel's FB id in the ledger is its video id;
+    the Page feed shows it as a post whose link ends /reel/<video id>/."""
+    idx = {}
+    for x in led:
+        name = PILLAR_NAMES.get(x.get("pillar"), x.get("pillar"))
+        for net in ("facebook", "instagram"):
+            if x.get(net):
+                idx[str(x[net])] = name
+    return idx
+
+
+def format_of(row, idx):
+    link = row.get("link") or ""
+    for key in (row["id"], link.rstrip("/").rsplit("/", 1)[-1]):
+        if key in idx:
+            return idx[key]
+    for words, name in HOOK_NAMES:
+        if words in (row.get("hook") or ""):
+            return name
+    return slot_of(datetime.fromisoformat(row["time"]))
 
 
 def _ts(s):
@@ -172,7 +204,7 @@ def message(start, summ, rows, prev=None):
         lines.append(f"🐢 Sabse kamzor: {worst[0]} ({worst[1]['per_post']} har post, {worst[1]['posts']} post).")
     top = max(rows, key=score, default=None)
     if top and score(top):
-        lines.append(f"🏆 Top post ({top['net'].upper()[:2]}, {top['format']}): {top['shares']} shares, "
+        lines.append(f"🏆 Top post ({'FB' if top['net'] == 'facebook' else 'IG'}, {top['format']}): {top['shares']} shares, "
                      f"{top.get('saves', 0)} saves, {top['comments']} comments. {top['link'] or ''}".strip())
     else:
         lines.append("🏆 Is hafte kisi post par share, save ya comment nahi aaya.")
@@ -217,6 +249,10 @@ def main():
             rows += ig_posts(requests, ig, token, start, end)
         except Exception as e:
             errors.append(f"Instagram: {e}")
+    from posts import ledger
+    idx = ledger_index(ledger.load())
+    for r in rows:
+        r["format"] = format_of(r, idx)
     summ = summarise(rows)
     msg = message(start.date(), summ, rows, previous(out_dir, monday))
     if errors:
