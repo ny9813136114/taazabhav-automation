@@ -250,6 +250,11 @@ def main():
                 if meta_publish.enabled():
                     cap = f"{title.split('|')[0].strip()}\n\n{desc.split(chr(10))[0]}\n\n🌐 पूरी जानकारी: taazabhav.com/kisan-mela (लिंक बायो में)\n\n#kisanmela #krishimela #agriexpo #kisan #taazabhav"
                     res = meta_publish.publish_all(out, cap)
+                    if res.get("facebook") or res.get("instagram"):
+                        from posts import ledger
+                        ledger.safe_record(ledger.entry(day=today, slot="17:13", fmt="reel", pillar="mela", post_id=key,
+                                                        caption=cap, state=ev.get("state") or None,
+                                                        facebook=res.get("facebook"), instagram=res.get("instagram")))
                     if res["errors"]:
                         send_telegram_alert("TaazaBhav ALERT: mela Reel issue\n\n" + "\n".join(res["errors"]))
             except Exception as e:

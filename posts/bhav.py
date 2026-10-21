@@ -111,7 +111,17 @@ def build(feed, today):
                "#मंडीभाव #आजकाभाव #किसान #mandibhav #taazabhav")[:2200]
     group = (f"आज {hi_date(today)} के मंडी भाव: " + "; ".join(f"{r['data']['nameHi']} {rs(r['data']['typical'])}" for r in reps[:4]) +
              f"। राज्य वार भाव और सबसे ऊंचे भाव वाली मंडी इस पोस्ट में देखें 👇")
-    return {"id": f"bhav-{day}", "slides": slides, "caption": caption, "group": group}
+    return {"id": f"bhav-{day}", "slides": slides, "caption": caption, "group": group,
+            "crops": [r["data"]["slug"] for r in reps]}
+
+
+def ledger_entry(post, today, res=None):
+    """A round-up of many crops: recorded with its crop list, but it fills
+    no single-crop slot (posts/ledger.py)."""
+    from posts.ledger import entry
+    res = res or {}
+    return entry(day=today, slot="14:30", fmt="photo", pillar="bhav", post_id=post["id"], caption=post["caption"],
+                 crops=post.get("crops"), facebook=res.get("facebook"), instagram=res.get("instagram"))
 
 
 def load_state():
@@ -146,6 +156,12 @@ def main():
     if not post:
         print(f"[bhav] no prices for {today} (latest {feed.get('latestDate')}), nothing posted")
         return 0
+    from posts import ledger
+    entry = ledger_entry(post, today)
+    bad = ledger.problems(entry, ledger.load(), today)
+    if bad:
+        alert(f"TaazaBhav bhav post: {post['id']} blocked by the no-repeat ledger, nothing posted.\n\n" + "\n".join(bad))
+        return 1
     print(f"[bhav] {run_mode}: {post['id']} ({len(post['slides'])} slides)")
     try:
         from posts.render import render
@@ -162,6 +178,7 @@ def main():
         state.setdefault("history", []).append({"date": today.isoformat(), "id": post["id"],
                                                 "facebook": res["facebook"], "instagram": res["instagram"]})
         save_state(state)
+        ledger.safe_record(ledger_entry(post, today, res))
         if res["errors"]:
             alert(f"TaazaBhav bhav post: " + "\n".join(res["errors"])[:500])
         try:

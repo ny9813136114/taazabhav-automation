@@ -56,7 +56,7 @@ jobs:
         run: |
           git config user.name "TaazaBhav Bot"
           git config user.email "bot@taazabhav.com"
-          git add data/published_melas.json 2>/dev/null || true
+          git add data/published_melas.json data/posts 2>/dev/null || true
           git diff --staged --quiet || git commit -m "Update published mela alerts"
           git pull --rebase
           git push
