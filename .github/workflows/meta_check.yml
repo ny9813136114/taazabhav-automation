@@ -10,6 +10,10 @@ on:
       ids:
         description: "Optional comma-separated FB post/video ids to inspect"
         required: false
+      report:
+        description: "Also print last week's Meta report (posts/report.py, sends nothing)"
+        type: boolean
+        default: false
 
 jobs:
   check:
@@ -76,3 +80,9 @@ jobs:
           for vid in [v for v in os.environ.get("CHECK_IDS", "").split(",") if v]:
               print("Object", vid, gp(vid, fields="id,created_time,permalink_url,published,status,privacy"))
           PY
+      - name: Report (print only)
+        if: inputs.report
+        env:
+          META_TOKEN: ${{ secrets.META_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+        run: python -m posts.report dry
