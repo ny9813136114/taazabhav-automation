@@ -6,6 +6,7 @@
 // Imports are relative to the website repo root, so copy it there and run:
 //   cp ops/build_calendar.ts ../taazabhav-website/_bc.ts
 //   cd ../taazabhav-website && npx tsx _bc.ts 2026-11 ../taazabhav-automation/content/calendar/2026-11.json && rm _bc.ts
+// A month starting mid-way (preview only): npx tsx _bc.ts 2026-10 "" 2026-10-22
 // Re-check every date against its government source before a new month.
 import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -23,7 +24,10 @@ import { BHAVANTAR } from "./lib/bhavantar";
 import { MSP_TABLE } from "./lib/msp";
 
 const MONTH = process.argv[2] ?? "2026-11";
-const OUT = resolve(process.argv[3] ?? `../taazabhav-automation/content/calendar/${MONTH}.json`);
+const OUT = resolve(process.argv[3] || `../taazabhav-automation/content/calendar/${MONTH}.json`);
+// Optional first date (YYYY-MM-DD) for a month that starts mid-way; that
+// month is marked preview-only (posts/pillar.py never publishes it).
+const FROM = process.argv[4] ?? "";
 const BUILT = new Date().toISOString().slice(0, 10);
 const rs = (n: number) => "₹" + (Number.isInteger(n) ? n.toLocaleString("en-IN") : n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 const num = (n: number, d = 2) => Number(n.toFixed(d)).toLocaleString("en-IN", { maximumFractionDigits: d });
@@ -289,6 +293,7 @@ function build(month: string): Day[] {
     else if (pillar === "P2") day.post = slipPost(sp[i % sp.length]);
     else if (pillar === "P4") day.dynamic = "P4";
     else if (pillar === "P1") { day.dynamic = "P1"; day.args = { state: p1States[i % p1States.length] }; }
+    if (FROM && iso < FROM) { if (pillar === "P6") lastChallenge = null; continue; }
     out.push(day);
   }
   return out;
@@ -307,5 +312,5 @@ const site = {
     sdrf: `SDRF: ${SDRF_MIN_LOSS}%+ नुकसान पर ${rs(SDRF_RATES.rainfed)} (बारानी) / ${rs(SDRF_RATES.irrigated)} (सिंचित) प्रति हेक्टेयर, ${SDRF_MAX_HA} हेक्टेयर तक`,
   },
 };
-writeFileSync(OUT, JSON.stringify({ month: MONTH, built: BUILT, site, days }, null, 1) + "\n");
+writeFileSync(OUT, JSON.stringify({ month: MONTH, built: BUILT, ...(FROM ? { previewOnly: true } : {}), site, days }, null, 1) + "\n");
 console.log(`${days.length} days -> ${OUT}`);

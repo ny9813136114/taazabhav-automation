@@ -177,6 +177,11 @@ class RunTest(unittest.TestCase):
         rc, sent, legacy, published, led = self.run_main(["publish"], {}, plan_day="2031-01-01")
         self.assertEqual(legacy[0][0], "no calendar day")
 
+    def test_part_month_is_preview_only_even_when_live(self):
+        rc, sent, legacy, published, led = self.run_main(["publish"], {}, plan_day="2026-10-22")
+        self.assertEqual((rc, sent, published, led), (0, ["p5-pala-bima"], [], []))
+        self.assertEqual(legacy, [("preview mode", "preview")])
+
 
 if __name__ == "__main__":
     unittest.main()
