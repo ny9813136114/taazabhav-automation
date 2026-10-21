@@ -26,7 +26,9 @@ GRAPH_VERSION = os.environ.get("META_GRAPH_VERSION", "v23.0")
 GRAPH = f"https://graph.facebook.com/{GRAPH_VERSION}"
 TIMEOUT = 60
 IG_POLL_SECONDS = 10
-IG_POLL_MAX = 30  # 5 minutes
+IG_POLL_MAX = 60  # 10 minutes: longer Reels (series C, ~45 s) can take over 5
+IG_TRIES = 2  # a failed IG Reel is tried once more from a new container
+IG_PUBLISH_TRIES = 3
 
 
 class MetaError(RuntimeError):
@@ -104,18 +106,27 @@ def post_instagram_reel(video_path, caption, ig_user_id, token, s=requests, slee
     upload_url = b.get("uri") or f"https://rupload.facebook.com/ig-api-upload/{GRAPH_VERSION}/{cid}"
     _upload_bytes(s, upload_url, token, video_path)
     for _ in range(IG_POLL_MAX):
-        st = _check(s.get(f"{GRAPH}/{cid}", params={"fields": "status_code,status", "access_token": token},
-                          timeout=TIMEOUT), "IG status").get("status_code")
+        b = _check(s.get(f"{GRAPH}/{cid}", params={"fields": "status_code,status", "access_token": token},
+                         timeout=TIMEOUT), "IG status")
+        st = b.get("status_code")
         if st == "FINISHED":
             break
         if st in ("ERROR", "EXPIRED"):
-            raise MetaError(f"IG processing {st}")
+            raise MetaError(f"IG processing {st}: {b.get('status') or 'no reason given'}")
         sleep(IG_POLL_SECONDS)
     else:
-        raise MetaError("IG processing did not finish in 5 minutes")
-    b = _check(s.post(f"{GRAPH}/{ig_user_id}/media_publish",
-                      params={"creation_id": cid, "access_token": token}, timeout=TIMEOUT), "IG publish")
-    return b.get("id")
+        raise MetaError(f"IG processing did not finish in {IG_POLL_MAX * IG_POLL_SECONDS // 60} minutes")
+    # Right after FINISHED, media_publish sometimes answers "media not ready";
+    # a short wait fixes it.
+    for i in range(IG_PUBLISH_TRIES):
+        try:
+            b = _check(s.post(f"{GRAPH}/{ig_user_id}/media_publish",
+                              params={"creation_id": cid, "access_token": token}, timeout=TIMEOUT), "IG publish")
+            return b.get("id")
+        except MetaError:
+            if i == IG_PUBLISH_TRIES - 1:
+                raise
+            sleep(20)
 
 
 def build_caption(title, description, commodity, state):
@@ -154,10 +165,14 @@ def publish_all(video_path, caption, s=requests, sleep=time.sleep):
     except Exception as e:
         out["errors"].append(f"Facebook: {e}")
     if ig:
-        try:
-            out["instagram"] = post_instagram_reel(video_path, caption, ig, page_token, s, sleep)
-        except Exception as e:
-            out["errors"].append(f"Instagram: {e}")
+        for i in range(IG_TRIES):
+            try:
+                out["instagram"] = post_instagram_reel(video_path, caption, ig, page_token, s, sleep)
+                break
+            except Exception as e:
+                print(f"[meta] Instagram try {i + 1} failed: {e}")
+                if i == IG_TRIES - 1:
+                    out["errors"].append(f"Instagram: {e}")
     else:
         out["errors"].append("Instagram: no Instagram account linked to the Page")
     return out
