@@ -45,6 +45,13 @@ class RulesTest(unittest.TestCase):
         self.assertTrue(L.problems(photo(hook="b", tool="khad"), reel, TODAY, skip=("tool_days",)))
         self.assertFalse(L.problems(photo(hook="b", tool="khad"), old, TODAY, skip=("tool_days",)))
 
+    def test_tool_rule_only_for_posts_about_a_tool(self):
+        old = [photo(day=date(2026, 10, 27), hook="a", pillar="P2", tool="hisab")]
+        self.assertFalse(L.problems(photo(hook="b", pillar="P2", tool="hisab"), old, TODAY))
+        p3 = [photo(day=date(2026, 10, 27), hook="a", pillar="P3", tool="hisab")]
+        self.assertFalse(L.problems(photo(hook="b", pillar="P2", tool="hisab"), p3, TODAY))
+        self.assertTrue(L.problems(photo(hook="b", pillar="tool", tool="hisab"), p3, TODAY))
+
     def test_topic_30_days(self):
         old = [photo(day=date(2026, 10, 5), hook="a", crop="wheat", state="rajasthan", angle="khad")]
         self.assertTrue(L.problems(photo(hook="b", crop="wheat", state="rajasthan", angle="khad"), old, TODAY))

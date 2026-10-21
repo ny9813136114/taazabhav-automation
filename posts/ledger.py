@@ -9,9 +9,11 @@ mela alerts) are only recorded, so a photo post never repeats today's Reel.
 Rules (TaazaBhav FB/IG Content Engine plan, section 6, 21 Oct 2026):
   hook   the first caption line is never used twice (hash of the text)
   crop   one single-crop photo post per crop per day
-  tool   one photo post per tool in 14 days, and never the tool of
-         today's Reel (series D shows one tool every day, so Reels are
-         not counted in the 14 days)
+  tool   a post about a tool (the old tool carousel, pillar P3) at most
+         once in 14 days, and never the tool of today's Reel. Series D
+         shows one tool every day, so Reels are not counted in the 14 days;
+         pillars that only link a tool (P2 parchi -> mandi hisab, P8 ->
+         sarkari paisa, ...) are weekly by design and not counted either
   topic  pillar + crop + state + angle once in 30 days
   claim  a "sach ya jhooth" claim once, until its govt order changes
          (claim id + order date is the key)
@@ -27,6 +29,7 @@ from pathlib import Path
 DIR = Path("data/posts/ledger")
 TOOL_DAYS = 14
 TOPIC_DAYS = 30
+TOOL_PILLARS = ("tool", "P3")
 # P1 and P3 rotate through these, oldest first (plan, section 6).
 STATES = ["madhya-pradesh", "rajasthan", "maharashtra", "uttar-pradesh",
           "gujarat", "haryana", "punjab", "karnataka"]
@@ -82,11 +85,13 @@ def problems(e, ledger, today, skip=()):
     if "crop" not in skip and e.get("crop"):
         if any(x.get("format") == "photo" and x.get("crop") == e["crop"] and x["date"] == day for x in ledger):
             out.append(f"{e['crop']} already had a photo post today")
-    if "tool" not in skip and e.get("tool"):
+    about_tool = e.get("tool") and e.get("pillar") in TOOL_PILLARS
+    if "tool" not in skip and about_tool:
         if any(x.get("format") == "reel" and x.get("tool") == e["tool"] and x["date"] == day for x in ledger):
             out.append(f"{e['tool']} is today's Reel")
-    if "tool_days" not in skip and e.get("tool"):
-        if any(x.get("format") == "photo" and x.get("tool") == e["tool"] and x["date"] > since(TOOL_DAYS) for x in ledger):
+    if "tool_days" not in skip and about_tool:
+        if any(x.get("format") == "photo" and x.get("pillar") in TOOL_PILLARS and x.get("tool") == e["tool"]
+               and x["date"] > since(TOOL_DAYS) for x in ledger):
             out.append(f"{e['tool']} had a photo post in the last {TOOL_DAYS} days")
     t = topic_key(e)
     if "topic" not in skip and t and any(topic_key(x) == t and x["date"] > since(TOPIC_DAYS) for x in ledger):
