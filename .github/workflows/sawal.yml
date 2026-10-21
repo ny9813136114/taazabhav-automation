@@ -53,6 +53,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           META_TOKEN: ${{ secrets.META_TOKEN }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          COMMENTS_LIVE: ${{ vars.COMMENTS_LIVE }}
           SAWAL_MODE: ${{ inputs.mode }}
           SAWAL_LIVE: ${{ vars.SAWAL_LIVE }}
         run: python sawal_video.py

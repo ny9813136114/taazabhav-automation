@@ -97,8 +97,10 @@ def build(feed, today):
     slides = [{"kind": "hook", "label": f"आज के मंडी भाव · {hi_date(today)}", "big": f"{names} का भाव",
                "sub": f"{len(reps)} फसलें · {markets} मंडियां · {len(states)} राज्य · राज्य का भाव और सबसे ऊंचे भाव वाली मंडी →"}]
     slides += [crop_slide(r) for r in reps]
+    lead = reps[0]["data"]["nameHi"]
+    ask = f"💬 आपकी मंडी में आज {lead} किस भाव बिका? मंडी का नाम और भाव कमेंट में लिखें।"
     slides.append({"kind": "cta", "label": "हर मंडी, हर फसल का भाव", "big": "अपनी मंडी का आज का भाव देखें",
-                   "url": "taazabhav.com"})
+                   "url": "taazabhav.com", "ask": [f"आपकी मंडी में आज {lead} का भाव?", "मंडी और भाव कमेंट में लिखें 👇"]})
     lines = []
     for r in reps:
         d = r["data"]
@@ -111,7 +113,10 @@ def build(feed, today):
                "#मंडीभाव #आजकाभाव #किसान #mandibhav #taazabhav")[:2200]
     group = (f"आज {hi_date(today)} के मंडी भाव: " + "; ".join(f"{r['data']['nameHi']} {rs(r['data']['typical'])}" for r in reps[:4]) +
              f"। राज्य वार भाव और सबसे ऊंचे भाव वाली मंडी इस पोस्ट में देखें 👇")
-    return {"id": f"bhav-{day}", "slides": slides, "caption": caption, "group": group,
+    # P1 question (plan section 4): farmers' own prices feed "Aapki Mandi Report".
+    caption_live = caption.replace("\n\nभाव मंडी रिपोर्ट से हैं", f"\n\n{ask}\n\nभाव मंडी रिपोर्ट से हैं", 1)
+    return {"id": f"bhav-{day}", "slides": slides, "caption": caption, "caption_live": caption_live, "group": group,
+            "link": SITE, "link_label": "अपनी मंडी का आज का भाव", "ask": ask, "lead": lead,
             "crops": [r["data"]["slug"] for r in reps]}
 
 
@@ -165,17 +170,19 @@ def main():
     print(f"[bhav] {run_mode}: {post['id']} ({len(post['slides'])} slides)")
     try:
         from posts.render import render
+        if run_mode != "publish":
+            post["comment_mode"] = True  # previews show the link-in-comment look (PR 3)
         slides = render(post, Path("posts-out"))
         if run_mode == "dry":
             print("\n".join(map(str, slides)))
             return 0
         if run_mode == "preview":
             send_preview(post, slides)
-            state.setdefault("preview", []).append({"date": today.isoformat(), "id": post["id"]})
+            state.setdefault("preview", []).append({"date": today.isoformat(), "id": post["id"], "lead": post["lead"]})
             save_state(state)
             return 0
         res = publish(post, slides)
-        state.setdefault("history", []).append({"date": today.isoformat(), "id": post["id"],
+        state.setdefault("history", []).append({"date": today.isoformat(), "id": post["id"], "lead": post["lead"],
                                                 "facebook": res["facebook"], "instagram": res["instagram"]})
         save_state(state)
         ledger.safe_record(ledger_entry(post, today, res))

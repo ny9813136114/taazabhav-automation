@@ -1,0 +1,53 @@
+name: Shaam ka Sawal (FB + IG comment)
+
+# 19:00 IST: the Page asks one real question in its own comment under the
+# day's post (posts/shaam.py). PREVIEW (owner's Telegram only) until the repo
+# variable COMMENTS_LIVE is "1". The same variable moves every FB caption's
+# link into the Page's first comment.
+on:
+  schedule:
+    - cron: "30 13 * * *"   # 19:00 IST
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "auto = follow COMMENTS_LIVE; preview = owner's Telegram only; publish = comment"
+        default: auto
+        type: choice
+        options: [auto, preview, publish, dry]
+
+concurrency:
+  group: taazabhav-posts
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Latest state
+        run: git pull --ff-only origin main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests==2.*
+      - name: Comment
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          META_TOKEN: ${{ secrets.META_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          COMMENTS_LIVE: ${{ vars.COMMENTS_LIVE }}
+        run: python -m posts.shaam ${{ (inputs.mode && inputs.mode != 'auto') && inputs.mode || '' }}
+      - name: Commit state
+        if: always()
+        run: |
+          git config user.name "TaazaBhav Bot"
+          git config user.email "bot@taazabhav.com"
+          git add data/posts 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "Shaam ka sawal: update state"
+          git pull --rebase
+          git push
