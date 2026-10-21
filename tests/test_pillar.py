@@ -182,6 +182,20 @@ class RunTest(unittest.TestCase):
         self.assertEqual((rc, sent, published, led), (0, ["p5-pala-bima"], [], []))
         self.assertEqual(legacy, [("preview mode", "preview")])
 
+    def test_approved_farmer_post_replaces_p2(self):
+        from posts import jawab
+        farmer = {"id": "p2-farmer-parchi", "slides": [], "caption": "असली पर्ची का हिसाब", "meta": {"angle": "farmer-parchi-1"}}
+        with mock.patch.object(jawab, "draft_for", return_value={"pillar": "P2", "post": farmer}):
+            rc, sent, legacy, published, led = self.run_main(["publish"], {}, plan_day="2026-11-08")
+        self.assertEqual(published, ["p2-farmer-parchi"])
+
+    def test_no_haan_keeps_calendar_post(self):
+        from posts import jawab
+        with mock.patch.object(jawab, "draft_for", return_value=None):
+            rc, sent, legacy, published, led = self.run_main(["publish"], {}, plan_day="2026-11-08")
+        self.assertEqual(len(published), 1)
+        self.assertNotEqual(published[0], "p2-farmer-parchi")
+
 
 if __name__ == "__main__":
     unittest.main()
