@@ -35,7 +35,7 @@ class MetaError(RuntimeError):
     pass
 
 
-_URL = re.compile(r"https?://[^\s?#]+\?[^\s#]*")
+_URL = re.compile(r"(?:https?://|\b(?:www\.)?taazabhav\.com)[^\s?#]*\?[^\s#]*")
 
 
 def _drop_utm(m):
@@ -47,6 +47,113 @@ def _drop_utm(m):
 def strip_utm(text):
     """Owner, 19 Oct 2026: no UTM tags in FB/IG post links for now."""
     return _URL.sub(_drop_utm, text)
+
+
+# ---------- Link in the first comment (plan section 2 + 6) ----------
+# Facebook shows posts with a link in the caption to fewer people; a link in
+# the Page's own first comment is not held back. Instagram captions can't
+# carry a clickable link anyway, so the Instagram caption stays as it is
+# ("link bio mein"). Live only when the repo variable COMMENTS_LIVE is "1";
+# until then the would-be Facebook caption and comment go to the owner's
+# Telegram as a preview and posts go out as before.
+
+_LINK = re.compile(r"(?:https?://|\b)(?:www\.)?(?:taazabhav\.com|t\.me|youtu\.be|youtube\.com)(?:/[^\s)।,]*)?|https?://[^\s)]+")
+_BIO = re.compile(r"\s*\((?:लिंक बायो में|link in bio)\)", re.I)
+_TAIL = re.compile(r"(?:^|(?<=[।.!?]))[^।.!?\n]{0,45}[:：]\s*$")
+_EMPTY = re.compile(r"^[\W\s·|_-]*$")
+COMMENT_MARK = "🔗 लिंक पहले कमेंट में 👇"
+COMMENT_TRIES = 4
+COMMENT_WAIT = 20
+
+
+def comments_live():
+    return os.environ.get("COMMENTS_LIVE", "").strip() == "1"
+
+
+def links_in(text):
+    out = []
+    for m in _LINK.finditer(text):
+        u = m.group(0).rstrip(".,।")
+        u = u if u.startswith("http") else "https://" + u
+        if u not in out:
+            out.append(u)
+    return out
+
+
+def fb_caption(caption):
+    """The caption with every link (and "(लिंक बायो में)") taken out, and one
+    "link pehle comment mein" line before the hashtags. A line that was only
+    a label for its link ("🌐 पूरी जानकारी: <link>") goes away."""
+    lines, had = [], False
+    for line in caption.split("\n"):
+        if not _LINK.search(line):
+            lines.append(line)
+            continue
+        had = True
+        rest = _BIO.sub("", _LINK.sub("", line)).rstrip()
+        rest = re.sub(r"[\s·|]*Telegram[\s:]*$", "", rest).rstrip()
+        rest = _TAIL.sub("", rest).rstrip(" ·|-")
+        if not _EMPTY.match(rest):
+            lines.append(rest)
+    if had:
+        at = next((i for i, l in enumerate(lines) if l.lstrip().startswith("#")), len(lines))
+        while at > 0 and not lines[at - 1].strip():
+            at -= 1
+        lines[at:at] = ["", COMMENT_MARK, ""]
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(lines)).strip()
+
+
+def default_comment(caption, label="पूरी जानकारी, मुफ़्त"):
+    """First comment when the caller gives none: the first taazabhav.com
+    link in the caption, with one line saying what it opens."""
+    site = [u for u in links_in(caption) if "taazabhav.com" in u] or links_in(caption)
+    return f"👉 {label}: {site[0]}" if site else None
+
+
+def post_comment(object_id, message, token, s=requests, sleep=time.sleep):
+    """Page's own comment on its FB post/Reel, or on an IG media. A Reel
+    still processing can refuse comments for a short while: try again."""
+    for i in range(COMMENT_TRIES):
+        try:
+            b = _check(s.post(f"{GRAPH}/{object_id}/comments", data={"message": message, "access_token": token},
+                              timeout=TIMEOUT), "Comment")
+            return b.get("id")
+        except MetaError:
+            if i == COMMENT_TRIES - 1:
+                raise
+            sleep(COMMENT_WAIT)
+
+
+def restore_caption(object_id, caption, token, reel, s=requests):
+    """The link comment failed: put the full caption (with its link) back,
+    so the post never goes without a way to the site."""
+    field = "description" if reel else "message"
+    _check(s.post(f"{GRAPH}/{object_id}", data={field: caption, "access_token": token}, timeout=TIMEOUT),
+           "Caption restore")
+
+
+def link_comment(fb_id, caption, comment, token, reel, s=requests, sleep=time.sleep):
+    """-> (comment id or None, error text or None)."""
+    try:
+        return post_comment(fb_id, comment, token, s, sleep), None
+    except Exception as e:
+        try:
+            restore_caption(fb_id, caption, token, reel, s)
+            return None, f"Facebook link comment failed, full caption put back: {e}"
+        except Exception as e2:
+            return None, f"Facebook link comment failed ({e}) and caption restore failed too: {e2}"
+
+
+def preview_comment(what, caption, comment):
+    """COMMENTS_LIVE off: show the owner what the Facebook side would be."""
+    if not comment:
+        return
+    try:
+        from notify import send_telegram_alert as send_telegram_message
+        send_telegram_message(f"PREVIEW, link-in-comment ({what}). Abhi post pehle jaisa gaya.\n\n"
+                              f"FB caption hoga:\n{fb_caption(caption)[:1500]}\n\nPage ka pehla comment:\n{comment}")
+    except Exception as e:
+        print(f"[meta] comment preview failed: {e}")
 
 
 def enabled():
@@ -154,14 +261,19 @@ def build_caption(title, description, commodity, state):
     )[:2200]
 
 
-def publish_all(video_path, caption, s=requests, sleep=time.sleep):
+def publish_all(video_path, caption, s=requests, sleep=time.sleep, comment=None, what="Reel"):
     """Posts to Facebook and Instagram independently. Returns
-    {"facebook": id|None, "instagram": id|None, "errors": [str]}."""
+    {"facebook": id|None, "instagram": id|None, "errors": [str]}.
+
+    comment: the Page's first comment on the Facebook Reel (its link). With
+    COMMENTS_LIVE=1 the link leaves the Facebook caption and goes there."""
     out = {"facebook": None, "instagram": None, "errors": []}
     caption = strip_utm(caption)
+    comment = strip_utm(comment) if comment else default_comment(caption)
+    live = comment and comments_live()
     page_token, ig = page_credentials(s)
     try:
-        out["facebook"] = post_facebook_reel(video_path, caption, page_token, s)
+        out["facebook"] = post_facebook_reel(video_path, fb_caption(caption) if live else caption, page_token, s)
     except Exception as e:
         out["errors"].append(f"Facebook: {e}")
     if ig:
@@ -175,4 +287,11 @@ def publish_all(video_path, caption, s=requests, sleep=time.sleep):
                     out["errors"].append(f"Instagram: {e}")
     else:
         out["errors"].append("Instagram: no Instagram account linked to the Page")
+    # Commented last: by now the Reel has had minutes to process.
+    if live and out["facebook"]:
+        out["comment"], err = link_comment(out["facebook"], caption, comment, page_token, True, s, sleep)
+        if err:
+            out["errors"].append(err)
+    elif comment and out["facebook"]:
+        preview_comment(what, caption, comment)
     return out

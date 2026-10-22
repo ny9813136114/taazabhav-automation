@@ -249,7 +249,7 @@ def main():
                 import meta_publish
                 if meta_publish.enabled():
                     cap = f"{title.split('|')[0].strip()}\n\n{desc.split(chr(10))[0]}\n\n🌐 पूरी जानकारी: taazabhav.com/kisan-mela (लिंक बायो में)\n\n#kisanmela #krishimela #agriexpo #kisan #taazabhav"
-                    res = meta_publish.publish_all(out, cap)
+                    res = meta_publish.publish_all(out, cap, comment="👉 मेले की पूरी जानकारी, तारीख और जगह: https://taazabhav.com/kisan-mela", what="mela Reel")
                     if res.get("facebook") or res.get("instagram"):
                         from posts import ledger
                         ledger.safe_record(ledger.entry(day=today, slot="17:13", fmt="reel", pillar="mela", post_id=key,

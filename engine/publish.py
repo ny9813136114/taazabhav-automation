@@ -137,7 +137,7 @@ def meta_reels(path, ep, alert):
     if not meta_publish.enabled():
         return None
     try:
-        res = meta_publish.publish_all(path, meta_caption(ep))
+        res = meta_publish.publish_all(path, meta_caption(ep), comment=ep.get("comment"), what=f"Reel {ep['series']}")
     except Exception as e:
         res = {"errors": [str(e)]}
     print(f"[engine] Meta Reel: FB {res.get('facebook')} IG {res.get('instagram')}")

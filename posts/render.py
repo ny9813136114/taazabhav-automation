@@ -62,7 +62,12 @@ def _e(s):
     return html.escape(str(s))
 
 
-def _slide(s, i, n, trust=""):
+CTA_SUB = "लिंक बायो में · सेव करें, शेयर करें"
+# Link in the first comment (COMMENTS_LIVE): the same slide goes to FB and IG.
+CTA_SUB_COMMENT = "लिंक: FB पर पहला कमेंट, IG पर बायो · सेव करें, शेयर करें"
+
+
+def _slide(s, i, n, trust="", comment=False):
     k = s["kind"]
     dark = k in ("hook", "cta", "quiz")
     body = ""
@@ -85,8 +90,10 @@ def _slide(s, i, n, trust=""):
         opts = "".join(f"<div class=opt>{_e(o)}</div>" for o in s["options"])
         body = f"<div class=label>{_e(s.get('label', 'हिसाब चैलेंज'))}</div><div class=q>{_e(s['q'])}</div>{opts}<div class=sub>{_e(s.get('sub', ''))}</div>"
     elif k == "cta":
-        body = (f"<div class=label>{_e(s.get('label', 'पूरा हिसाब अपने आंकड़ों से'))}</div><div class=big>{_e(s['big'])}</div>"
-                f"<div><span class=url>{_e(s['url'])}</span></div><div class=sub>लिंक बायो में · सेव करें, शेयर करें</div>")
+        # A format's question for the comments (PR 3) replaces the slide's words.
+        label, big = (s["ask"] if comment and s.get("ask") else (s.get("label", "पूरा हिसाब अपने आंकड़ों से"), s["big"]))
+        body = (f"<div class=label>{_e(label)}</div><div class=big>{_e(big)}</div>"
+                f"<div><span class=url>{_e(s['url'])}</span></div><div class=sub>{CTA_SUB_COMMENT if comment else CTA_SUB}</div>")
     else:
         raise ValueError(f"unknown slide kind {k}")
     foot = f"<div class=foot><span>ताज़ा<span class=leaf>भाव</span> · taazabhav.com</span><span>{i}/{n}{' →' if i < n else ''}</span></div>"
@@ -111,12 +118,14 @@ def render(post, out_dir):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     slides = post["slides"]
+    import meta_publish as mp
+    comment = bool(post.get("comment_mode") or mp.comments_live())
     paths = []
     with sync_playwright() as p:
         b = p.chromium.launch()
         pg = b.new_page(viewport={"width": W, "height": H})
         for i, s in enumerate(slides, 1):
-            pg.set_content(f"<!doctype html><meta charset=utf-8><style>{CSS}</style>{_slide(s, i, len(slides), post.get('trust', ''))}")
+            pg.set_content(f"<!doctype html><meta charset=utf-8><style>{CSS}</style>{_slide(s, i, len(slides), post.get('trust', ''), comment)}")
             pg.evaluate("document.fonts.ready")
             pg.evaluate(FIT_JS)
             path = out_dir / f"{post['id']}-{i}.png"
