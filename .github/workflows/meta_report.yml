@@ -1,0 +1,49 @@
+name: Somvar Meta Report
+
+# Monday 08:30 IST: last week's reach, shares, comments and saves of every
+# FB + IG post (posts/report.py). Numbers are kept on the `reports` branch
+# (meta/<Monday>.json); the owner gets a 5-line Telegram report. Posts
+# nothing on the Page.
+on:
+  schedule:
+    - cron: "0 3 * * 1"   # Monday 08:30 IST
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests==2.*
+      - name: Reports branch
+        run: |
+          git config user.name "TaazaBhav Bot"
+          git config user.email "bot@taazabhav.com"
+          if git fetch --depth=1 origin reports; then
+            git worktree add -B reports rep FETCH_HEAD
+          else
+            git worktree add --detach rep
+            git -C rep checkout --orphan reports
+            git -C rep rm -rfq .
+          fi
+      - name: Report
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          META_TOKEN: ${{ secrets.META_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+        run: python -m posts.report send "" rep/meta
+      - name: Save numbers
+        if: always()
+        run: |
+          cd rep
+          git add meta 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "Meta report"
+          git push origin reports
