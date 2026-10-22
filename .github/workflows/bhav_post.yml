@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Latest state
-        run: git pull --ff-only origin main
+        run: git pull --ff-only origin ${{ github.ref_name }}  # main on schedule; a PR branch when previewing it
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -40,6 +40,7 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           META_TOKEN: ${{ secrets.META_TOKEN }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          COMMENTS_LIVE: ${{ vars.COMMENTS_LIVE }}
           BHAV_POSTS_LIVE: ${{ vars.BHAV_POSTS_LIVE }}
         run: python -m posts.bhav ${{ (inputs.mode && inputs.mode != 'auto') && inputs.mode || '' }}
       - name: Commit state

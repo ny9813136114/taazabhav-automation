@@ -106,11 +106,17 @@ def send_preview(post, slides):
     files = {f"s{i}": open(p, "rb") for i, p in enumerate(slides)}
     try:
         media = [{"type": "photo", "media": f"attach://s{i}"} for i in range(len(slides))]
-        media[0]["caption"] = f"PREVIEW (not posted): {post['id']}\n\n{post['caption']}"[:1000]
+        media[0]["caption"] = f"PREVIEW (not posted): {post['id']}\n\n{post.get('caption_live') or post['caption']}"[:1000]
         _tg("sendMediaGroup", {"chat_id": _owner(), "media": json.dumps(media)}, files)
     finally:
         for f in files.values():
             f.close()
+    comment = first_comment(post)
+    if comment:
+        import meta_publish as mp
+        _tg("sendMessage", {"chat_id": _owner(), "disable_web_page_preview": "true",
+                            "text": f"Facebook par (link pehle comment mein):\n\n{mp.fb_caption(post.get('caption_live') or post['caption'])[:3000]}\n\n"
+                                    f"Page ka pehla comment:\n{comment}"})
 
 
 def alert(msg):
@@ -171,9 +177,20 @@ def publish(post, slides):
         raise RuntimeError("META_TOKEN / FB_PAGE_ID not set")
     out = {"facebook": None, "instagram": None, "errors": []}
     token, ig = mp.page_credentials()
-    caption = mp.strip_utm(post["caption"])
-    fb_id, photo_ids = post_facebook(slides, caption, token)
+    comment = first_comment(post)
+    live = comment and mp.comments_live()
+    # caption_live: the caption with the format's new question (PR 3 formats).
+    caption = mp.strip_utm(post.get("caption_live") if live and post.get("caption_live") else post["caption"])
+    # Link in the Page's first comment on Facebook (COMMENTS_LIVE=1); the
+    # Instagram caption keeps "link bio mein".
+    fb_id, photo_ids = post_facebook(slides, mp.fb_caption(caption) if live else caption, token)
     out["facebook"] = fb_id
+    if live:
+        out["comment"], err = mp.link_comment(fb_id, caption, comment, token, False)
+        if err:
+            out["errors"].append(err)
+    elif comment:
+        mp.preview_comment(post["id"], mp.strip_utm(post.get("caption_live") or caption), comment)
     if ig:
         try:
             out["instagram"] = post_instagram(photo_ids, caption, ig, token)
@@ -182,6 +199,17 @@ def publish(post, slides):
     else:
         out["errors"].append("Instagram: no account linked to the Page")
     return out
+
+
+def first_comment(post):
+    """The Page's first comment: the post's own link with one line saying
+    what it opens. No UTM tags (owner, 19 Oct 2026)."""
+    import meta_publish as mp
+    if post.get("comment"):
+        return mp.strip_utm(post["comment"])
+    if post.get("link"):
+        return mp.strip_utm(f"👉 {post.get('link_label') or 'पूरा हिसाब, मुफ़्त टूल'}: {post['link']}")
+    return mp.default_comment(mp.strip_utm(post.get("caption", "")))
 
 
 def share_kit(post, fb_id):
@@ -209,6 +237,8 @@ def main():
     print(f"[posts] {run_mode}: {post['id']}")
     try:
         from posts.render import render
+        if run_mode != "publish":
+            post["comment_mode"] = True  # previews show the link-in-comment look (PR 3)
         slides = render(post, Path("posts-out"))
         if run_mode == "dry":
             print("\n".join(map(str, slides)))

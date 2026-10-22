@@ -385,6 +385,8 @@ def main():
     print(f"[pillar] {run_mode}: {pillar} {post['id']}")
     try:
         from posts.render import render
+        if run_mode != "publish":
+            post["comment_mode"] = True  # previews show the link-in-comment look (PR 3)
         slides = render(post, Path("posts-out"))
         if run_mode == "dry":
             print("\n".join(map(str, slides)))
