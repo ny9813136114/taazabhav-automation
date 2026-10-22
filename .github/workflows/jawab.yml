@@ -1,0 +1,56 @@
+name: Farmer Jawab Loop (comments -> P1/P2)
+
+# 21:30 IST: reads farmers' comments under the Page's last 3 days of posts
+# (posts/jawab.py): price reports for "Aapki Mandi Report" (P1), photos as
+# possible mandi parchi (P2, sent to the owner's Telegram). The night before
+# a P1/P2 day it builds the farmer post and asks the owner on Telegram; the
+# 09:30 post uses it only after the owner's "haan". Posts nothing itself.
+on:
+  schedule:
+    - cron: "0 16 * * *"   # 21:30 IST
+  workflow_dispatch:
+
+concurrency:
+  group: taazabhav-posts
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  jawab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      META_TOKEN: ${{ secrets.META_TOKEN }}
+      FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Latest state
+        run: git pull --ff-only origin ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests==2.*
+      - name: Read comments
+        run: python -m posts.jawab collect
+      - name: Farmer post tomorrow?
+        id: need
+        run: python -m posts.jawab need
+      - name: Browser for the slides
+        if: steps.need.outputs.need == '1'
+        run: pip install playwright==1.56.0 && python -m playwright install --with-deps chromium
+      - name: Ask the owner
+        if: steps.need.outputs.need == '1'
+        run: python -m posts.jawab draft
+      - name: Commit state
+        if: always()
+        run: |
+          git config user.name "TaazaBhav Bot"
+          git config user.email "bot@taazabhav.com"
+          git add data/farmer 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "Jawab loop: update state"
+          git pull --rebase
+          git push

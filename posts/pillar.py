@@ -374,6 +374,13 @@ def main():
         traceback.print_exc()
         pillar, post = plan["pillar"], None
         alert(f"TaazaBhav pillar post ({plan['pillar']}, {day}): build failed: {e}")
+    if run_mode == "publish" and pillar == plan["pillar"] and pillar in ("P1", "P2"):
+        # Farmers' own prices / parchi (posts/jawab.py), only with the owner's "haan".
+        from posts import jawab
+        d = jawab.draft_for(day)
+        if d and d["pillar"] == pillar:
+            post = d["post"]
+            print(f"[pillar] owner approved the farmer post {post['id']}")
     bad = []
     if post:
         bad = ledger.problems(entry_for(day, pillar, post["id"], post["meta"], post["caption"]), ledger.load(), day)
