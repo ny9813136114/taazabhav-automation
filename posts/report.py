@@ -124,7 +124,7 @@ def fb_reach(s, pid, token, cache):
     return None
 
 
-def fb_posts(s, page, token, start, end):
+def fb_posts(s, page, token, start, end, reach=True):
     rows, cache = [], {}
     fields = "id,created_time,message,permalink_url,status_type,shares,comments.summary(true).limit(0),reactions.summary(true).limit(0)"
     for p in _pages(s, f"{page}/posts", token, start, fields=fields):
@@ -133,7 +133,7 @@ def fb_posts(s, page, token, start, end):
             continue
         rows.append({"net": "facebook", "id": p["id"], "time": ts.astimezone(IST).isoformat(), "format": slot_of(ts),
                      "hook": (p.get("message") or "").split("\n")[0][:90], "link": p.get("permalink_url"),
-                     "reach": fb_reach(s, p["id"], token, cache),
+                     "reach": fb_reach(s, p["id"], token, cache) if reach else None,
                      "shares": (p.get("shares") or {}).get("count", 0),
                      "comments": ((p.get("comments") or {}).get("summary") or {}).get("total_count", 0),
                      "reactions": ((p.get("reactions") or {}).get("summary") or {}).get("total_count", 0)})
