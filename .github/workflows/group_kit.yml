@@ -1,0 +1,28 @@
+name: Group Kit
+
+# 21:15 IST: one Telegram message to the owner with all of today's Facebook
+# Page posts and Reels, to share into the TaazaBhav Facebook group
+# (posts/group_kit.py). Meta's API can't post in groups (removed April 2024).
+# Posts nothing.
+on:
+  schedule:
+    - cron: "45 15 * * *"   # 21:15 IST
+  workflow_dispatch:
+
+jobs:
+  kit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests==2.*
+      - name: Send group kit
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          META_TOKEN: ${{ secrets.META_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+        run: python -m posts.group_kit send
