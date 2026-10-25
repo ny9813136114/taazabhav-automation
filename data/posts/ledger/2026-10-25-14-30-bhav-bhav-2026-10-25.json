@@ -1,0 +1,19 @@
+{
+ "date": "2026-10-25",
+ "slot": "14:30",
+ "format": "photo",
+ "pillar": "bhav",
+ "id": "bhav-2026-10-25",
+ "hook": "आज के मंडी भाव, 25 अक्टूबर 2026 (₹/क्विंटल, आम भाव)",
+ "hook_hash": "e8bdaf2c8115e793",
+ "crops": [
+  "soybean",
+  "cotton",
+  "dhan-paddy",
+  "wheat",
+  "maize",
+  "onion",
+  "bajra"
+ ],
+ "facebook": "1297351930130917_122115338145489082"
+}
