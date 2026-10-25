@@ -4,7 +4,8 @@ comment under the day's post, on Facebook and Instagram (TaazaBhav FB/IG
 Content Engine plan, section 4). The answers (farmers' own mandi prices,
 parchi deductions) feed Aapki Mandi Report (P1) and Parchi Doctor (P2).
 
-Which post: the 14:30 bhav carousel when there is one (the question is about
+Which post: the 14:30 bhav carousel when there is one (else the 12:30 or
+07:30 Reel when photo posts are off) (the question is about
 today's prices); Wednesday's question is about the morning's Hisaab
 Challenge and Sunday has no bhav post, so those two go under the 09:30 post.
 
@@ -88,7 +89,13 @@ def target(day, led):
     for slot in order:
         if slot in by_slot:
             return by_slot[slot], slot
-    return None, "no photo post on the Page today"
+    # No photo post (they are off on FB + IG, META_ON): the day's Reel before 19:00.
+    reels = {x.get("slot"): x for x in led if x.get("date") == d and x.get("format") == "reel"
+             and (x.get("facebook") or x.get("instagram"))}
+    for slot in ("12:30", "07:30"):
+        if slot in reels:
+            return reels[slot], slot
+    return None, "no post on the Page today"
 
 
 def load_state():

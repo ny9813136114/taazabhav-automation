@@ -160,6 +160,22 @@ def enabled():
     return bool(os.environ.get("META_TOKEN") and os.environ.get("FB_PAGE_ID"))
 
 
+# Which daily formats go to FB + IG. Owner, 25 Oct 2026: engagement is near
+# zero with 4 Page followers, so only the 3 Reels with the most reach post
+# (A 07:30 Bhav Dhamaka, D 12:30 Tool se hal, B 20:30 Kist ka Sach); photo
+# posts reached 0-2 people. Repo variable META_ON overrides it: a comma list
+# of A,B,C,D,mela,tool,bhav, or "all". YouTube and Telegram are not affected.
+META_ON_DEFAULT = "A,D,B"
+META_KINDS = ("A", "B", "C", "D", "mela", "tool", "bhav")
+
+
+def on_meta(kind):
+    raw = (os.environ.get("META_ON") or "").strip() or META_ON_DEFAULT
+    if raw.lower() == "all":
+        return True
+    return kind.lower() in {k.strip().lower() for k in raw.split(",") if k.strip()}
+
+
 def _check(resp, what):
     try:
         body = resp.json()

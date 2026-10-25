@@ -41,6 +41,7 @@ jobs:
           META_TOKEN: ${{ secrets.META_TOKEN }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           COMMENTS_LIVE: ${{ vars.COMMENTS_LIVE }}
+          META_ON: ${{ vars.META_ON }}
           BHAV_POSTS_LIVE: ${{ vars.BHAV_POSTS_LIVE }}
         run: python -m posts.bhav ${{ (inputs.mode && inputs.mode != 'auto') && inputs.mode || '' }}
       - name: Commit state

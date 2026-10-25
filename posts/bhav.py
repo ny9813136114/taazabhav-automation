@@ -146,6 +146,9 @@ def save_state(state):
 def main():
     from engine.feed import load_feed
     run_mode = mode()
+    from posts.run import meta_off_skip
+    if run_mode == "publish" and not meta_off_skip("bhav"):
+        return 0
     today = datetime.now(IST).date()
     state = load_state()
     key = "history" if run_mode == "publish" else "preview"

@@ -106,6 +106,7 @@ jobs:
           META_TOKEN: ${{ secrets.META_TOKEN }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           COMMENTS_LIVE: ${{ vars.COMMENTS_LIVE }}
+          META_ON: ${{ vars.META_ON }}
           ENGINE_MODE: ${{ inputs.mode }}
           ENGINE_LIVE: ${{ vars.ENGINE_LIVE }}
         run: python -m engine.run ${{ steps.s.outputs.series }}

@@ -145,7 +145,7 @@ class RunTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d, \
                 mock.patch.object(pillar, "STATE", Path(d) / "pillar.json"), \
                 mock.patch.object(L, "DIR", Path(d) / "ledger"), \
-                mock.patch.dict("os.environ", env, clear=False), \
+                mock.patch.dict("os.environ", {"META_ON": "all", **env}, clear=False), \
                 mock.patch("sys.argv", ["x"] + argv + [plan_day]), \
                 mock.patch.object(pillar, "frost_hits", return_value=[]), \
                 mock.patch("posts.render.render", return_value=["a.png", "b.png"]), \
