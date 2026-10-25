@@ -347,6 +347,9 @@ def legacy(reason, run_mode):
 
 def main():
     run_mode = mode()
+    from posts.run import meta_off_skip
+    if run_mode == "publish" and not meta_off_skip("tool"):
+        return 0
     day = date.fromisoformat(sys.argv[2]) if len(sys.argv) > 2 else datetime.now(IST).date()
     state = load_state()
     key = "history" if run_mode == "publish" else "preview"

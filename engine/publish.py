@@ -136,6 +136,9 @@ def meta_reels(path, ep, alert):
     import meta_publish
     if not meta_publish.enabled():
         return None
+    if not meta_publish.on_meta(ep["series"]):
+        print(f"[engine] Meta Reel: series {ep['series']} is off (META_ON), YouTube only")
+        return None
     try:
         res = meta_publish.publish_all(path, meta_caption(ep), comment=ep.get("comment"), what=f"Reel {ep['series']}")
     except Exception as e:

@@ -247,7 +247,7 @@ def main():
             print(f"[melas] uploaded {key}: https://youtu.be/{vid}")
             try:
                 import meta_publish
-                if meta_publish.enabled():
+                if meta_publish.enabled() and meta_publish.on_meta("mela"):
                     cap = f"{title.split('|')[0].strip()}\n\n{desc.split(chr(10))[0]}\n\n🌐 पूरी जानकारी: taazabhav.com/kisan-mela (लिंक बायो में)\n\n#kisanmela #krishimela #agriexpo #kisan #taazabhav"
                     res = meta_publish.publish_all(out, cap, comment="👉 मेले की पूरी जानकारी, तारीख और जगह: https://taazabhav.com/kisan-mela", what="mela Reel")
                     if res.get("facebook") or res.get("instagram"):

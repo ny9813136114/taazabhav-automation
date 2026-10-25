@@ -212,6 +212,15 @@ def first_comment(post):
     return mp.default_comment(mp.strip_utm(post.get("caption", "")))
 
 
+def meta_off_skip(kind):
+    """False (and a log line) when this format is off on FB + IG (META_ON)."""
+    import meta_publish as mp
+    if mp.on_meta(kind):
+        return True
+    print(f"[posts] {kind} is off on FB + IG (META_ON), nothing posted")
+    return False
+
+
 def share_kit(post, fb_id):
     from meta_publish import strip_utm
     link = f"https://www.facebook.com/{fb_id}"
@@ -222,6 +231,8 @@ def share_kit(post, fb_id):
 
 def main():
     run_mode = mode()
+    if run_mode == "publish" and not meta_off_skip("tool"):
+        return 0
     today = datetime.now(IST).date()
     posts = json.loads(QUEUE.read_text(encoding="utf-8"))["posts"]
     state = load_state()
