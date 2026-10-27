@@ -2,6 +2,16 @@ import os
 import requests
 
 
+def annotate(message):
+    """On GitHub Actions, also print the alert as an error annotation, so a
+    failed run says why on its summary page (raw logs are not always
+    reachable) instead of only "Process completed with exit code 1"."""
+    if os.environ.get("GITHUB_ACTIONS") != "true":
+        return
+    text = str(message).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+    print(f"::error::{text}")
+
+
 def send_telegram_alert(message):
     """Sends message to the configured Telegram chat via the Bot API.
 
@@ -12,6 +22,7 @@ def send_telegram_alert(message):
     pipeline would defeat the point: a failure notification going missing is
     fine, but it must never turn one real failure into two.
     """
+    annotate(message)
     bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
     chat_id = os.environ.get("TELEGRAM_CHAT_ID")
     if not bot_token or not chat_id:
