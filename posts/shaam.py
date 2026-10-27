@@ -20,7 +20,7 @@ python -m posts.shaam [preview|publish|dry] [YYYY-MM-DD]"""
 import json
 import os
 import sys
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from posts import ledger
@@ -98,6 +98,13 @@ def target(day, led):
     return None, "no post on the Page today"
 
 
+def scheduled_day(now):
+    """The 19:00 IST run's own day. GitHub can start a scheduled run hours
+    late (26 Oct 2026: started 00:59 IST on the 27th, found no post "today"
+    and failed), so a run before 06:00 IST belongs to the previous day."""
+    return now.date() - timedelta(days=1) if now.hour < 6 else now.date()
+
+
 def load_state():
     return _read(STATE) or {"history": [], "preview": []}
 
@@ -111,7 +118,7 @@ def save_state(state):
 
 def main():
     run_mode = mode()
-    day = date.fromisoformat(sys.argv[2]) if len(sys.argv) > 2 else datetime.now(IST).date()
+    day = date.fromisoformat(sys.argv[2]) if len(sys.argv) > 2 else scheduled_day(datetime.now(IST))
     state = load_state()
     key = "history" if run_mode == "publish" else "preview"
     if run_mode != "dry" and any(h["date"] == day.isoformat() for h in state.get(key, [])):
