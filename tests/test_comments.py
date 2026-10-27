@@ -157,5 +157,12 @@ class ShaamTest(unittest.TestCase):
         self.assertEqual(shaam.lead_crop(date(2026, 10, 28), st), shaam.DEFAULT_CROP)
 
 
+class ShaamLateRun(unittest.TestCase):
+    def test_late_run_after_midnight_uses_previous_day(self):
+        from datetime import datetime
+        self.assertEqual(shaam.scheduled_day(datetime(2026, 10, 27, 0, 59, tzinfo=run.IST)), date(2026, 10, 26))
+        self.assertEqual(shaam.scheduled_day(datetime(2026, 10, 27, 19, 0, tzinfo=run.IST)), date(2026, 10, 27))
+
+
 if __name__ == "__main__":
     unittest.main()
