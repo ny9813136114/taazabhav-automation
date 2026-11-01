@@ -11,9 +11,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 8
     steps:
-      - run: echo "::notice::${{ matrix.os }} = $(. /etc/os-release; echo $PRETTY_NAME)"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install playwright==1.56.0 && python -m playwright install --with-deps chromium 2>&1 | tail -15 | tee /tmp/o; test ${PIPESTATUS[0]} -eq 0 || { echo "::error::${{ matrix.os }} install failed: $(tail -5 /tmp/o | tr '\n' ' ')"; exit 1; }
-        shell: bash
+      - shell: bash
+        run: |
+          echo "::notice::os $(. /etc/os-release; echo $PRETTY_NAME)"
+          pip install -q playwright==1.56.0
+          if ! python -m playwright install --with-deps chromium > /tmp/o 2>&1; then
+            echo "::error::install failed $(tail -6 /tmp/o | tr '\n' ' ')"
+            exit 1
+          fi
+          echo "::notice::install ok"
