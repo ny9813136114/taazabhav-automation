@@ -1,0 +1,1429 @@
+{
+ "_note": "Series Y yojana queue. Facts copied from taazabhav.com scheme pages (official sources). Owner reviews before going live; one item per day, a scheme at most twice a week, no repeat within 15 days.",
+ "items": [
+  {
+   "id": "pmkisan-paisa-nahi",
+   "scheme": "pmkisan",
+   "scope": "central",
+   "hook": {
+    "label": "PM किसान",
+    "big": "पैसा नहीं आया?",
+    "sub": "3 चीज़ें चेक करें",
+    "say": "पीएम किसान का पैसा नहीं आया? ये तीन चीज़ें चेक करें"
+   },
+   "facts": [
+    {
+     "label": "1. ई-केवाईसी",
+     "big": "eKYC पूरा?",
+     "sub": "OTP, CSC या फ़ेस से",
+     "say": "पहला, ई-केवाईसी पूरा होना चाहिए"
+    },
+    {
+     "label": "2. ज़मीन का रिकॉर्ड",
+     "big": "Land Seeding: Yes",
+     "sub": "No हो तो पटवारी से मिलें",
+     "say": "दूसरा, लैंड सीडिंग यस होनी चाहिए, नो हो तो पटवारी से मिलें"
+    },
+    {
+     "label": "3. हेल्पलाइन",
+     "big": "155261",
+     "sub": "pmkisan.gov.in पर स्टेटस",
+     "say": "तीसरा, स्टेटस देखें, हेल्पलाइन एक पांच पांच दो छह एक"
+    }
+   ],
+   "source": "pmkisan.gov.in",
+   "tool": {
+    "path": "/pm-kisan-kist",
+    "label": "किस्त का पूरा हाल",
+    "big": "किस्त स्टेटस",
+    "say": "किस्त का पूरा हाल ताज़ा भाव पर"
+   },
+   "title": "PM Kisan का पैसा नहीं आया? ये 3 चीज़ें चेक करें | PM Kisan Paisa Nahi Aaya",
+   "tags": [
+    "pm kisan paisa nahi aaya",
+    "pm kisan status",
+    "pm kisan ekyc"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ /pm-kisan-kist #103"
+  },
+  {
+   "id": "pmkisan-ekyc",
+   "scheme": "pmkisan",
+   "scope": "central",
+   "hook": {
+    "label": "PM किसान",
+    "big": "eKYC कैसे करें?",
+    "sub": "बिना eKYC किस्त रुकेगी",
+    "say": "पीएम किसान ई-केवाईसी नहीं किया तो किस्त रुक जाएगी"
+   },
+   "facts": [
+    {
+     "label": "तरीका 1",
+     "big": "OTP से",
+     "sub": "pmkisan.gov.in, आधार वाला मोबाइल",
+     "say": "पहला तरीका, वेबसाइट पर आधार वाले मोबाइल पर ओटीपी"
+    },
+    {
+     "label": "तरीका 2",
+     "big": "CSC पर अंगूठा",
+     "sub": "नज़दीकी जन सेवा केंद्र",
+     "say": "दूसरा, नज़दीकी सीएससी पर बायोमेट्रिक"
+    },
+    {
+     "label": "तरीका 3",
+     "big": "ऐप में फ़ेस",
+     "sub": "PM-KISAN मोबाइल ऐप",
+     "say": "तीसरा, पीएम किसान ऐप में चेहरे से"
+    }
+   ],
+   "source": "pmkisan.gov.in",
+   "tool": {
+    "path": "/pm-kisan-kist",
+    "label": "किस्त का पूरा हाल",
+    "big": "किस्त स्टेटस",
+    "say": "किस्त का हाल ताज़ा भाव पर देखें"
+   },
+   "title": "PM Kisan eKYC कैसे करें? 3 आसान तरीके | PM Kisan eKYC Online 2026",
+   "tags": [
+    "pm kisan ekyc",
+    "pm kisan ekyc kaise kare",
+    "pm kisan"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #101"
+  },
+  {
+   "id": "pmkisan-status-words",
+   "scheme": "pmkisan",
+   "scope": "central",
+   "hook": {
+    "label": "PM किसान स्टेटस",
+    "big": "FTO का मतलब?",
+    "sub": "स्टेटस के शब्द समझें",
+    "say": "पीएम किसान स्टेटस में आरएफटी और एफटीओ का क्या मतलब है?"
+   },
+   "facts": [
+    {
+     "label": "RFT Signed by State",
+     "big": "राज्य ने भेजा",
+     "sub": "राज्य ने पैसा मांग लिया",
+     "say": "आरएफटी साइन्ड, यानी राज्य ने केंद्र से पैसा मांग लिया"
+    },
+    {
+     "label": "FTO Generated",
+     "big": "आदेश बन गया",
+     "sub": "पैसा कुछ दिन में खाते में",
+     "say": "एफटीओ जनरेटेड, यानी भुगतान आदेश बन गया, पैसा कुछ दिन में"
+    },
+    {
+     "label": "कहीं No लिखा है?",
+     "big": "उसे ठीक कराएं",
+     "sub": "eKYC, लैंड सीडिंग, आधार-बैंक",
+     "say": "कहीं नो लिखा हो तो वही ठीक कराएं"
+    }
+   ],
+   "source": "pmkisan.gov.in",
+   "tool": {
+    "path": "/pm-kisan-kist",
+    "label": "किस्त का पूरा हाल",
+    "big": "किस्त स्टेटस",
+    "say": "पूरी जानकारी ताज़ा भाव पर"
+   },
+   "title": "PM Kisan Status में RFT, FTO का मतलब क्या? | PM Kisan FTO Generated Meaning",
+   "tags": [
+    "pm kisan fto generated",
+    "rft signed by state",
+    "pm kisan status"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #98"
+  },
+  {
+   "id": "pmkisan-reg-number",
+   "scheme": "pmkisan",
+   "scope": "central",
+   "hook": {
+    "label": "PM किसान",
+    "big": "नंबर भूल गए?",
+    "sub": "पंजीकरण नंबर ऐसे निकालें",
+    "say": "पीएम किसान का पंजीकरण नंबर भूल गए? ऐसे निकालें"
+   },
+   "facts": [
+    {
+     "label": "स्टेप 1",
+     "big": "Know Your Status",
+     "sub": "pmkisan.gov.in पर",
+     "say": "पीएम किसान वेबसाइट पर नो योर स्टेटस खोलें"
+    },
+    {
+     "label": "स्टेप 2",
+     "big": "Know reg. no.",
+     "sub": "मोबाइल या आधार नंबर डालें",
+     "say": "नो योर रजिस्ट्रेशन नंबर में मोबाइल या आधार डालें"
+    },
+    {
+     "label": "स्टेप 3",
+     "big": "OTP डालें",
+     "sub": "नंबर तुरंत दिख जाएगा",
+     "say": "ओटीपी डालते ही नंबर दिख जाएगा"
+    }
+   ],
+   "source": "pmkisan.gov.in",
+   "tool": {
+    "path": "/pm-kisan-kist",
+    "label": "किस्त का पूरा हाल",
+    "big": "किस्त स्टेटस",
+    "say": "किस्त का हाल ताज़ा भाव पर देखें"
+   },
+   "title": "PM Kisan Registration Number भूल गए? 1 मिनट में निकालें | PM Kisan Registration No",
+   "tags": [
+    "pm kisan registration number",
+    "pm kisan status"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #99"
+  },
+  {
+   "id": "pmkisan-gaon-list",
+   "scheme": "pmkisan",
+   "scope": "central",
+   "hook": {
+    "label": "PM किसान",
+    "big": "गांव की लिस्ट",
+    "sub": "आपका नाम है या नहीं",
+    "say": "पीएम किसान में आपके गांव की लिस्ट में नाम है या नहीं?"
+   },
+   "facts": [
+    {
+     "label": "स्टेप 1",
+     "big": "Beneficiary List",
+     "sub": "pmkisan.gov.in, Farmers Corner",
+     "say": "फार्मर्स कॉर्नर में बेनिफिशियरी लिस्ट खोलें"
+    },
+    {
+     "label": "स्टेप 2",
+     "big": "गांव चुनें",
+     "sub": "राज्य, ज़िला, तहसील, ब्लॉक",
+     "say": "राज्य, ज़िला, तहसील, ब्लॉक और गांव चुनें"
+    },
+    {
+     "label": "स्टेप 3",
+     "big": "Get Report",
+     "sub": "पूरी लिस्ट सामने",
+     "say": "गेट रिपोर्ट दबाएं, पूरी लिस्ट सामने"
+    }
+   ],
+   "source": "pmkisan.gov.in",
+   "tool": {
+    "path": "/pm-kisan-kist",
+    "label": "किस्त का पूरा हाल",
+    "big": "किस्त स्टेटस",
+    "say": "किस्त का हाल ताज़ा भाव पर देखें"
+   },
+   "title": "PM Kisan गांव की लिस्ट कैसे देखें? | PM Kisan Beneficiary List 2026",
+   "tags": [
+    "pm kisan beneficiary list",
+    "pm kisan list"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #100"
+  },
+  {
+   "id": "farmer-id-kaise",
+   "scheme": "farmerid",
+   "scope": "central",
+   "hook": {
+    "label": "फार्मर आईडी",
+    "big": "कैसे बनाएं?",
+    "sub": "किसान पहचान पत्र",
+    "say": "फार्मर आईडी, यानी किसान पहचान पत्र, कैसे बनाएं?"
+   },
+   "facts": [
+    {
+     "label": "कहां",
+     "big": "पोर्टल या CSC",
+     "sub": "राज्य का Farmer Registry",
+     "say": "राज्य के फार्मर रजिस्ट्री पोर्टल पर, या सीएससी पर"
+    },
+    {
+     "label": "कागज़",
+     "big": "आधार + खतौनी",
+     "sub": "आधार वाला मोबाइल, बैंक पासबुक",
+     "say": "आधार, खतौनी और बैंक पासबुक ले जाएं"
+    },
+    {
+     "label": "ज़रूरी",
+     "big": "Enrollment ID",
+     "sub": "जमा करने पर मिली ID संभालें",
+     "say": "जमा करने पर मिली एनरोलमेंट आईडी संभाल कर रखें"
+    }
+   ],
+   "source": "agristack.gov.in",
+   "tool": {
+    "path": "/farmer-id",
+    "label": "मुफ़्त जांच-सूची",
+    "big": "आईडी जांच-सूची",
+    "say": "अटकने से पहले जांच-सूची ताज़ा भाव पर"
+   },
+   "title": "Farmer ID कैसे बनाएं? कागज़ और तरीका | Farmer Registry Online 2026",
+   "tags": [
+    "farmer id kaise banaye",
+    "farmer registry",
+    "kisan pehchan patra"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #13"
+  },
+  {
+   "id": "farmer-id-atki",
+   "scheme": "farmerid",
+   "scope": "central",
+   "hook": {
+    "label": "फार्मर आईडी",
+    "big": "क्यों अटकी?",
+    "sub": "3 सबसे आम कारण",
+    "say": "फार्मर आईडी अटक गई? ये तीन सबसे आम कारण हैं"
+   },
+   "facts": [
+    {
+     "label": "कारण 1",
+     "big": "नाम में फ़र्क",
+     "sub": "आधार और खतौनी अलग",
+     "say": "पहला, आधार और खतौनी में नाम का फ़र्क"
+    },
+    {
+     "label": "कारण 2",
+     "big": "मोबाइल लिंक नहीं",
+     "sub": "आधार से मोबाइल जुड़ा नहीं",
+     "say": "दूसरा, मोबाइल आधार से नहीं जुड़ा"
+    },
+    {
+     "label": "कारण 3",
+     "big": "नामांतरण बाकी",
+     "sub": "ज़मीन आपके नाम नहीं चढ़ी",
+     "say": "तीसरा, ज़मीन का नामांतरण नहीं हुआ"
+    }
+   ],
+   "source": "agristack.gov.in",
+   "tool": {
+    "path": "/farmer-id",
+    "label": "मुफ़्त जांच-सूची",
+    "big": "आईडी जांच-सूची",
+    "say": "पूरी जांच-सूची ताज़ा भाव पर"
+   },
+   "title": "Farmer ID अटक गई? ये 3 कारण ठीक करो | Farmer ID Status Pending",
+   "tags": [
+    "farmer id status",
+    "farmer registry pending"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #16, #14"
+  },
+  {
+   "id": "kcc-byaj",
+   "scheme": "kcc",
+   "scope": "central",
+   "hook": {
+    "label": "किसान क्रेडिट कार्ड",
+    "big": "ब्याज सिर्फ़ 4%?",
+    "sub": "KCC का असली हिसाब",
+    "say": "किसान क्रेडिट कार्ड पर ब्याज सिर्फ़ चार प्रतिशत, कैसे?"
+   },
+   "facts": [
+    {
+     "label": "₹3 लाख तक का लोन",
+     "big": "7% सालाना",
+     "sub": "फसल लोन पर",
+     "say": "तीन लाख रुपये तक के फसल लोन पर सात प्रतिशत"
+    },
+    {
+     "label": "समय पर चुकाया",
+     "big": "3% छूट",
+     "sub": "सरकार देती है",
+     "say": "समय पर चुकाया तो तीन प्रतिशत छूट"
+    },
+    {
+     "label": "असल ब्याज",
+     "big": "सिर्फ़ 4%",
+     "sub": "₹3 लाख से ऊपर बैंक की दर",
+     "say": "यानी असल ब्याज सिर्फ़ चार प्रतिशत"
+    }
+   ],
+   "source": "pib.gov.in",
+   "tool": {
+    "path": "/kisan-credit-card",
+    "label": "पूरी जानकारी",
+    "big": "KCC जानकारी",
+    "say": "पूरी जानकारी ताज़ा भाव पर"
+   },
+   "title": "KCC पर ब्याज सिर्फ़ 4%? पूरा हिसाब | Kisan Credit Card Interest Rate 2026",
+   "tags": [
+    "kcc interest rate",
+    "kisan credit card",
+    "kcc loan"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #32"
+  },
+  {
+   "id": "kcc-guarantee",
+   "scheme": "kcc",
+   "scope": "central",
+   "hook": {
+    "label": "किसान क्रेडिट कार्ड",
+    "big": "बिना गारंटी लोन",
+    "sub": "कितने तक?",
+    "say": "किसान क्रेडिट कार्ड पर कितने तक बिना गारंटी लोन मिलता है?"
+   },
+   "facts": [
+    {
+     "label": "1 जनवरी 2025 से",
+     "big": "₹2 लाख तक",
+     "sub": "कोई गिरवी नहीं",
+     "say": "एक जनवरी दो हज़ार पच्चीस से दो लाख रुपये तक कोई गिरवी नहीं"
+    },
+    {
+     "label": "पहले",
+     "big": "₹1.6 लाख थी",
+     "sub": "RBI ने सीमा बढ़ाई",
+     "say": "पहले यह सीमा एक लाख साठ हज़ार थी"
+    },
+    {
+     "label": "सिर्फ़ इतना",
+     "big": "फसल दृष्टिबंधक",
+     "sub": "फसल बैंक के नाम दर्ज",
+     "say": "बस फसल बैंक के पास दृष्टिबंधक रहती है"
+    }
+   ],
+   "source": "rbi.org.in",
+   "tool": {
+    "path": "/kisan-credit-card",
+    "label": "पूरी जानकारी",
+    "big": "KCC जानकारी",
+    "say": "पूरी जानकारी ताज़ा भाव पर"
+   },
+   "title": "KCC पर ₹2 लाख तक बिना गारंटी लोन | Kisan Credit Card Without Guarantee",
+   "tags": [
+    "kcc without guarantee",
+    "kcc loan limit"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #34"
+  },
+  {
+   "id": "kcc-5-lakh",
+   "scheme": "kcc",
+   "scope": "central",
+   "hook": {
+    "label": "KCC की लिमिट",
+    "big": "₹5 लाख हो गई?",
+    "sub": "सच जानिए",
+    "say": "किसान क्रेडिट कार्ड की लिमिट पांच लाख हो गई? सच जानिए"
+   },
+   "facts": [
+    {
+     "label": "बजट 2025-26",
+     "big": "घोषणा हुई",
+     "sub": "₹3 लाख से ₹5 लाख",
+     "say": "बजट में तीन से पांच लाख की घोषणा हुई थी"
+    },
+    {
+     "label": "ताज़ा सरकारी आदेश",
+     "big": "अब भी ₹3 लाख",
+     "sub": "सस्ती दर वाली सीमा",
+     "say": "पर ताज़ा आदेश में सस्ती दर अब भी तीन लाख तक"
+    },
+    {
+     "label": "क्या करें",
+     "big": "बैंक से पूछें",
+     "sub": "लिखित जानकारी लें",
+     "say": "अपने बैंक से लिखित में पूछें"
+    }
+   ],
+   "source": "sbi.co.in",
+   "tool": {
+    "path": "/kisan-credit-card",
+    "label": "पूरी जानकारी",
+    "big": "KCC जानकारी",
+    "say": "पूरा सच ताज़ा भाव पर"
+   },
+   "title": "KCC लिमिट ₹5 लाख हो गई? सच क्या है | Kisan Credit Card 5 Lakh Limit",
+   "tags": [
+    "kcc 5 lakh",
+    "kcc limit 2026"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #35"
+  },
+  {
+   "id": "bima-rabi-premium",
+   "scheme": "pmfby",
+   "scope": "central",
+   "hook": {
+    "label": "रबी फसल बीमा",
+    "big": "प्रीमियम कितना?",
+    "sub": "किसान का हिस्सा",
+    "say": "रबी फसल बीमा में किसान को कितना प्रीमियम देना है?"
+   },
+   "facts": [
+    {
+     "label": "रबी अनाज, तिलहन",
+     "big": "सिर्फ़ 1.5%",
+     "sub": "बीमित राशि का",
+     "say": "रबी अनाज और तिलहन पर बीमित राशि का सिर्फ़ डेढ़ प्रतिशत"
+    },
+    {
+     "label": "नकदी, बागवानी",
+     "big": "5%",
+     "sub": "खरीफ पर 2%",
+     "say": "नकदी और बागवानी फसल पर पांच प्रतिशत"
+    },
+    {
+     "label": "बाकी प्रीमियम",
+     "big": "सरकार देगी",
+     "sub": "केंद्र और राज्य आधा-आधा",
+     "say": "बाकी प्रीमियम केंद्र और राज्य आधा-आधा देते हैं"
+    }
+   ],
+   "source": "pmfby.gov.in",
+   "tool": {
+    "path": "/fasal-bima-2026",
+    "label": "पूरी जानकारी",
+    "big": "बीमा जानकारी",
+    "say": "आखिरी तारीख और पूरी जानकारी ताज़ा भाव पर"
+   },
+   "title": "रबी फसल बीमा प्रीमियम कितना? सिर्फ़ 1.5% | PMFBY Rabi 2026-27",
+   "tags": [
+    "pmfby rabi 2026",
+    "fasal bima premium"
+   ],
+   "validFrom": null,
+   "validUntil": "2026-12-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #19"
+  },
+  {
+   "id": "bima-claim-72",
+   "scheme": "pmfby",
+   "scope": "central",
+   "hook": {
+    "label": "फसल खराब हुई?",
+    "big": "72 घंटे",
+    "sub": "बीमा क्लेम की समय सीमा",
+    "say": "ओले या बारिश से फसल खराब हुई? बहत्तर घंटे में सूचना दें"
+   },
+   "facts": [
+    {
+     "label": "फ़ोन करें",
+     "big": "14447",
+     "sub": "फसल बीमा हेल्पलाइन",
+     "say": "एक चार चार चार सात पर फ़ोन करें"
+    },
+    {
+     "label": "या ऐप से",
+     "big": "Crop Insurance",
+     "sub": "सरकारी ऐप, बैंक या कृषि विभाग",
+     "say": "या क्रॉप इंश्योरेंस ऐप, बैंक या कृषि विभाग"
+    },
+    {
+     "label": "पैसा देर से आए",
+     "big": "12% ज़्यादा",
+     "sub": "कंपनी को देना होता है",
+     "say": "क्लेम देर से मिले तो कंपनी को बारह प्रतिशत ज़्यादा देना होता है"
+    }
+   ],
+   "source": "pmfby.gov.in",
+   "tool": {
+    "path": "/fasal-nuksan",
+    "label": "मुफ़्त टूल",
+    "big": "नुकसान का सबूत",
+    "say": "नुकसान का सबूत ताज़ा भाव पर बनाएं"
+   },
+   "title": "फसल खराब? 72 घंटे में ऐसे करें बीमा क्लेम | PMFBY Claim Kaise Kare",
+   "tags": [
+    "pmfby claim",
+    "fasal bima claim",
+    "14447"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #22, #23"
+  },
+  {
+   "id": "bima-kcc-auto",
+   "scheme": "pmfby",
+   "scope": "central",
+   "hook": {
+    "label": "KCC वाले किसान",
+    "big": "बीमा अपने आप?",
+    "sub": "प्रीमियम कट जाएगा",
+    "say": "केसीसी लोन है तो फसल बीमा अपने आप हो जाता है, पर मना भी कर सकते हैं"
+   },
+   "facts": [
+    {
+     "label": "नियम",
+     "big": "बीमा स्वैच्छिक",
+     "sub": "2020 से सबके लिए",
+     "say": "दो हज़ार बीस से बीमा सबके लिए स्वैच्छिक है"
+    },
+    {
+     "label": "मना करना है?",
+     "big": "7 दिन पहले",
+     "sub": "कट-ऑफ से पहले बैंक को लिखें",
+     "say": "मना करना है तो कट-ऑफ से सात दिन पहले बैंक को लिखकर दें"
+    },
+    {
+     "label": "वरना",
+     "big": "प्रीमियम कटेगा",
+     "sub": "बैंक बीमा कर देगा",
+     "say": "वरना बैंक प्रीमियम काटकर बीमा कर देगा"
+    }
+   ],
+   "source": "pmfby.gov.in",
+   "tool": {
+    "path": "/fasal-bima-2026",
+    "label": "पूरी जानकारी",
+    "big": "बीमा जानकारी",
+    "say": "पूरी जानकारी ताज़ा भाव पर"
+   },
+   "title": "KCC वालों का फसल बीमा अपने आप? ऐसे करें मना | PMFBY Opt Out",
+   "tags": [
+    "pmfby opt out",
+    "kcc fasal bima"
+   ],
+   "validFrom": null,
+   "validUntil": "2026-12-24",
+   "checked": "2026-11-03",
+   "basis": "FAQ #21"
+  },
+  {
+   "id": "bima-batai",
+   "scheme": "pmfby",
+   "scope": "central",
+   "hook": {
+    "label": "बटाईदार किसान",
+    "big": "बीमा मिलेगा?",
+    "sub": "हां, ऐसे",
+    "say": "बटाईदार किसान को फसल बीमा मिलेगा? हां"
+   },
+   "facts": [
+    {
+     "label": "कागज़",
+     "big": "बटाई-पत्र",
+     "sub": "राज्य का तय कागज़",
+     "say": "राज्य के तय बटाई-पत्र से बीमा होता है"
+    },
+    {
+     "label": "अब तक",
+     "big": "1.44 करोड़",
+     "sub": "बटाईदार, किरायेदार का बीमा",
+     "say": "अब तक एक करोड़ चवालीस लाख बटाईदारों का बीमा हुआ"
+    },
+    {
+     "label": "फार्मर आईडी",
+     "big": "अभी ज़रूरी नहीं",
+     "sub": "शर्त सिर्फ़ ज़मीन वालों पर",
+     "say": "फार्मर आईडी की शर्त अभी सिर्फ़ ज़मीन वालों पर"
+    }
+   ],
+   "source": "pmfby.gov.in",
+   "tool": {
+    "path": "/fasal-bima-2026",
+    "label": "पूरी जानकारी",
+    "big": "बीमा जानकारी",
+    "say": "पूरी जानकारी ताज़ा भाव पर"
+   },
+   "title": "बटाईदार किसान को भी फसल बीमा | PMFBY Sharecropper Insurance",
+   "tags": [
+    "pmfby batai",
+    "fasal bima batai kisan"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #25"
+  },
+  {
+   "id": "khad-rate",
+   "scheme": "khad",
+   "scope": "central",
+   "hook": {
+    "label": "खाद का सरकारी रेट",
+    "big": "DAP ₹1,350",
+    "sub": "इससे ज़्यादा लिया? गलत",
+    "say": "डीएपी की बोरी का सरकारी रेट तेरह सौ पचास रुपये"
+   },
+   "facts": [
+    {
+     "label": "DAP, 50 किलो",
+     "big": "₹1,350",
+     "sub": "सरकारी तय दाम",
+     "say": "डीएपी पचास किलो बोरी तेरह सौ पचास रुपये"
+    },
+    {
+     "label": "यूरिया, 45 किलो",
+     "big": "₹266.50",
+     "sub": "सरकारी तय दाम",
+     "say": "यूरिया पैंतालीस किलो बोरी दो सौ छियासठ रुपये पचास पैसे"
+    },
+    {
+     "label": "ज़्यादा लिया?",
+     "big": "1800-180-1551",
+     "sub": "किसान कॉल सेंटर, मुफ़्त",
+     "say": "ज़्यादा लिया तो किसान कॉल सेंटर पर शिकायत करें, PoS रसीद रखें"
+    }
+   ],
+   "source": "fert.nic.in",
+   "tool": {
+    "path": "/khad-calculator",
+    "label": "अपना हिसाब 10 सेकंड में",
+    "big": "खाद कैलकुलेटर",
+    "say": "कितनी बोरी लगेगी, ताज़ा भाव के खाद कैलकुलेटर से"
+   },
+   "title": "DAP ₹1,350, यूरिया ₹266.50: खाद का सरकारी रेट 2026 | DAP Urea Price",
+   "tags": [
+    "dap price 2026",
+    "urea rate",
+    "khad rate"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #42, #44"
+  },
+  {
+   "id": "mp-khad-etoken",
+   "scheme": "mpkhad",
+   "scope": "state",
+   "hook": {
+    "label": "मध्य प्रदेश",
+    "big": "खाद ई-टोकन",
+    "sub": "कहां बनता है?",
+    "say": "मध्य प्रदेश में खाद का ई-टोकन कहां बनता है?"
+   },
+   "facts": [
+    {
+     "label": "सरकारी पोर्टल",
+     "big": "ई-विकास",
+     "sub": "evikas.mpkrishi.mp.gov.in",
+     "say": "सिर्फ़ सरकार के ई-विकास पोर्टल पर"
+    },
+    {
+     "label": "सावधान",
+     "big": "नकली साइट",
+     "sub": "मिलते-जुलते नाम की वेबसाइट",
+     "say": "मिलते-जुलते नाम वाली प्राइवेट वेबसाइट से बचें"
+    },
+    {
+     "label": "कभी न डालें",
+     "big": "आधार, OTP",
+     "sub": "प्राइवेट साइट पर",
+     "say": "ऐसी साइट पर आधार या ओटीपी न डालें"
+    }
+   ],
+   "source": "mpkrishi.mp.gov.in",
+   "tool": {
+    "path": "/mp-khad-e-token",
+    "label": "पूरा तरीका",
+    "big": "ई-टोकन गाइड",
+    "say": "पूरा तरीका ताज़ा भाव पर"
+   },
+   "title": "MP खाद ई-टोकन कहां बनता है? नकली साइट से बचें | MP Khad E Token",
+   "tags": [
+    "mp khad e token",
+    "evikas mp"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #70"
+  },
+  {
+   "id": "tractor-subsidy",
+   "scheme": "smam",
+   "scope": "central",
+   "hook": {
+    "label": "ट्रैक्टर सब्सिडी",
+    "big": "कितनी मिलती है?",
+    "sub": "केंद्र की SMAM योजना",
+    "say": "ट्रैक्टर पर कितनी सब्सिडी मिलती है?"
+   },
+   "facts": [
+    {
+     "label": "SC/ST, छोटे, महिला",
+     "big": "50%",
+     "sub": "बाकी किसानों को 40%",
+     "say": "छोटे, महिला और एससी एसटी किसानों को पचास प्रतिशत, बाकी को चालीस"
+    },
+    {
+     "label": "20-40 HP ट्रैक्टर",
+     "big": "₹2.5 लाख तक",
+     "sub": "बाकी किसान ₹2 लाख",
+     "say": "बीस से चालीस एचपी पर ढाई लाख रुपये तक"
+    },
+    {
+     "label": "सावधान",
+     "big": "राज्य का पोर्टल",
+     "sub": "'PM ट्रैक्टर योजना' फ़र्ज़ी",
+     "say": "आवेदन सिर्फ़ राज्य के पोर्टल पर, पीएम ट्रैक्टर योजना फ़र्ज़ी है"
+    }
+   ],
+   "source": "agrimachinery.nic.in",
+   "tool": {
+    "path": "/krishi-yantra-anudan",
+    "label": "पूरी जानकारी",
+    "big": "अनुदान हिसाब",
+    "say": "अपना अनुदान ताज़ा भाव पर देखें"
+   },
+   "title": "ट्रैक्टर पर 50% सब्सिडी? सच और तरीका | Tractor Subsidy 2026",
+   "tags": [
+    "tractor subsidy 2026",
+    "smam yojana",
+    "pm kisan tractor yojana"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #45, #46"
+  },
+  {
+   "id": "pm-tractor-fake",
+   "scheme": "smam",
+   "scope": "central",
+   "hook": {
+    "label": "वायरल योजना",
+    "big": "PM ट्रैक्टर योजना?",
+    "sub": "सच जानिए",
+    "say": "पीएम किसान ट्रैक्टर योजना, सच या झूठ?"
+   },
+   "facts": [
+    {
+     "label": "PIB फैक्ट चेक",
+     "big": "ऐसी योजना नहीं",
+     "sub": "यह नाम फ़र्ज़ी है",
+     "say": "पीआईबी फैक्ट चेक के मुताबिक ऐसी कोई योजना नहीं"
+    },
+    {
+     "label": "ऐसी वेबसाइटें",
+     "big": "फीस ठगती हैं",
+     "sub": "और आपकी जानकारी",
+     "say": "ऐसी वेबसाइटें फीस और आपकी जानकारी ले लेती हैं"
+    },
+    {
+     "label": "असली रास्ता",
+     "big": "राज्य कृषि विभाग",
+     "sub": "ट्रैक्टर सब्सिडी वहीं से",
+     "say": "असली ट्रैक्टर सब्सिडी सिर्फ़ राज्य कृषि विभाग से"
+    }
+   ],
+   "source": "pib.gov.in",
+   "tool": {
+    "path": "/krishi-yantra-anudan",
+    "label": "पूरी जानकारी",
+    "big": "असली अनुदान",
+    "say": "असली अनुदान की जानकारी ताज़ा भाव पर"
+   },
+   "title": "PM किसान ट्रैक्टर योजना सच या झूठ? | PM Kisan Tractor Yojana Fact Check",
+   "tags": [
+    "pm kisan tractor yojana",
+    "tractor yojana fake"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #46"
+  },
+  {
+   "id": "drone-subsidy",
+   "scheme": "smam",
+   "scope": "central",
+   "hook": {
+    "label": "किसान ड्रोन",
+    "big": "₹5 लाख तक",
+    "sub": "सब्सिडी किसे मिलेगी?",
+    "say": "किसान ड्रोन पर पांच लाख रुपये तक सब्सिडी, किसे मिलेगी?"
+   },
+   "facts": [
+    {
+     "label": "छोटे, SC/ST, महिला",
+     "big": "50%",
+     "sub": "₹5 लाख तक",
+     "say": "छोटे, महिला और एससी एसटी किसानों को पचास प्रतिशत, पांच लाख रुपये तक"
+    },
+    {
+     "label": "बाकी किसान",
+     "big": "40%",
+     "sub": "₹4 लाख तक",
+     "say": "बाकी किसानों को चालीस प्रतिशत, चार लाख रुपये तक"
+    },
+    {
+     "label": "FPO को",
+     "big": "75% तक",
+     "sub": "किसान उत्पादक संगठन",
+     "say": "किसान उत्पादक संगठन को पचहत्तर प्रतिशत तक"
+    }
+   ],
+   "source": "agrimachinery.nic.in",
+   "tool": {
+    "path": "/krishi-yantra-anudan",
+    "label": "पूरी जानकारी",
+    "big": "अनुदान हिसाब",
+    "say": "पूरी जानकारी ताज़ा भाव पर"
+   },
+   "title": "किसान ड्रोन पर ₹5 लाख सब्सिडी, किसे मिलेगी? | Drone Subsidy for Farmers",
+   "tags": [
+    "drone subsidy",
+    "kisan drone yojana"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #49"
+  },
+  {
+   "id": "pm-kusum",
+   "scheme": "kusum",
+   "scope": "central",
+   "hook": {
+    "label": "PM-KUSUM",
+    "big": "सोलर पंप",
+    "sub": "सरकार कितना देगी?",
+    "say": "पीएम कुसुम सोलर पंप पर सरकार कितना पैसा देती है?"
+   },
+   "facts": [
+    {
+     "label": "केंद्र का हिस्सा",
+     "big": "30%",
+     "sub": "पूर्वोत्तर, पहाड़ी राज्य 50%",
+     "say": "केंद्र देता है तीस प्रतिशत, पूर्वोत्तर और पहाड़ी राज्यों में पचास"
+    },
+    {
+     "label": "पंप की सीमा",
+     "big": "7.5 HP तक",
+     "sub": "इससे बड़े पर उतना ही",
+     "say": "साढ़े सात हॉर्सपावर तक के पंप पर"
+    },
+    {
+     "label": "राज्य का हिस्सा",
+     "big": "अलग से",
+     "sub": "राज्य के हिसाब से",
+     "say": "राज्य अपना हिस्सा अलग से जोड़ते हैं"
+    }
+   ],
+   "source": "pmkusum.mnre.gov.in",
+   "tool": {
+    "path": "/pm-kusum-yojana",
+    "label": "अपना हिसाब 10 सेकंड में",
+    "big": "सोलर पंप हिसाब",
+    "say": "अपना हिसाब ताज़ा भाव पर"
+   },
+   "title": "PM Kusum Yojana 2026: सोलर पंप पर कितना पैसा? | PM Kusum Apply Online",
+   "tags": [
+    "pm kusum yojana",
+    "solar pump subsidy",
+    "kusum yojana"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "lib/kusum.ts (MNRE)"
+  },
+  {
+   "id": "bhavantar",
+   "scheme": "bhavantar",
+   "scope": "state",
+   "hook": {
+    "label": "MP भावांतर",
+    "big": "सोयाबीन ₹5,708",
+    "sub": "MSP से कम बिका?",
+    "say": "मध्य प्रदेश भावांतर, सोयाबीन एमएसपी से कम बिका तो फ़र्क मिलेगा"
+   },
+   "facts": [
+    {
+     "label": "सोयाबीन MSP",
+     "big": "₹5,708",
+     "sub": "खरीफ 2026-27",
+     "say": "सोयाबीन का एमएसपी सत्तावन सौ आठ रुपये"
+    },
+    {
+     "label": "बिक्री की अवधि",
+     "big": "15 जनवरी 2027",
+     "sub": "तक मंडी में बेचें",
+     "say": "पंद्रह जनवरी दो हज़ार सत्ताईस तक मंडी में बिक्री"
+    },
+    {
+     "label": "कितना फ़र्क",
+     "big": "हिसाब ज़रूरी",
+     "sub": "मॉडल भाव पर निर्भर",
+     "say": "कितना फ़र्क मिलेगा, यह मॉडल भाव पर निर्भर"
+    }
+   ],
+   "source": "mpeuparjan.nic.in",
+   "tool": {
+    "path": "/bhavantar-calculator",
+    "label": "अपना हिसाब 10 सेकंड में",
+    "big": "भावांतर कैलकुलेटर",
+    "say": "ताज़ा भाव के भावांतर कैलकुलेटर से"
+   },
+   "title": "भावांतर: सोयाबीन पर कितना पैसा मिलेगा? | MP Bhavantar Yojana Calculator",
+   "tags": [
+    "bhavantar yojana",
+    "bhavantar calculator",
+    "soybean msp"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-01-15",
+   "checked": "2026-11-03",
+   "basis": "lib/bhavantar.ts"
+  },
+  {
+   "id": "gehu-msp-2027",
+   "scheme": "gehu",
+   "scope": "central",
+   "hook": {
+    "label": "गेहूं MSP",
+    "big": "₹2,610",
+    "sub": "रबी विपणन 2027-28",
+    "say": "गेहूं का नया एमएसपी, छब्बीस सौ दस रुपये प्रति क्विंटल"
+   },
+   "facts": [
+    {
+     "label": "नया MSP",
+     "big": "₹2,610",
+     "sub": "प्रति क्विंटल",
+     "say": "गेहूं का नया एमएसपी छब्बीस सौ दस रुपये"
+    },
+    {
+     "label": "पिछले साल से",
+     "big": "सिर्फ़ ₹25 ज़्यादा",
+     "sub": "पिछला ₹2,585",
+     "say": "पिछले साल से सिर्फ़ पच्चीस रुपये ज़्यादा"
+    },
+    {
+     "label": "मंज़ूरी",
+     "big": "कैबिनेट",
+     "sub": "30 सितंबर 2026",
+     "say": "केंद्रीय कैबिनेट ने तीस सितंबर को मंज़ूरी दी"
+    }
+   ],
+   "source": "pib.gov.in",
+   "tool": {
+    "path": "/msp-vs-mandi",
+    "label": "अपना हिसाब 10 सेकंड में",
+    "big": "MSP या मंडी?",
+    "say": "एमएसपी या मंडी, किसमें फ़ायदा, ताज़ा भाव पर"
+   },
+   "title": "गेहूं MSP 2027 ₹2,610: सिर्फ़ ₹25 बढ़ा | Wheat MSP 2027-28",
+   "tags": [
+    "wheat msp 2027",
+    "gehu msp",
+    "msp 2027-28"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #26"
+  },
+  {
+   "id": "gehu-bonus",
+   "scheme": "gehu",
+   "scope": "state",
+   "hook": {
+    "label": "गेहूं बोनस",
+    "big": "किस राज्य में?",
+    "sub": "MSP के ऊपर",
+    "say": "किस राज्य में गेहूं पर एमएसपी के ऊपर बोनस मिला?"
+   },
+   "facts": [
+    {
+     "label": "राजस्थान 2026",
+     "big": "₹150 बोनस",
+     "sub": "कुल ₹2,735",
+     "say": "राजस्थान ने एक सौ पचास रुपये बोनस दिया"
+    },
+    {
+     "label": "मध्य प्रदेश 2026",
+     "big": "₹40 बोनस",
+     "sub": "कुल ₹2,625",
+     "say": "मध्य प्रदेश ने चालीस रुपये"
+    },
+    {
+     "label": "2027 का बोनस",
+     "big": "अभी घोषित नहीं",
+     "sub": "किसी राज्य ने नहीं",
+     "say": "दो हज़ार सत्ताईस का बोनस अभी किसी राज्य ने घोषित नहीं किया"
+    }
+   ],
+   "source": "food.rajasthan.gov.in",
+   "tool": {
+    "path": "/gehu-kharid",
+    "label": "पूरी जानकारी",
+    "big": "खरीदी जानकारी",
+    "say": "पंजीयन और बोनस की खबर ताज़ा भाव पर"
+   },
+   "title": "गेहूं पर बोनस किस राज्य में? राजस्थान ₹150, MP ₹40 | Gehu Bonus",
+   "tags": [
+    "gehu bonus",
+    "wheat bonus rajasthan",
+    "gehu kharid"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #28"
+  },
+  {
+   "id": "dhan-msp",
+   "scheme": "dhan",
+   "scope": "central",
+   "hook": {
+    "label": "धान MSP 2026-27",
+    "big": "₹2,441",
+    "sub": "मंडी में कम मिल रहा?",
+    "say": "धान का एमएसपी चौबीस सौ इकतालीस रुपये, मंडी में कम मिल रहा है?"
+   },
+   "facts": [
+    {
+     "label": "कॉमन धान",
+     "big": "₹2,441",
+     "sub": "ग्रेड A ₹2,461",
+     "say": "कॉमन धान चौबीस सौ इकतालीस, ग्रेड ए चौबीस सौ इकसठ"
+    },
+    {
+     "label": "मंडी में कम?",
+     "big": "सरकारी केंद्र",
+     "sub": "पंजीकरण कराकर MSP पर बेचें",
+     "say": "मंडी में कम हो तो पंजीकरण कराकर सरकारी केंद्र पर बेचें"
+    },
+    {
+     "label": "भुगतान",
+     "big": "48 घंटे",
+     "sub": "UP-बिहार का दावा",
+     "say": "यूपी और बिहार अड़तालीस घंटे में भुगतान का दावा करते हैं"
+    }
+   ],
+   "source": "pib.gov.in",
+   "tool": {
+    "path": "/msp-vs-mandi",
+    "label": "अपना हिसाब 10 सेकंड में",
+    "big": "MSP या मंडी?",
+    "say": "भाड़ा जोड़कर असली फ़र्क ताज़ा भाव पर"
+   },
+   "title": "धान MSP ₹2,441: मंडी में कम मिले तो क्या करें | Dhan MSP 2026-27",
+   "tags": [
+    "dhan msp 2026",
+    "paddy msp",
+    "dhan kharid"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-02-28",
+   "checked": "2026-11-03",
+   "basis": "FAQ #7, #10, #11"
+  },
+  {
+   "id": "mitti-jaanch",
+   "scheme": "shc",
+   "scope": "central",
+   "hook": {
+    "label": "मिट्टी जांच",
+    "big": "सही नमूना कैसे?",
+    "sub": "गलत नमूना, गलत रिपोर्ट",
+    "say": "मिट्टी जांच का नमूना कैसे लें? गलत नमूना, गलत रिपोर्ट"
+   },
+   "facts": [
+    {
+     "label": "कहां से",
+     "big": "10-15 जगह",
+     "sub": "खेत में ज़िग-ज़ैग",
+     "say": "खेत में ज़िग-ज़ैग दस से पंद्रह जगह से"
+    },
+    {
+     "label": "कितना गहरा",
+     "big": "15 सेमी, V आकार",
+     "sub": "मिलाकर आधा किलो रखें",
+     "say": "पंद्रह सेंटीमीटर गहरा, मिलाकर आधा किलो"
+    },
+    {
+     "label": "कहां दें",
+     "big": "सरकारी लैब, KVK",
+     "sub": "छाया में सुखाकर, पर्ची लगाकर",
+     "say": "छाया में सुखाकर कृषि विभाग लैब या केवीके में दें"
+    }
+   ],
+   "source": "soilhealth.dac.gov.in",
+   "tool": {
+    "path": "/mitti-jaanch",
+    "label": "पूरी जानकारी",
+    "big": "जांच गाइड",
+    "say": "पूरा तरीका और लैब ताज़ा भाव पर"
+   },
+   "title": "मिट्टी जांच का सही तरीका, नमूना कैसे लें | Soil Testing Kaise Kare",
+   "tags": [
+    "mitti jaanch",
+    "soil health card",
+    "soil testing"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #64, #66"
+  },
+  {
+   "id": "rabi-buvai",
+   "scheme": "rabi",
+   "scope": "central",
+   "hook": {
+    "label": "गेहूं बुवाई",
+    "big": "सही समय?",
+    "sub": "देरी = कम उपज",
+    "say": "गेहूं की बुवाई का सही समय क्या है?"
+   },
+   "facts": [
+    {
+     "label": "समय पर बुवाई",
+     "big": "20 नवंबर तक",
+     "sub": "ICAR-IIWBR",
+     "say": "समय पर बुवाई बीस नवंबर तक"
+    },
+    {
+     "label": "पछेती बुवाई",
+     "big": "25 दिसंबर तक",
+     "sub": "पछेती किस्में चुनें",
+     "say": "पछेती बुवाई पच्चीस दिसंबर तक"
+    },
+    {
+     "label": "हर हफ़्ते देरी",
+     "big": "150 किलो कम",
+     "sub": "प्रति एकड़ (PAU)",
+     "say": "हर हफ़्ते की देरी से करीब डेढ़ सौ किलो प्रति एकड़ कम"
+    }
+   ],
+   "source": "iiwbr.icar.gov.in",
+   "tool": {
+    "path": "/kheti-lagat-munafa",
+    "label": "अपना हिसाब 10 सेकंड में",
+    "big": "लागत-मुनाफ़ा",
+    "say": "अपनी लागत और मुनाफ़ा ताज़ा भाव पर"
+   },
+   "title": "गेहूं बुवाई का सही समय, देरी से कितना नुकसान | Wheat Sowing Time 2026",
+   "tags": [
+    "gehu buvai",
+    "wheat sowing time"
+   ],
+   "validFrom": null,
+   "validUntil": "2026-12-15",
+   "checked": "2026-11-03",
+   "basis": "FAQ #80"
+  },
+  {
+   "id": "pala-bachav",
+   "scheme": "pala",
+   "scope": "central",
+   "hook": {
+    "label": "पाला अलर्ट",
+    "big": "फसल कैसे बचाएं?",
+    "sub": "पाले की रात से पहले",
+    "say": "पाले से फसल कैसे बचाएं? तीन काम"
+   },
+   "facts": [
+    {
+     "label": "शाम को",
+     "big": "हल्की सिंचाई",
+     "sub": "पाले की आशंका वाले दिन",
+     "say": "पाले की आशंका वाली शाम हल्की सिंचाई"
+    },
+    {
+     "label": "आधी रात के बाद",
+     "big": "मेड़ पर धुआं",
+     "sub": "उत्तर-पश्चिम की तरफ़",
+     "say": "आधी रात के बाद उत्तर-पश्चिम मेड़ पर धुआं"
+    },
+    {
+     "label": "छिड़काव",
+     "big": "गंधक तेज़ाब 0.1%",
+     "sub": "राजस्थान कृषि विभाग",
+     "say": "गंधक के तेज़ाब, शून्य दशमलव एक प्रतिशत का छिड़काव"
+    }
+   ],
+   "source": "agriculture.rajasthan.gov.in",
+   "tool": {
+    "path": "/pala-alert",
+    "label": "मुफ़्त अलर्ट",
+    "big": "पाला अलर्ट",
+    "say": "अपने ज़िले का पाला अलर्ट ताज़ा भाव पर"
+   },
+   "title": "पाले से फसल कैसे बचाएं? 3 काम | Pala Se Fasal Kaise Bachaye",
+   "tags": [
+    "pala se bachav",
+    "frost protection crops"
+   ],
+   "validFrom": "2026-12-01",
+   "validUntil": "2027-02-15",
+   "checked": "2026-11-03",
+   "basis": "FAQ #76"
+  },
+  {
+   "id": "bihar-input",
+   "scheme": "bihardbt",
+   "scope": "state",
+   "hook": {
+    "label": "बिहार इनपुट अनुदान",
+    "big": "कितना मिलेगा?",
+    "sub": "33% से ज़्यादा नुकसान पर",
+    "say": "बिहार कृषि इनपुट अनुदान में कितना पैसा मिलेगा?"
+   },
+   "facts": [
+    {
+     "label": "असिंचित ज़मीन",
+     "big": "₹8,500/हेक्टेयर",
+     "sub": "अधिकतम 2 हेक्टेयर",
+     "say": "असिंचित ज़मीन पर साढ़े आठ हज़ार रुपये प्रति हेक्टेयर"
+    },
+    {
+     "label": "सिंचित ज़मीन",
+     "big": "₹17,000/हेक्टेयर",
+     "sub": "बहुवर्षीय फसल ₹22,500",
+     "say": "सिंचित पर सत्रह हज़ार रुपये प्रति हेक्टेयर"
+    },
+    {
+     "label": "बटाईदार भी",
+     "big": "आवेदन कर सकते",
+     "sub": "मुखिया से प्रमाण पत्र",
+     "say": "बटाईदार किसान भी आवेदन कर सकते हैं"
+    }
+   ],
+   "source": "dbtagriculture.bihar.gov.in",
+   "tool": {
+    "path": "/bihar-dbt-agriculture",
+    "label": "अपना हिसाब 10 सेकंड में",
+    "big": "अनुदान कैलकुलेटर",
+    "say": "अपना रकबा डालकर हिसाब ताज़ा भाव पर"
+   },
+   "title": "बिहार कृषि इनपुट अनुदान: कितना पैसा मिलेगा? | Bihar Input Anudan 2026",
+   "tags": [
+    "bihar input anudan",
+    "dbt agriculture bihar"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #3, #5"
+  },
+  {
+   "id": "mahadbt-drip",
+   "scheme": "mahadbt",
+   "scope": "state",
+   "hook": {
+    "label": "महाराष्ट्र ठिबक",
+    "big": "55% अनुदान",
+    "sub": "ड्रिप पर कितना मिलेगा?",
+    "say": "महाराष्ट्र में ठिबक सिंचन पर कितना अनुदान?"
+   },
+   "facts": [
+    {
+     "label": "छोटे, सीमांत",
+     "big": "55%",
+     "sub": "प्रति थेंब अधिक पीक",
+     "say": "छोटे और सीमांत किसानों को पचपन प्रतिशत"
+    },
+    {
+     "label": "बाकी किसान",
+     "big": "45%",
+     "sub": "तय इकाई लागत तक",
+     "say": "बाकी किसानों को पैंतालीस प्रतिशत"
+    },
+    {
+     "label": "आवेदन",
+     "big": "MahaDBT",
+     "sub": "कुछ ज़िलों में पूरक अनुदान",
+     "say": "आवेदन महाडीबीटी पोर्टल पर"
+    }
+   ],
+   "source": "mahadbt.maharashtra.gov.in",
+   "tool": {
+    "path": "/mahadbt-farmer",
+    "label": "पूरा तरीका",
+    "big": "आवेदन गाइड",
+    "say": "पूरा तरीका ताज़ा भाव पर"
+   },
+   "title": "ठिबक सिंचन पर 55% अनुदान | MahaDBT Drip Irrigation Subsidy",
+   "tags": [
+    "mahadbt drip subsidy",
+    "thibak anudan"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #56"
+  },
+  {
+   "id": "mfmb-haryana",
+   "scheme": "mfmb",
+   "scope": "state",
+   "hook": {
+    "label": "हरियाणा किसान",
+    "big": "MFMB ज़रूरी",
+    "sub": "मेरी फसल मेरा ब्योरा",
+    "say": "हरियाणा में मेरी फसल मेरा ब्योरा पर फसल दर्ज नहीं की तो नुकसान"
+   },
+   "facts": [
+    {
+     "label": "सरकारी खरीद",
+     "big": "ई-खरीद",
+     "sub": "MFMB के बिना नहीं",
+     "say": "सरकारी खरीद के लिए ज़रूरी"
+    },
+    {
+     "label": "फसल बीमा, मुआवज़ा",
+     "big": "MFMB से",
+     "sub": "हर सीज़न पंजीकरण",
+     "say": "फसल बीमा और मुआवज़े के लिए भी"
+    },
+    {
+     "label": "हर सीज़न",
+     "big": "फसल दर्ज करें",
+     "sub": "fasal.haryana.gov.in",
+     "say": "हर सीज़न पोर्टल पर फसल दर्ज करें"
+    }
+   ],
+   "source": "fasal.haryana.gov.in",
+   "tool": {
+    "path": "/meri-fasal-mera-byora",
+    "label": "पूरा तरीका",
+    "big": "पंजीकरण गाइड",
+    "say": "पूरा तरीका ताज़ा भाव पर"
+   },
+   "title": "मेरी फसल मेरा ब्योरा क्यों ज़रूरी? | MFMB Registration Haryana",
+   "tags": [
+    "meri fasal mera byora",
+    "mfmb registration"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-03",
+   "basis": "FAQ #24, #60"
+  }
+ ]
+}

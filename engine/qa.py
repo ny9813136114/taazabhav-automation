@@ -4,8 +4,8 @@ slot and tells the owner; a wrong video is worse than no video."""
 import re
 
 # Seconds of voice-led video allowed per series (blueprint: A 12-15 s, B 12-18 s,
-# C 35-45 s, D 25-35 s), with headroom for the voice speed.
-BOUNDS = {"A": (7, 26), "B": (7, 28), "C": (18, 58), "D": (14, 48)}
+# C 35-45 s, D 25-35 s, Y about 20-30 s), with headroom for the voice speed.
+BOUNDS = {"A": (7, 26), "B": (7, 28), "C": (18, 58), "D": (14, 48), "Y": (12, 40)}
 BAD = re.compile(r"\b(None|nan|NaN|undefined|null)\b|₹0\b|₹-")
 DATE_WORD = re.compile(r"\d{1,2} (जनवरी|फ़रवरी|मार्च|अप्रैल|मई|जून|जुलाई|अगस्त|सितंबर|अक्टूबर|नवंबर|दिसंबर)")
 

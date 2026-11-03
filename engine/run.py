@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""One video for one series: python -m engine.run A|B|C|D
+"""One video for one series: python -m engine.run A|B|C|D|Y
 
 Mode: ENGINE_MODE=preview|publish (manual runs). Scheduled runs publish only
 when the repo variable ENGINE_LIVE is "1"; until then the video goes to the
@@ -13,10 +13,10 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from engine import feed as F
-from engine import media, qa, stories, tools
+from engine import media, qa, stories, tools, yojana
 
 IST = timezone(timedelta(hours=5, minutes=30))
-RECENT_DAYS = {"A": 7, "B": 1, "C": 1, "D": 21}
+RECENT_DAYS = {"A": 7, "B": 1, "C": 1, "D": 21, "Y": 15}
 # 3 Nov 2026: E = the evening bhav Short (18:30 IST, the old C slot). It is
 # an A video (same builder, playlist and log), only its slot differs.
 SLOT_OF = {"E": "A"}
@@ -31,6 +31,9 @@ def mode(series=None):
     # The new mandi bhav Short previews on the owner's Telegram until the
     # repo variable BHAV_V2_LIVE is "1" (owner rule: 2 preview days first).
     if series in ("A", "E") and os.environ.get("BHAV_V2_LIVE", "").strip() != "1":
+        return "preview"
+    # Series Y stays a Telegram preview until the owner sets YOJANA_LIVE=1.
+    if series == "Y" and os.environ.get("YOJANA_LIVE", "").strip() != "1":
         return "preview"
     return "publish" if os.environ.get("ENGINE_LIVE", "").strip() == "1" else "preview"
 
@@ -51,6 +54,12 @@ def a_history(state, today, days=14):
 
 
 def build(series, today, state):
+    if series == "Y":
+        items = yojana.load_queue()
+        left = yojana.fresh_count(items, today, state)
+        if left < yojana.LOW_QUEUE:
+            alert(f"TaazaBhav engine: yojana queue mein sirf {left} naye topic bache hain. content/yojana/queue.json mein aur jodo.")
+        return yojana.build_y(today, state, items)
     series = SLOT_OF.get(series, series)
     recent = F.recent_keys(state, series, today, RECENT_DAYS[series])
     if series == "D":
