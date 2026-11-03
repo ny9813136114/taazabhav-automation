@@ -10,9 +10,12 @@ name: Content Engine (4 series)
 #   Y योजना की बात 12:30 IST replaces D once the variable YOJANA_LIVE is "1";
 #     until then D still posts at 12:30 and Y goes to the owner's Telegram as
 #     a preview right after it.
-#   A and C (bhav) no longer post: their slot runs stop at once unless the
+#   A, C and E (bhav) no longer post: their slot runs stop at once unless the
 #     variable BHAV_VIDEOS is "1". Bhav stays on the site and Telegram.
 #   Manual runs (mode preview/publish) still work for every series.
+#   Bhav = A, C and E (evening bhav from PR #40); all three are off.
+# Repo variables: YOJANA_LIVE, BHAV_VIDEOS (above); BHAV_V2_LIVE, EVENING_BHAV,
+#   YT_SERIES (default "A,B,Y"), B_ONLY_NEWS (only matter if bhav comes back).
 #
 # Exact times come from the Supabase clock (ops/supabase-clock.sql), which
 # starts this workflow with mode "auto". GitHub's own schedule below starts
@@ -25,9 +28,9 @@ on:
   workflow_dispatch:
     inputs:
       series:
-        description: "A bhav, B kist, C khabar, D tool, Y yojana"
+        description: "A bhav (morning), E bhav (evening), B kist, C khabar, D tool, Y yojana"
         type: choice
-        options: [A, B, C, D, Y]
+        options: [A, E, B, C, D, Y]
         default: A
       mode:
         description: "auto = follow ENGINE_LIVE, once per slot; preview = owner's Telegram only; publish = post it"
@@ -59,9 +62,11 @@ jobs:
             "0 15 * * *") S=B ;;
             *) S="${{ inputs.series }}" ;;
           esac
+          # The 18:30 slot (clock or backup) is the evening bhav Short now.
+          if [ "$S" = "C" ] && [ "${{ vars.EVENING_BHAV }}" != "0" ] && [ "${{ github.event_name }}" = "schedule" -o "${{ inputs.mode }}" = "auto" ]; then S=E; fi
           if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ inputs.mode }}" = "auto" ]; then
             if [ "$S" = "D" ] && [ "${{ vars.YOJANA_LIVE }}" = "1" ]; then S=Y; fi
-            if { [ "$S" = "A" ] || [ "$S" = "C" ]; } && [ "${{ vars.BHAV_VIDEOS }}" != "1" ]; then
+            if { [ "$S" = "A" ] || [ "$S" = "C" ] || [ "$S" = "E" ]; } && [ "${{ vars.BHAV_VIDEOS }}" != "1" ]; then
               echo "off=true" >> "$GITHUB_OUTPUT"
               echo "Series $S is off (bhav videos stopped 3 Nov 2026; repo variable BHAV_VIDEOS=1 turns it back on)."
             fi
@@ -122,6 +127,9 @@ jobs:
           ENGINE_MODE: ${{ inputs.mode }}
           ENGINE_LIVE: ${{ vars.ENGINE_LIVE }}
           YOJANA_LIVE: ${{ vars.YOJANA_LIVE }}
+          BHAV_V2_LIVE: ${{ vars.BHAV_V2_LIVE }}
+          YT_SERIES: ${{ vars.YT_SERIES }}
+          B_ONLY_NEWS: ${{ vars.B_ONLY_NEWS }}
         run: python -m engine.run ${{ steps.s.outputs.series }}
       - name: Yojana preview (until YOJANA_LIVE=1)
         # Only on the 12:30 slot run; never publishes (ENGINE_MODE=preview).

@@ -9,7 +9,7 @@ import os
 import shutil
 import sys
 import traceback
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from engine import feed as F
@@ -17,6 +17,9 @@ from engine import media, qa, stories, tools, yojana
 
 IST = timezone(timedelta(hours=5, minutes=30))
 RECENT_DAYS = {"A": 7, "B": 1, "C": 1, "D": 21, "Y": 15}
+# 3 Nov 2026: E = the evening bhav Short (18:30 IST, the old C slot). It is
+# an A video (same builder, playlist and log), only its slot differs.
+SLOT_OF = {"E": "A"}
 # Voice speeds tried in turn when a video is over its length limit.
 SPEEDS = ("+8%", "+18%", "+28%")
 
@@ -25,6 +28,10 @@ def mode(series=None):
     m = (os.environ.get("ENGINE_MODE") or "").strip().lower()
     if m in ("publish", "preview"):
         return m
+    # The new mandi bhav Short previews on the owner's Telegram until the
+    # repo variable BHAV_V2_LIVE is "1" (owner rule: 2 preview days first).
+    if series in ("A", "E") and os.environ.get("BHAV_V2_LIVE", "").strip() != "1":
+        return "preview"
     # Series Y stays a Telegram preview until the owner sets YOJANA_LIVE=1.
     if series == "Y" and os.environ.get("YOJANA_LIVE", "").strip() != "1":
         return "preview"
@@ -39,6 +46,13 @@ def alert(msg):
         print(msg)
 
 
+def a_history(state, today, days=14):
+    """A keys of the last `days` days, newest first."""
+    eps = [e for e in state.get("episodes", []) if e.get("series") == "A" and e.get("key")
+           and (today - date.fromisoformat(e["date"])).days < days]
+    return [e["key"] for e in reversed(eps)]
+
+
 def build(series, today, state):
     if series == "Y":
         items = yojana.load_queue()
@@ -46,12 +60,15 @@ def build(series, today, state):
         if left < yojana.LOW_QUEUE:
             alert(f"TaazaBhav engine: yojana queue mein sirf {left} naye topic bache hain. content/yojana/queue.json mein aur jodo.")
         return yojana.build_y(today, state, items)
+    series = SLOT_OF.get(series, series)
     recent = F.recent_keys(state, series, today, RECENT_DAYS[series])
     if series == "D":
         return tools.build_d(today, recent)
     feed = F.load_feed(today, want_today=(series == "C"))
     if series == "A":
-        return stories.build_a(feed, today, recent)
+        if not feed.get("mandis"):
+            raise RuntimeError("yt-feed has no 'mandis' yet (website PR #171 not live), A needs it")
+        return stories.build_bhav(feed, today, a_history(state, today))
     if series == "C":
         return stories.build_c(feed, today, recent)
     claim = None
@@ -85,10 +102,11 @@ def main(series):
         ep = build(series, today, state)
         if not ep:
             print(f"[engine] {series}: no story today")
-            if series != "C":
+            if series not in ("B", "C"):  # B skips on purpose when B_ONLY_NEWS=1
                 alert(f"TaazaBhav engine: no {series} story today (nothing new in the feed).")
             return 0
         print(f"[engine] {series} {run_mode}: {ep['key']} | {ep['title']}")
+        series = ep["series"]
         qa.check_episode(ep)
         rec = None
         rec_secs = None
@@ -125,9 +143,9 @@ def main(series):
             return 0
         from engine.publish import publish
         vid = publish(out, ep, alert)
-        F.mark(state, series, ep["key"], today, vid, ep["title"])
+        F.mark(state, ep["series"], ep["key"], today, vid, ep["title"])
         F.save_state(state)
-        print(f"[engine] published https://youtu.be/{vid}")
+        print(f"[engine] published {'https://youtu.be/' + vid if vid else '(FB/IG only, not on YouTube)'}")
         return 0
     except Exception as e:
         traceback.print_exc()

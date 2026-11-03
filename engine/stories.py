@@ -7,6 +7,7 @@ the screen shows + what the voice says), plus title, description, tags and
 the comment to post. Every number comes from the feed; nothing is
 estimated here. Builders return None when there is no honest story today.
 """
+import os
 from datetime import date
 
 from engine.text import day_hi, inr, link, pct_spoken, pct_text
@@ -189,6 +190,168 @@ def build_a(feed, today, recent):
     }
 
 
+# ================================================================ A (v2)
+# 3 Nov 2026 (owner OK): the bhav Short covers one SEARCHED mandi a video
+# (Betul, Neemuch, Mandsaur...), price per kg first, change since about a
+# week ago, and ends on "बेचें या रोकें?". The old A picked the biggest
+# one-day jump anywhere: every video said ▲ 50-60% at a mandi nobody
+# searches, often a data glitch (soybean ₹9,600 at APMCKHEDBRAHMA, 22 Oct).
+# Data: feed["mandis"] from website PR #171.
+MAX_WEEK_MOVE = 35.0      # % change in a week above this = likely a data error, skip
+SANE_RATIO = (0.5, 2.0)   # mandi price vs the crop's national typical price
+SANE_RATIO_PERISHABLE = (0.3, 3.0)  # onion/tomato/potato swing more between states
+WEEK_BACK = (5, 12)       # "last week" = newest report 5-12 days before today's
+# Crop order at one mandi: season crops first, then these.
+CROP_ORDER = ["Soyabean", "Wheat", "Bengal Gram(Gram)(Whole)", "Mustard", "Garlic", "Onion", "Maize",
+              "Paddy(Common)", "Cotton", "Groundnut", "Green Gram(Moong)(Whole)", "Potato", "Tomato",
+              "Cummin Seed(Jeera)", "Bajra(Pearl Millet/Cumbu)"]
+HI_NAME = {"Soyabean": "सोयाबीन", "Wheat": "गेहूं", "Bengal Gram(Gram)(Whole)": "चना", "Mustard": "सरसों",
+           "Garlic": "लहसुन", "Onion": "प्याज़", "Maize": "मक्का", "Paddy(Common)": "धान", "Cotton": "कपास",
+           "Groundnut": "मूंगफली", "Green Gram(Moong)(Whole)": "मूंग", "Potato": "आलू", "Tomato": "टमाटर",
+           "Cummin Seed(Jeera)": "जीरा", "Bajra(Pearl Millet/Cumbu)": "बाजरा"}
+
+
+def per_kg(modal):
+    """₹ per quintal -> '₹49/किलो' text and the whole number to count up to
+    (None when it has a decimal, so the count-up doesn't garble it)."""
+    kg = modal / 100
+    if kg >= 10:
+        return f"₹{round(kg)}/किलो", round(kg)
+    t = f"{kg:.1f}".rstrip("0").rstrip(".")
+    return f"₹{t}/किलो", (int(t) if "." not in t else None)
+
+
+def week_ago(crop, latest):
+    """(date, modal) of the newest earlier report 5-12 days before `latest`."""
+    d0 = date.fromisoformat(latest)
+    for h in sorted(crop.get("history") or [], key=lambda x: x["date"], reverse=True):
+        gap = (d0 - date.fromisoformat(h["date"])).days
+        if WEEK_BACK[0] <= gap <= WEEK_BACK[1] and h.get("modal", 0) > 0:
+            return h["date"], h["modal"]
+    return None
+
+
+def bhav_candidates(feed, today):
+    """Every (mandi, crop, week) that passes the checks, in mandi order."""
+    latest = feed.get("latestDate")
+    if not latest:
+        return []
+    season = SEASON.get(today.month, set())
+    typical = {r["data"]["commodity"]: r["data"] for r in _reports(feed, "crop")}
+    out = []
+    for m in feed.get("mandis") or []:
+        crops = []
+        for c in m.get("crops", []):
+            if c["commodity"] not in HI_NAME or c.get("modal", 0) <= 0:
+                continue
+            # Today's (or the previous report day's) price only.
+            if (date.fromisoformat(latest) - date.fromisoformat(c["date"])).days > 1:
+                continue
+            nat = typical.get(c["commodity"], {})
+            lo, hi = SANE_RATIO_PERISHABLE if nat.get("perishable") else SANE_RATIO
+            if nat.get("typical") and not lo <= c["modal"] / nat["typical"] <= hi:
+                continue
+            wk = week_ago(c, c["date"])
+            pct = (c["modal"] - wk[1]) * 100.0 / wk[1] if wk else None
+            if pct is not None and abs(pct) > MAX_WEEK_MOVE:
+                continue
+            rank = CROP_ORDER.index(c["commodity"]) if c["commodity"] in CROP_ORDER else 99
+            crops.append(((0 if c["commodity"] in season else 1), (0 if wk else 1), rank, c, wk, pct, nat))
+        crops.sort(key=lambda x: x[:3])
+        out += [(m, c, wk, pct, nat) for _, _, _, c, wk, pct, nat in crops]
+    return out
+
+
+def bhav_verdict(pct, below_msp, perishable):
+    """(pos -1..1, screen line, tone). A description of the week, not advice."""
+    if below_msp and not perishable:
+        return -0.6, "MSP से नीचे, सरकारी खरीद भी देखें", "low"
+    if pct is None or abs(pct) < 3:
+        return 0.0, "भाव स्थिर, पास की मंडी मिलाएँ", "steady"
+    if pct > 0:
+        return 0.6, "हफ़्ते भर में भाव बढ़ा", "good"
+    if perishable:
+        return -0.2, "भाव गिरा, ज़्यादा न रोकें", "low"
+    return -0.6, "हफ़्ते भर में भाव गिरा", "low"
+
+
+def build_bhav(feed, today, history):
+    """history: A keys newest first ('<market>|<commodity>'). The mandi used
+    longest ago (or never) goes first; never the same mandi+crop within 7 days."""
+    cands = bhav_candidates(feed, today)
+    if not cands:
+        return None
+    recent7 = set(history[:14])  # 2 videos a day
+    last_use = {}
+    for i, k in enumerate(history):
+        last_use.setdefault(k.split("|")[0], i)
+    fresh = [c for c in cands if f"{c[0]['market']}|{c[1]['commodity']}" not in recent7]
+    if not fresh:
+        return None
+    m, c, wk, pct, nat = max(fresh, key=lambda x: last_use.get(x[0]["market"], 10 ** 6))
+    m_c = [x for x in fresh if x[0]["market"] == m["market"]]
+    m, c, wk, pct, nat = m_c[0]
+
+    crop = HI_NAME[c["commodity"]]
+    mandi = m["marketHi"]
+    kg_text, kg_count = per_kg(c["modal"])
+    msp = nat.get("msp")
+    perishable = bool(nat.get("perishable"))
+    below = bool(msp and c["modal"] < msp)
+    tone = "steady" if pct is None or abs(pct) < 3 else ("up" if pct > 0 else "down")
+    scenes = [
+        {"kind": "number", "label": f"{mandi} मंडी {crop}", "big": kg_text.split("/")[0], "count": kg_count,
+         "sub": f"प्रति किलो · {inr(c['modal'])}/क्विंटल", "tone": tone,
+         "say": f"{mandi} मंडी, {crop} {kg_text.split('/')[0]} किलो"},
+    ]
+    if wk:
+        diff = c["modal"] - wk[1]
+        arrow = "▲" if diff > 0 else "▼" if diff < 0 else "•"
+        scenes.append({"kind": "move", "big": f"{arrow} {inr(abs(diff))}", "label": "पिछले हफ़्ते से",
+                       "sub": f"{day_hi(wk[0])} को {inr(wk[1])}", "tone": tone,
+                       "say": ("हफ़्ते भर में भाव वही" if diff == 0 else
+                               f"हफ़्ते भर में {abs(diff)} रुपये {'बढ़ा' if diff > 0 else 'गिरा'}")})
+    if below and not perishable:
+        # Only when it is news: the mandi pays less than MSP.
+        bars = [{"label": f"{mandi} मंडी", "value": c["modal"], "text": inr(c["modal"]), "tone": "low" if below else "good"},
+                {"label": "MSP", "value": msp, "text": inr(msp), "tone": "white"}]
+        scenes.append({"kind": "compare", "label": f"{crop}: MSP से तुलना", "bars": bars, "optional": True,
+                       "say": f"एमएसपी से {msp - c['modal']} रुपये कम"})
+    pos, line, vtone = bhav_verdict(pct, below, perishable)
+    scenes.append({"kind": "meter", "label": "आप क्या करेंगे?", "pos": pos, "sub": line, "tone": vtone,
+                   "left": "रोकें", "right": "बेचें", "say": line})
+    scenes.append({"kind": "cta", "label": "बेचें या रोकें?", "big": "कमेंट में लिखें 👇", "sub": "taazabhav.com",
+                   "say": "बेचेंगे या रोकेंगे? कमेंट करें"})
+
+    en = _en(c["commodity"])
+    place = m["market"].title()
+    title = _fit(f"{mandi} मंडी {crop} भाव आज {inr(c['modal'])} | {place} Mandi {en} Rate Today")
+    week_line = None
+    if wk:
+        week_line = f"पिछले हफ़्ते ({day_hi(wk[0])}) {inr(wk[1])} था, यानी {pct_text(pct, arrow=False)} {'ऊपर' if pct > 0 else 'नीचे' if pct < 0 else 'बराबर'}।"
+    desc = "\n".join(x for x in [
+        f"{day_hi(c['date'], True)}: {mandi} मंडी ({m['state']}) में {crop} का मॉडल भाव {inr(c['modal'])} प्रति क्विंटल"
+        f" ({kg_text}), न्यूनतम {inr(c['min'])}, अधिकतम {inr(c['max'])}।",
+        week_line,
+        f"{mandi} मंडी के आज के सभी भाव: {link(m['path'])}",
+        "",
+        "स्रोत: Agmarknet / data.gov.in (सरकारी मंडी आँकड़े)। भाव थोक (मंडी) के हैं।",
+        DISCLAIMER,
+        "",
+        "आपकी मंडी कौन सी है? कमेंट करें, अगला वीडियो उसी का।",
+        "Telegram: https://t.me/taazabhav",
+        f"#मंडीभाव #{place.replace(' ', '')}Mandi #{en.replace(' ', '')}Rate #kisan #taazabhav",
+    ] if x is not None)
+    return {
+        "series": "A", "key": f"{m['market']}|{c['commodity']}", "clip": CLIP.get(c["commodity"], "generic"),
+        "stamp": day_hi(c["date"]), "scenes": scenes, "title": title, "description": desc,
+        "tags": [f"{place} mandi bhav", f"{place} mandi bhav today", f"{m['marketHi']} मंडी भाव", f"{en} rate today",
+                 crop, "mandi bhav", "aaj ka mandi bhav", "taazabhav"],
+        "comment": f"📍 {mandi} मंडी के आज के सभी भाव: {link(m['path'])}\nआप बेचेंगे या रोकेंगे? और कौन सी मंडी का भाव चाहिए? कमेंट करें 👇",
+        "playlist": "A", "link": link(m["path"]),
+    }
+
+
 # ====================================================================== B
 SCHEME_DAY = {1: "mpkalyan", 4: "rajsamman"}  # Tue = MP, Fri = Rajasthan, other days PM Kisan
 
@@ -211,6 +374,11 @@ def build_b(feed, today, recent, claim=None):
         if od and f"{k['key']}|announced|{od}" not in recent and od >= today.isoformat():
             chosen, announced = k, True
             break
+    if not chosen and os.environ.get("B_ONLY_NEWS") == "1":
+        # Optional: B posts only an official date or a widely spread claim.
+        # Off by default: on 3 Nov 2026 the owner's Studio grid showed the daily
+        # PM Kisan "25वीं किस्त कब?" Shorts at 58K and 69K views, the channel's best.
+        return None
     if not chosen:
         # Day's scheme first, then PM Kisan, then any other; never one already
         # posted today (20 Oct: a post-midnight run had used Tuesday's MP slot).

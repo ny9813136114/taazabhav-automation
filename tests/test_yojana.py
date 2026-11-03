@@ -119,6 +119,8 @@ class ModeTest(unittest.TestCase):
         self.assertIn("Y", publish.PLAYLIST_NAMES)
         with mock.patch.dict(os.environ, {"META_ON": ""}):
             self.assertTrue(meta_publish.on_meta("Y"))
+        with mock.patch.dict(os.environ, {"YT_SERIES": ""}):
+            self.assertTrue(publish.on_youtube("Y"))
 
 
 if __name__ == "__main__":

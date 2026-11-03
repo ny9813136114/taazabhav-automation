@@ -112,7 +112,19 @@ def add_to_playlists(series, vid, alert, youtube=None):
     return left
 
 
+def on_youtube(series):
+    """3 Nov 2026 (owner OK): only these series go to YouTube; the rest
+    (C news, D tool demos: same few topics again and again) post only as
+    FB/IG Reels. Repo variable YT_SERIES, default "A,B,Y" (Y yojana added 3 Nov)."""
+    raw = (os.environ.get("YT_SERIES") or "").strip() or "A,B,Y"
+    return raw.lower() == "all" or series.upper() in {x.strip().upper() for x in raw.split(",")}
+
+
 def publish(path, ep, alert):
+    if not on_youtube(ep["series"]):
+        print(f"[engine] series {ep['series']} is off YouTube (YT_SERIES), FB/IG only")
+        meta_reels(path, ep, alert)
+        return None
     from upload_youtube import upload_video
     vid = upload_video(path, ep["title"], ep["description"], ep["tags"], thumbnail_path=None, comment_text=ep["comment"])
     add_to_playlists(ep["series"], vid, alert)
