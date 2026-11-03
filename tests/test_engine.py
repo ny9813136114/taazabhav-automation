@@ -117,8 +117,15 @@ class BhavV2Test(unittest.TestCase):
 
 
 class BOnlyNewsTest(unittest.TestCase):
-    def test_no_daily_status_video(self):
-        self.assertIsNone(stories.build_b(load(), TODAY, set()))
+    def test_daily_status_video_by_default(self):
+        self.assertIsNotNone(stories.build_b(load(), TODAY, set()))
+
+    def test_only_news_switch(self):
+        os.environ["B_ONLY_NEWS"] = "1"
+        try:
+            self.assertIsNone(stories.build_b(load(), TODAY, set()))
+        finally:
+            del os.environ["B_ONLY_NEWS"]
 
     def test_claim_still_checked(self):
         ep = stories.build_b(load(), TODAY, set(), claim={"date": "2026-10-20", "count": 5})
@@ -156,11 +163,6 @@ class YtSeriesTest(unittest.TestCase):
 
 
 class SeriesBTest(unittest.TestCase):
-    def setUp(self):
-        os.environ["B_DAILY"] = "1"  # the status-video rules still hold when it is on
-
-    def tearDown(self):
-        os.environ.pop("B_DAILY", None)
 
     def test_no_date_without_official_date(self):
         ep = stories.build_b(load(), TODAY, set(), claim={"date": "2026-10-20", "count": 5})
@@ -255,8 +257,6 @@ class LengthTest(unittest.TestCase):
     faster-voice fallback in engine.run is only a safety net."""
 
     def episodes(self):
-        os.environ["B_DAILY"] = "1"
-        self.addCleanup(os.environ.pop, "B_DAILY", None)
         feed = load()
         yield stories.build_a(feed, TODAY, set())
         yield stories.build_b(feed, TODAY, set(), claim={"date": "2026-10-25", "count": 7})

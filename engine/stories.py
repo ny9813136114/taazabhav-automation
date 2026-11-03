@@ -374,10 +374,10 @@ def build_b(feed, today, recent, claim=None):
         if od and f"{k['key']}|announced|{od}" not in recent and od >= today.isoformat():
             chosen, announced = k, True
             break
-    if not chosen and not (claim and claim.get("count", 0) >= 3) and os.environ.get("B_DAILY") != "1":
-        # 3 Nov 2026 (owner OK): B posts only real news, an official date or a
-        # date many videos are spreading. The daily "not announced yet" video
-        # repeated 9 days in 12 and pulled the channel down. B_DAILY=1 restores it.
+    if not chosen and os.environ.get("B_ONLY_NEWS") == "1":
+        # Optional: B posts only an official date or a widely spread claim.
+        # Off by default: on 3 Nov 2026 the owner's Studio grid showed the daily
+        # PM Kisan "25वीं किस्त कब?" Shorts at 58K and 69K views, the channel's best.
         return None
     if not chosen:
         # Day's scheme first, then PM Kisan, then any other; never one already

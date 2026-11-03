@@ -93,7 +93,7 @@ def main(series):
         ep = build(series, today, state)
         if not ep:
             print(f"[engine] {series}: no story today")
-            if series not in ("B", "C"):  # B now skips most days on purpose
+            if series not in ("B", "C"):  # B skips on purpose when B_ONLY_NEWS=1
                 alert(f"TaazaBhav engine: no {series} story today (nothing new in the feed).")
             return 0
         print(f"[engine] {series} {run_mode}: {ep['key']} | {ep['title']}")

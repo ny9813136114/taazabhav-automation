@@ -11,7 +11,7 @@ name: Content Engine (4 series)
 #                 until then A/E go to the owner's Telegram as previews.
 #   EVENING_BHAV  "0" = the 18:30 slot makes C (news) again instead of E.
 #   YT_SERIES     series that go to YouTube (default "A,B"); others FB/IG only.
-#   B_DAILY       "1" = B posts the daily "not announced yet" video again.
+#   B_ONLY_NEWS   "1" = B posts only an official date / spread claim (default: daily).
 #
 # Exact times come from the Supabase clock (ops/supabase-clock.sql), which
 # starts this workflow with mode "auto". GitHub's own schedule below starts
@@ -120,7 +120,7 @@ jobs:
           ENGINE_LIVE: ${{ vars.ENGINE_LIVE }}
           BHAV_V2_LIVE: ${{ vars.BHAV_V2_LIVE }}
           YT_SERIES: ${{ vars.YT_SERIES }}
-          B_DAILY: ${{ vars.B_DAILY }}
+          B_ONLY_NEWS: ${{ vars.B_ONLY_NEWS }}
         run: python -m engine.run ${{ steps.s.outputs.series }}
       - name: Mark slot done
         if: success() && steps.g.outputs.run == 'true' && steps.g.outputs.gated == 'true'
