@@ -6,6 +6,13 @@ name: Content Engine (4 series)
 # Runs only PUBLISH when the repo variable ENGINE_LIVE is "1" (mode auto);
 # until then each video goes to the owner's Telegram as a preview.
 #
+# 3 Nov 2026 (owner OK), repo variables:
+#   BHAV_V2_LIVE  "1" = the new mandi bhav Short (A 07:30 + E 18:30) posts;
+#                 until then A/E go to the owner's Telegram as previews.
+#   EVENING_BHAV  "0" = the 18:30 slot makes C (news) again instead of E.
+#   YT_SERIES     series that go to YouTube (default "A,B"); others FB/IG only.
+#   B_DAILY       "1" = B posts the daily "not announced yet" video again.
+#
 # Exact times come from the Supabase clock (ops/supabase-clock.sql), which
 # starts this workflow with mode "auto". GitHub's own schedule below starts
 # runs hours late, so it is only a backup: engine/slot_gate.py lets each
@@ -19,9 +26,9 @@ on:
   workflow_dispatch:
     inputs:
       series:
-        description: "A bhav, B kist, C khabar, D tool"
+        description: "A bhav (morning), E bhav (evening), B kist, C khabar, D tool"
         type: choice
-        options: [A, B, C, D]
+        options: [A, E, B, C, D]
         default: A
       mode:
         description: "auto = follow ENGINE_LIVE, once per slot; preview = owner's Telegram only; publish = post it"
@@ -55,6 +62,8 @@ jobs:
             "0 15 * * *") S=B ;;
             *) S="${{ inputs.series }}" ;;
           esac
+          # The 18:30 slot (clock or backup) is the evening bhav Short now.
+          if [ "$S" = "C" ] && [ "${{ vars.EVENING_BHAV }}" != "0" ] && [ "${{ github.event_name }}" = "schedule" -o "${{ inputs.mode }}" = "auto" ]; then S=E; fi
           echo "series=$S" >> "$GITHUB_OUTPUT"
       - name: Once per slot
         id: g
@@ -109,6 +118,9 @@ jobs:
           META_ON: ${{ vars.META_ON }}
           ENGINE_MODE: ${{ inputs.mode }}
           ENGINE_LIVE: ${{ vars.ENGINE_LIVE }}
+          BHAV_V2_LIVE: ${{ vars.BHAV_V2_LIVE }}
+          YT_SERIES: ${{ vars.YT_SERIES }}
+          B_DAILY: ${{ vars.B_DAILY }}
         run: python -m engine.run ${{ steps.s.outputs.series }}
       - name: Mark slot done
         if: success() && steps.g.outputs.run == 'true' && steps.g.outputs.gated == 'true'

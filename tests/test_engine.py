@@ -48,7 +48,120 @@ class SeriesATest(unittest.TestCase):
         self.assertEqual(ep["key"], "Soyabean|Indore")
 
 
+MANDI_FIXTURE = Path(__file__).parent / "fixtures" / "engine_feed_mandis.json"
+TODAY2 = date(2026, 11, 3)
+
+
+def load_mandis():
+    os.environ["ENGINE_FEED_FILE"] = str(MANDI_FIXTURE)
+    try:
+        return F.load_feed(TODAY2)
+    finally:
+        del os.environ["ENGINE_FEED_FILE"]
+
+
+class BhavV2Test(unittest.TestCase):
+    """3 Nov 2026: A = one searched mandi, per-kg price, change since last week."""
+
+    def test_checks_drop_glitches(self):
+        keys = {f"{m['market']}|{c['commodity']}" for m, c, *_ in stories.bhav_candidates(load_mandis(), TODAY2)}
+        self.assertIn("Betul|Soyabean", keys)
+        self.assertIn("Neemuch|Wheat", keys)
+        self.assertNotIn("Neemuch|Garlic", keys)   # +60% in a week
+        self.assertNotIn("Dewas|Soyabean", keys)   # 2x the national price
+        self.assertNotIn("Kota|Mustard", keys)     # 4 days old
+        self.assertIn("Mandsaur|Onion", keys)      # perishable: wider band
+
+    def test_first_video(self):
+        ep = stories.build_bhav(load_mandis(), TODAY2, [])
+        qa.check_episode(ep)
+        self.assertEqual(ep["series"], "A")
+        self.assertEqual(ep["key"], "Betul|Soyabean")
+        self.assertTrue(ep["title"].startswith("बैतूल मंडी सोयाबीन भाव आज ₹4,520"))
+        self.assertIn("Betul Mandi Soybean Rate Today", ep["title"])
+        self.assertEqual(ep["scenes"][0]["big"], "₹45")
+        self.assertTrue(ep["scenes"][0]["sub"].startswith("प्रति किलो"))
+        self.assertEqual(ep["scenes"][1]["big"], "▲ ₹140")  # vs 27 Oct ₹4,380 (30 Oct is only 3 days back)
+        self.assertEqual(ep["scenes"][-1]["label"], "बेचें या रोकें?")
+        self.assertNotIn("%", ep["scenes"][0]["big"] + ep["scenes"][1]["big"])
+
+    def test_rotates_to_mandi_used_longest_ago(self):
+        feed = load_mandis()
+        ep = stories.build_bhav(feed, TODAY2, ["Betul|Soyabean"])
+        self.assertEqual(ep["key"], "Neemuch|Wheat")
+        ep = stories.build_bhav(feed, TODAY2, ["Neemuch|Wheat", "Mandsaur|Onion", "Betul|Soyabean"])
+        self.assertEqual(ep["key"], "Betul|Maize")  # Betul longest ago; soybean used this week
+
+    def test_none_without_mandis(self):
+        feed = load_mandis()
+        feed["mandis"] = []
+        self.assertIsNone(stories.build_bhav(feed, TODAY2, []))
+
+    def test_per_kg(self):
+        self.assertEqual(stories.per_kg(4520), ("₹45/किलो", 45))
+        self.assertEqual(stories.per_kg(750), ("₹7.5/किलो", None))
+        self.assertEqual(stories.per_kg(800), ("₹8/किलो", 8))
+
+    def test_fits_length(self):
+        feed = load_mandis()
+        hist = []
+        for _ in range(4):
+            ep = stories.build_bhav(feed, TODAY2, hist)
+            if not ep:
+                break
+            secs = estimate_secs(fitted(ep))
+            self.assertLessEqual(secs, qa.BOUNDS["A"][1], ep["key"])
+            self.assertGreaterEqual(secs, qa.BOUNDS["A"][0], ep["key"])
+            hist.insert(0, ep["key"])
+        self.assertGreaterEqual(len(hist), 3)
+
+
+class BOnlyNewsTest(unittest.TestCase):
+    def test_no_daily_status_video(self):
+        self.assertIsNone(stories.build_b(load(), TODAY, set()))
+
+    def test_claim_still_checked(self):
+        ep = stories.build_b(load(), TODAY, set(), claim={"date": "2026-10-20", "count": 5})
+        self.assertIsNotNone(ep)
+
+
+class YtSeriesTest(unittest.TestCase):
+    def test_default_youtube_only_a_b(self):
+        from engine.publish import on_youtube
+        os.environ.pop("YT_SERIES", None)
+        self.assertTrue(on_youtube("A"))
+        self.assertTrue(on_youtube("B"))
+        self.assertFalse(on_youtube("C"))
+        self.assertFalse(on_youtube("D"))
+        os.environ["YT_SERIES"] = "all"
+        try:
+            self.assertTrue(on_youtube("D"))
+        finally:
+            del os.environ["YT_SERIES"]
+
+    def test_bhav_previews_until_live(self):
+        from engine.run import mode
+        os.environ.pop("ENGINE_MODE", None)
+        os.environ["ENGINE_LIVE"] = "1"
+        try:
+            os.environ.pop("BHAV_V2_LIVE", None)
+            self.assertEqual(mode("A"), "preview")
+            self.assertEqual(mode("E"), "preview")
+            self.assertEqual(mode("B"), "publish")
+            os.environ["BHAV_V2_LIVE"] = "1"
+            self.assertEqual(mode("E"), "publish")
+        finally:
+            os.environ.pop("ENGINE_LIVE", None)
+            os.environ.pop("BHAV_V2_LIVE", None)
+
+
 class SeriesBTest(unittest.TestCase):
+    def setUp(self):
+        os.environ["B_DAILY"] = "1"  # the status-video rules still hold when it is on
+
+    def tearDown(self):
+        os.environ.pop("B_DAILY", None)
+
     def test_no_date_without_official_date(self):
         ep = stories.build_b(load(), TODAY, set(), claim={"date": "2026-10-20", "count": 5})
         qa.check_episode(ep)
@@ -142,6 +255,8 @@ class LengthTest(unittest.TestCase):
     faster-voice fallback in engine.run is only a safety net."""
 
     def episodes(self):
+        os.environ["B_DAILY"] = "1"
+        self.addCleanup(os.environ.pop, "B_DAILY", None)
         feed = load()
         yield stories.build_a(feed, TODAY, set())
         yield stories.build_b(feed, TODAY, set(), claim={"date": "2026-10-25", "count": 7})

@@ -1,0 +1,441 @@
+{
+ "generatedAt": "2026-11-03T00:31:07.137Z",
+ "latestDate": "2026-11-02",
+ "reports": [
+  {
+   "date": "2026-11-02",
+   "kind": "crop",
+   "slug": "bajra-bhav-aaj",
+   "data": {
+    "commodity": "Bajra(Pearl Millet/Cumbu)",
+    "nameHi": "बाजरा",
+    "slug": "bajra",
+    "typical": 2578,
+    "msp": 2900,
+    "perishable": false,
+    "markets": 93
+   }
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "crop",
+   "slug": "chana-bhav-aaj",
+   "data": {
+    "commodity": "Bengal Gram(Gram)(Whole)",
+    "nameHi": "चना",
+    "slug": "chana",
+    "typical": 6850,
+    "msp": 5875,
+    "perishable": false,
+    "markets": 172
+   }
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "crop",
+   "slug": "cotton-bhav-aaj",
+   "data": {
+    "commodity": "Cotton",
+    "nameHi": "कपास",
+    "slug": "cotton",
+    "typical": 8838,
+    "msp": 8267,
+    "perishable": false,
+    "markets": 134
+   }
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "crop",
+   "slug": "dhan-paddy-bhav-aaj",
+   "data": {
+    "commodity": "Paddy(Common)",
+    "nameHi": "धान",
+    "slug": "dhan-paddy",
+    "typical": 2461,
+    "msp": 2441,
+    "perishable": false,
+    "markets": 286
+   }
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "crop",
+   "slug": "garlic-bhav-aaj",
+   "data": {
+    "commodity": "Garlic",
+    "nameHi": "लहसुन",
+    "slug": "garlic",
+    "typical": 12500,
+    "msp": null,
+    "perishable": true,
+    "markets": 96
+   }
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "crop",
+   "slug": "groundnut-bhav-aaj",
+   "data": {
+    "commodity": "Groundnut",
+    "nameHi": "मूंगफली",
+    "slug": "groundnut",
+    "typical": 7300,
+    "msp": 7517,
+    "perishable": false,
+    "markets": 102
+   }
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "crop",
+   "slug": "jeera-bhav-aaj",
+   "data": {
+    "commodity": "Cummin Seed(Jeera)",
+    "nameHi": "जीरा",
+    "slug": "jeera",
+    "typical": 24150,
+    "msp": null,
+    "perishable": false,
+    "markets": 23
+   }
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "crop",
+   "slug": "maize-bhav-aaj",
+   "data": {
+    "commodity": "Maize",
+    "nameHi": "मक्का",
+    "slug": "maize",
+    "typical": 2580,
+    "msp": 2410,
+    "perishable": false,
+    "markets": 283
+   }
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "crop",
+   "slug": "moong-bhav-aaj",
+   "data": {
+    "commodity": "Green Gram(Moong)(Whole)",
+    "nameHi": "मूंग",
+    "slug": "moong",
+    "typical": 7959,
+    "msp": 8780,
+    "perishable": false,
+    "markets": 78
+   }
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "crop",
+   "slug": "mustard-bhav-aaj",
+   "data": {
+    "commodity": "Mustard",
+    "nameHi": "सरसों",
+    "slug": "mustard",
+    "typical": 8278,
+    "msp": 6200,
+    "perishable": false,
+    "markets": 75
+   }
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "crop",
+   "slug": "onion-bhav-aaj",
+   "data": {
+    "commodity": "Onion",
+    "nameHi": "प्याज़",
+    "slug": "onion",
+    "typical": 4250,
+    "msp": null,
+    "perishable": true,
+    "markets": 320
+   }
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "crop",
+   "slug": "potato-bhav-aaj",
+   "data": {
+    "commodity": "Potato",
+    "nameHi": "आलू",
+    "slug": "potato",
+    "typical": 1100,
+    "msp": null,
+    "perishable": true,
+    "markets": 291
+   }
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "crop",
+   "slug": "soybean-bhav-aaj",
+   "data": {
+    "commodity": "Soyabean",
+    "nameHi": "सोयाबीन",
+    "slug": "soybean",
+    "typical": 6855,
+    "msp": 5708,
+    "perishable": false,
+    "markets": 238
+   }
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "crop",
+   "slug": "tomato-bhav-aaj",
+   "data": {
+    "commodity": "Tomato",
+    "nameHi": "टमाटर",
+    "slug": "tomato",
+    "typical": 2225,
+    "msp": null,
+    "perishable": true,
+    "markets": 323
+   }
+  },
+  {
+   "date": "2026-11-02",
+   "kind": "crop",
+   "slug": "wheat-bhav-aaj",
+   "data": {
+    "commodity": "Wheat",
+    "nameHi": "गेहूं",
+    "slug": "wheat",
+    "typical": 2875,
+    "msp": 2585,
+    "perishable": false,
+    "markets": 273
+   }
+  }
+ ],
+ "signals": [],
+ "kist": [
+  {
+   "key": "pmkisan",
+   "nameHi": "पीएम किसान",
+   "path": "/pm-kisan-kist",
+   "amount": 2000,
+   "perYear": 6000,
+   "checkedOn": "2026-10-31",
+   "next": {
+    "n": 25,
+    "officialDate": null,
+    "windowStart": "2027-02-01",
+    "windowEnd": "2027-03-31",
+    "windowEn": "February–March 2027",
+    "windowHi": "फ़रवरी–मार्च 2027"
+   },
+   "last": {
+    "n": 24,
+    "date": "2026-10-30",
+    "placeEn": "Bhildi, Banaskantha (Gujarat)",
+    "placeHi": "भीलडी, बनासकांठा (गुजरात)",
+    "crore": 18690,
+    "farmersCrore": 9.34,
+    "source": "https://www.pib.gov.in/PressReleseDetailm.aspx?PRID=2330414&reg=48&lang=2"
+   },
+   "statusUrl": "https://pmkisan.gov.in/"
+  },
+  {
+   "key": "mpkalyan",
+   "nameHi": "मुख्यमंत्री किसान कल्याण योजना",
+   "stateHi": "मध्य प्रदेश",
+   "path": "/mp-kisan-kalyan-kist",
+   "amount": 2000,
+   "perYear": 6000,
+   "checkedOn": "2026-10-17",
+   "next": {
+    "n": 16,
+    "officialDate": null,
+    "windowHi": "अक्टूबर–दिसंबर 2026",
+    "windowEn": "October–December 2026"
+   },
+   "last": {
+    "label": "14-15",
+    "date": "2026-07-27",
+    "placeHi": "बलराम कृषि महोत्सव, खंडवा",
+    "placeEn": "Balram Krishi Mahotsav, Khandwa",
+    "perFarmer": 4000,
+    "crore": 3300,
+    "lakhFarmers": 82.7,
+    "source": "https://www.india.com/hindi-news/madhya-pradesh/cm-mohan-yadav-announces-over-3300-crore-4000-each-transferred-to-the-accounts-of-82-lakh-70-thousand-farmers-8485685/"
+   },
+   "statusUrl": "https://saara.mp.gov.in/"
+  },
+  {
+   "key": "rajsamman",
+   "nameHi": "मुख्यमंत्री किसान सम्मान निधि",
+   "stateHi": "राजस्थान",
+   "path": "/rajasthan-kisan-samman-kist",
+   "amount": 1000,
+   "perYear": 3000,
+   "checkedOn": "2026-10-17",
+   "next": {
+    "n": 7,
+    "officialDate": null,
+    "windowHi": "अक्टूबर–दिसंबर 2026",
+    "windowEn": "October–December 2026"
+   },
+   "last": {
+    "label": "6",
+    "date": "2026-04-22",
+    "placeHi": "ओसियां, जोधपुर",
+    "placeEn": "Osian, Jodhpur",
+    "perFarmer": 1000,
+    "crore": 665,
+    "lakhFarmers": 66,
+    "source": "https://www.krishakjagat.org/news/rajasthan-sixth-installment-of-chief-minister-kisan-samman-nidhi-to-be-released-today-6-6-million-farmers-to-receive-a-gift/"
+   },
+   "statusUrl": "https://rajkisan.rajasthan.gov.in/"
+  }
+ ],
+ "mandis": [
+  {
+   "state": "Madhya Pradesh",
+   "stateSlug": "madhya-pradesh",
+   "market": "Betul",
+   "marketHi": "बैतूल",
+   "path": "/mandi-bhav/state/madhya-pradesh/betul",
+   "crops": [
+    {
+     "commodity": "Soyabean",
+     "variety": "",
+     "date": "2026-11-02",
+     "modal": 4520,
+     "min": 4320,
+     "max": 4670,
+     "history": [
+      {
+       "date": "2026-10-30",
+       "modal": 4470
+      },
+      {
+       "date": "2026-10-27",
+       "modal": 4380
+      }
+     ]
+    },
+    {
+     "commodity": "Maize",
+     "variety": "",
+     "date": "2026-11-02",
+     "modal": 1850,
+     "min": 1650,
+     "max": 2000,
+     "history": [
+      {
+       "date": "2026-10-28",
+       "modal": 1900
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "state": "Madhya Pradesh",
+   "stateSlug": "madhya-pradesh",
+   "market": "Neemuch",
+   "marketHi": "नीमच",
+   "path": "/mandi-bhav/state/madhya-pradesh/neemuch",
+   "crops": [
+    {
+     "commodity": "Garlic",
+     "variety": "",
+     "date": "2026-11-02",
+     "modal": 11200,
+     "min": 11000,
+     "max": 11350,
+     "history": [
+      {
+       "date": "2026-10-27",
+       "modal": 7000
+      }
+     ]
+    },
+    {
+     "commodity": "Wheat",
+     "variety": "",
+     "date": "2026-11-02",
+     "modal": 2650,
+     "min": 2450,
+     "max": 2800,
+     "history": [
+      {
+       "date": "2026-10-26",
+       "modal": 2600
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "state": "Madhya Pradesh",
+   "stateSlug": "madhya-pradesh",
+   "market": "Dewas",
+   "marketHi": "देवास",
+   "path": "/mandi-bhav/state/madhya-pradesh/dewas",
+   "crops": [
+    {
+     "commodity": "Soyabean",
+     "variety": "",
+     "date": "2026-11-02",
+     "modal": 14000,
+     "min": 13800,
+     "max": 14150,
+     "history": [
+      {
+       "date": "2026-10-27",
+       "modal": 4300
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "state": "Rajasthan",
+   "stateSlug": "rajasthan",
+   "market": "Kota",
+   "marketHi": "कोटा",
+   "path": "/mandi-bhav/state/rajasthan/kota",
+   "crops": [
+    {
+     "commodity": "Mustard",
+     "variety": "",
+     "date": "2026-10-29",
+     "modal": 6100,
+     "min": 5900,
+     "max": 6250,
+     "history": []
+    }
+   ]
+  },
+  {
+   "state": "Madhya Pradesh",
+   "stateSlug": "madhya-pradesh",
+   "market": "Mandsaur",
+   "marketHi": "मंदसौर",
+   "path": "/mandi-bhav/state/madhya-pradesh/mandsaur",
+   "crops": [
+    {
+     "commodity": "Onion",
+     "variety": "",
+     "date": "2026-11-02",
+     "modal": 1450,
+     "min": 1250,
+     "max": 1600,
+     "history": [
+      {
+       "date": "2026-10-28",
+       "modal": 1300
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
