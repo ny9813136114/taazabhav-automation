@@ -6,22 +6,28 @@ name: Content Engine (4 series)
 # Runs only PUBLISH when the repo variable ENGINE_LIVE is "1" (mode auto);
 # until then each video goes to the owner's Telegram as a preview.
 #
+# 3 Nov 2026 (owner: "2 are enough", yojana videos get the views):
+#   Y योजना की बात 12:30 IST replaces D once the variable YOJANA_LIVE is "1";
+#     until then D still posts at 12:30 and Y goes to the owner's Telegram as
+#     a preview right after it.
+#   A and C (bhav) no longer post: their slot runs stop at once unless the
+#     variable BHAV_VIDEOS is "1". Bhav stays on the site and Telegram.
+#   Manual runs (mode preview/publish) still work for every series.
+#
 # Exact times come from the Supabase clock (ops/supabase-clock.sql), which
 # starts this workflow with mode "auto". GitHub's own schedule below starts
 # runs hours late, so it is only a backup: engine/slot_gate.py lets each
 # series run once per slot and tells the owner when the clock missed one.
 on:
   schedule:
-    - cron: "0 2 * * *"    # 07:30 IST  A
-    - cron: "0 7 * * *"    # 12:30 IST  D
-    - cron: "0 13 * * *"   # 18:30 IST  C
+    - cron: "0 7 * * *"    # 12:30 IST  D, or Y when YOJANA_LIVE=1
     - cron: "0 15 * * *"   # 20:30 IST  B
   workflow_dispatch:
     inputs:
       series:
-        description: "A bhav, B kist, C khabar, D tool"
+        description: "A bhav, B kist, C khabar, D tool, Y yojana"
         type: choice
-        options: [A, B, C, D]
+        options: [A, B, C, D, Y]
         default: A
       mode:
         description: "auto = follow ENGINE_LIVE, once per slot; preview = owner's Telegram only; publish = post it"
@@ -49,15 +55,21 @@ jobs:
         id: s
         run: |
           case "${{ github.event.schedule }}" in
-            "0 2 * * *") S=A ;;
             "0 7 * * *") S=D ;;
-            "0 13 * * *") S=C ;;
             "0 15 * * *") S=B ;;
             *) S="${{ inputs.series }}" ;;
           esac
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ inputs.mode }}" = "auto" ]; then
+            if [ "$S" = "D" ] && [ "${{ vars.YOJANA_LIVE }}" = "1" ]; then S=Y; fi
+            if { [ "$S" = "A" ] || [ "$S" = "C" ]; } && [ "${{ vars.BHAV_VIDEOS }}" != "1" ]; then
+              echo "off=true" >> "$GITHUB_OUTPUT"
+              echo "Series $S is off (bhav videos stopped 3 Nov 2026; repo variable BHAV_VIDEOS=1 turns it back on)."
+            fi
+          fi
           echo "series=$S" >> "$GITHUB_OUTPUT"
       - name: Once per slot
         id: g
+        if: steps.s.outputs.off != 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -109,7 +121,18 @@ jobs:
           META_ON: ${{ vars.META_ON }}
           ENGINE_MODE: ${{ inputs.mode }}
           ENGINE_LIVE: ${{ vars.ENGINE_LIVE }}
+          YOJANA_LIVE: ${{ vars.YOJANA_LIVE }}
         run: python -m engine.run ${{ steps.s.outputs.series }}
+      - name: Yojana preview (until YOJANA_LIVE=1)
+        # Only on the 12:30 slot run; never publishes (ENGINE_MODE=preview).
+        if: success() && steps.g.outputs.run == 'true' && steps.g.outputs.gated == 'true' && steps.s.outputs.series == 'D' && vars.YOJANA_LIVE != '1'
+        continue-on-error: true
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          ENGINE_MODE: preview
+        run: python -m engine.run Y
       - name: Mark slot done
         if: success() && steps.g.outputs.run == 'true' && steps.g.outputs.gated == 'true'
         run: python3 -m engine.slot_gate done ${{ steps.s.outputs.series }}

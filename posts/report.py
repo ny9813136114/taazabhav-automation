@@ -28,11 +28,11 @@ import requests
 from posts.run import IST, _owner, _tg
 
 # Slot (IST) -> format name, as the owner knows them.
-SLOTS = [("07:30", "Bhav Dhamaka Reel"), ("09:30", "09:30 post"), ("12:30", "Tool se hal Reel"),
+SLOTS = [("07:30", "Bhav Dhamaka Reel"), ("09:30", "09:30 post"), ("12:30", "Yojana / Tool Reel"),
          ("14:30", "Bhav carousel"), ("17:13", "Mela alert Reel"), ("18:30", "Kisan Khabar Reel"),
          ("20:30", "Kist ka Sach Reel")]
 # Ledger pillar (posts/ledger.py) -> format name.
-PILLAR_NAMES = {"A": "Bhav Dhamaka Reel", "D": "Tool se hal Reel", "C": "Kisan Khabar Reel", "B": "Kist ka Sach Reel",
+PILLAR_NAMES = {"A": "Bhav Dhamaka Reel", "D": "Tool se hal Reel", "Y": "Yojana ki Baat Reel", "C": "Kisan Khabar Reel", "B": "Kist ka Sach Reel",
                 "mela": "Mela alert Reel", "bhav": "Bhav carousel", "tool": "Tool carousel",
                 "P1": "P1 Aapki Mandi Report", "P2": "P2 Parchi Doctor", "P3": "P3 Kisan ka Hisaab",
                 "P4": "P4 Rokun ya Bechun", "P5": "P5 Sach ya Jhooth", "P6": "P6 Hisaab Challenge",

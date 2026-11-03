@@ -6,7 +6,7 @@
 -- (Taazabhav-website: db/morning-trigger.sql); this file adds the
 -- automation repo to it, reusing the same GitHub token from the vault.
 --
---   Content engine   A 07:30 IST, D 12:30, C 18:30, B 20:30  (mode "auto")
+--   Content engine   D/Y 12:30 IST, B 20:30  (mode "auto"; A and C stopped 3 Nov 2026)
 --   Telegram channel 13:00 IST, again 16:00 IST (posts once a day)
 --
 -- The workflows' own GitHub schedules stay as late backups; each one runs
@@ -56,12 +56,10 @@ end $$;
 revoke execute on function public.dispatch_automation(text, jsonb) from public, anon, authenticated;
 
 -- pg_cron runs in UTC (IST = UTC + 5:30).
-select cron.schedule('taazabhav-auto-engine-a', '0 2 * * *',
-  $$select public.dispatch_automation('engine.yml', '{"series":"A","mode":"auto"}')$$);
+-- A (07:30 bhav) stopped 3 Nov 2026: select cron.unschedule('taazabhav-auto-engine-a');
 select cron.schedule('taazabhav-auto-engine-d', '0 7 * * *',
   $$select public.dispatch_automation('engine.yml', '{"series":"D","mode":"auto"}')$$);
-select cron.schedule('taazabhav-auto-engine-c', '0 13 * * *',
-  $$select public.dispatch_automation('engine.yml', '{"series":"C","mode":"auto"}')$$);
+-- C (18:30 bhav news) stopped 3 Nov 2026: select cron.unschedule('taazabhav-auto-engine-c');
 select cron.schedule('taazabhav-auto-engine-b', '0 15 * * *',
   $$select public.dispatch_automation('engine.yml', '{"series":"B","mode":"auto"}')$$);
 select cron.schedule('taazabhav-auto-telegram', '30 7,10 * * *',

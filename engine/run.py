@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""One video for one series: python -m engine.run A|B|C|D
+"""One video for one series: python -m engine.run A|B|C|D|Y
 
 Mode: ENGINE_MODE=preview|publish (manual runs). Scheduled runs publish only
 when the repo variable ENGINE_LIVE is "1"; until then the video goes to the
@@ -13,18 +13,21 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from engine import feed as F
-from engine import media, qa, stories, tools
+from engine import media, qa, stories, tools, yojana
 
 IST = timezone(timedelta(hours=5, minutes=30))
-RECENT_DAYS = {"A": 7, "B": 1, "C": 1, "D": 21}
+RECENT_DAYS = {"A": 7, "B": 1, "C": 1, "D": 21, "Y": 15}
 # Voice speeds tried in turn when a video is over its length limit.
 SPEEDS = ("+8%", "+18%", "+28%")
 
 
-def mode():
+def mode(series=None):
     m = (os.environ.get("ENGINE_MODE") or "").strip().lower()
     if m in ("publish", "preview"):
         return m
+    # Series Y stays a Telegram preview until the owner sets YOJANA_LIVE=1.
+    if series == "Y" and os.environ.get("YOJANA_LIVE", "").strip() != "1":
+        return "preview"
     return "publish" if os.environ.get("ENGINE_LIVE", "").strip() == "1" else "preview"
 
 
@@ -37,6 +40,12 @@ def alert(msg):
 
 
 def build(series, today, state):
+    if series == "Y":
+        items = yojana.load_queue()
+        left = yojana.fresh_count(items, today, state)
+        if left < yojana.LOW_QUEUE:
+            alert(f"TaazaBhav engine: yojana queue mein sirf {left} naye topic bache hain. content/yojana/queue.json mein aur jodo.")
+        return yojana.build_y(today, state, items)
     recent = F.recent_keys(state, series, today, RECENT_DAYS[series])
     if series == "D":
         return tools.build_d(today, recent)
@@ -59,7 +68,7 @@ def build(series, today, state):
 def main(series):
     today = datetime.now(IST).date()
     state = F.load_state()
-    run_mode = "dry" if os.environ.get("ENGINE_DRY") == "1" else mode()
+    run_mode = "dry" if os.environ.get("ENGINE_DRY") == "1" else mode(series)
     work = Path("engine-out")
     work.mkdir(exist_ok=True)
     out = work / f"{series}-{today.isoformat()}.mp4"

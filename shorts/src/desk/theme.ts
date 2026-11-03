@@ -16,6 +16,7 @@ export const SERIES: Record<string, { name: string; color: string }> = {
   B: { name: "किस्त का सच", color: "#13955a" },
   C: { name: "किसान खबर", color: "#1f5fd1" },
   D: { name: "टूल से हल", color: "#7b3fd0" },
+  Y: { name: "योजना की बात", color: "#c2185b" },
 };
 
 // Shorts UI covers the bottom ~25% and a ~150 px rail on the right.
