@@ -16,8 +16,9 @@ SITE_PAGES = {
     "/khad-rate", "/mp-khad-e-token", "/krishi-yantra-anudan", "/pm-kusum-yojana", "/bhavantar-calculator",
     "/msp-vs-mandi", "/gehu-kharid", "/dhan-kharid", "/mitti-jaanch", "/kheti-lagat-munafa", "/pala-alert",
     "/raj-kisan-sathi", "/bihar-dbt-agriculture", "/mahadbt-farmer", "/meri-fasal-mera-byora", "/rabi-buvai-2026",
+    "/bigha-to-acre", "/sarkari-paisa",
 }
-OFFICIAL = re.compile(r"(\.gov\.in|\.nic\.in|^rbi\.org\.in|^sbi\.co\.in)$")
+OFFICIAL = re.compile(r"(\.gov\.in|\.nic\.in|^rbi\.org\.in|^sbi\.co\.in|\.mahait\.org)$")  # mahait.org: Maharashtra govt IT
 
 
 def state(*eps):
@@ -33,20 +34,25 @@ class QueueTest(unittest.TestCase):
         ids = [i["id"] for i in self.items]
         self.assertEqual(len(ids), len(set(ids)))
         for i in self.items:
-            self.assertEqual(len(i["facts"]), 3, i["id"])
+            self.assertIn(len(i["facts"]), (2, 3), i["id"])
+            self.assertIn(i["format"], yojana.FORMATS, i["id"])
+            if i["format"] == "sach":
+                self.assertIn("verdict", i, i["id"])
             self.assertIn(i["tool"]["path"], SITE_PAGES, i["id"])
             self.assertRegex(i["source"], OFFICIAL, i["id"])
             self.assertIn(i["scope"], ("central", "state"))
             self.assertTrue(i["basis"], f"{i['id']} has no basis (which site page the facts came from)")
             for part in (i["hook"], *i["facts"], i["tool"]):
-                self.assertLessEqual(len(part["big"]), 18, f"{i['id']}: {part['big']}")
+                self.assertLessEqual(len(part.get("big", "")), 18, f"{i['id']}: {part.get('big')}")
+                for it in part.get("items", []):
+                    self.assertLessEqual(len(it["value"]), 16, i["id"])
                 self.assertTrue(part["say"].strip(), i["id"])
             self.assertNotIn("utm_", str(i))
 
     def test_voice_never_reads_rupee_lakh_wrong(self):
         # spoken() turns "₹2 लाख" into "2 रुपये लाख"; voice lines must say amounts in words.
         for i in self.items:
-            for part in (i["hook"], *i["facts"], i["tool"]):
+            for part in (i["hook"], *i["facts"], i["tool"], *([i["verdict"]] if "verdict" in i else [])):
                 self.assertNotRegex(part["say"], r"₹\s*[\d.,]+\s*(लाख|करोड़|हज़ार)", i["id"])
 
     def test_every_item_passes_qa_and_fits(self):
@@ -64,41 +70,70 @@ class QueueTest(unittest.TestCase):
 
 
 class PickTest(unittest.TestCase):
+    # TODAY (4 Nov 2026) is a Wednesday: format "kitna".
     items = [
-        {"id": "a1", "scheme": "a"}, {"id": "a2", "scheme": "a"}, {"id": "a3", "scheme": "a"},
-        {"id": "b1", "scheme": "b"}, {"id": "old", "scheme": "c", "validUntil": "2026-11-01"},
-        {"id": "later", "scheme": "d", "validFrom": "2026-12-01"},
+        {"id": "s1", "scheme": "a", "format": "state", "state": "TG"},
+        {"id": "k1", "scheme": "a", "format": "kitna"},
+        {"id": "k2", "scheme": "b", "format": "kitna"},
+        {"id": "s2", "scheme": "c", "format": "state", "state": "TG"},
+        {"id": "old", "scheme": "d", "format": "kitna", "validUntil": "2026-11-01"},
+        {"id": "later", "scheme": "e", "format": "kitna", "validFrom": "2026-12-01"},
     ]
 
-    def test_first_never_shown_in_queue_order(self):
-        self.assertEqual(yojana.pick(self.items, TODAY, state())["id"], "a1")
+    def test_todays_format_first(self):
+        self.assertEqual(TODAY.weekday(), 2)
+        self.assertEqual(yojana.pick(self.items, TODAY, state())["id"], "k1")
+        self.assertEqual(yojana.pick(self.items, TODAY - timedelta(days=2), state())["id"], "s1")  # Monday
 
-    def test_no_repeat_within_15_days(self):
-        s = state(("a1", TODAY - timedelta(days=14)), ("a2", TODAY - timedelta(days=13)), ("a3", TODAY - timedelta(days=12)), ("b1", TODAY - timedelta(days=11)))
+    def test_never_repeats_an_item(self):
+        s = state(*[(i["id"], TODAY - timedelta(days=300)) for i in self.items])
         self.assertIsNone(yojana.pick(self.items, TODAY, s))
-        s = state(("a1", TODAY - timedelta(days=15)), ("a2", TODAY - timedelta(days=13)), ("a3", TODAY - timedelta(days=12)), ("b1", TODAY - timedelta(days=11)))
-        self.assertEqual(yojana.pick(self.items, TODAY, s)["id"], "a1")
 
-    def test_scheme_at_most_twice_a_week(self):
-        s = state(("a1", TODAY - timedelta(days=1)), ("a2", TODAY - timedelta(days=2)))
-        self.assertEqual(yojana.pick(self.items, TODAY, s)["id"], "b1")
+    def test_scheme_gap(self):
+        s = state(("s1", TODAY - timedelta(days=13)))
+        self.assertEqual(yojana.pick(self.items, TODAY, s)["id"], "k2")
+        s = state(("s1", TODAY - timedelta(days=14)))
+        self.assertEqual(yojana.pick(self.items, TODAY, s)["id"], "k1")
 
-    def test_expired_and_not_yet_valid_are_skipped(self):
-        s = state(("a1", TODAY - timedelta(days=1)), ("a2", TODAY - timedelta(days=2)), ("b1", TODAY - timedelta(days=3)))
+    def test_state_gap(self):
+        s = state(("s1", TODAY - timedelta(days=6)), ("k1", TODAY - timedelta(days=40)), ("k2", TODAY - timedelta(days=40)))
         self.assertIsNone(yojana.pick(self.items, TODAY, s))
-        self.assertEqual(yojana.pick(self.items, date(2026, 12, 1), s)["id"], "a3")
+        s = state(("s1", TODAY - timedelta(days=7)), ("k1", TODAY - timedelta(days=40)), ("k2", TODAY - timedelta(days=40)))
+        self.assertEqual(yojana.pick(self.items, TODAY, s)["id"], "s2")
 
-    def test_oldest_shown_goes_first_when_all_used(self):
-        s = state(("a1", TODAY - timedelta(days=40)), ("a2", TODAY - timedelta(days=60)), ("a3", TODAY - timedelta(days=50)), ("b1", TODAY - timedelta(days=30)))
-        self.assertEqual(yojana.pick(self.items, TODAY, s)["id"], "a2")
+    def test_other_format_when_today_is_empty(self):
+        s = state(("k1", TODAY - timedelta(days=30)), ("k2", TODAY - timedelta(days=30)))
+        self.assertEqual(yojana.pick(self.items, TODAY, s)["id"], "s1")
+
+    def test_dates(self):
+        s = state(("s1", TODAY - timedelta(days=30)), ("k1", TODAY - timedelta(days=30)), ("k2", TODAY - timedelta(days=30)), ("s2", TODAY - timedelta(days=30)))
+        self.assertIsNone(yojana.pick(self.items, TODAY, s))
+        self.assertEqual(yojana.pick(self.items, date(2026, 12, 2), s)["id"], "later")
 
     def test_fresh_count(self):
-        s = state(("a1", TODAY - timedelta(days=1)))
-        self.assertEqual(yojana.fresh_count(self.items, TODAY, s), 3)
+        self.assertEqual(yojana.fresh_count(self.items, TODAY, state(("s1", TODAY))), 3)
 
     def test_other_series_do_not_count(self):
-        s = {"episodes": [{"series": "D", "key": "a1", "date": TODAY.isoformat()}]}
-        self.assertEqual(yojana.pick(self.items, TODAY, s)["id"], "a1")
+        s = {"episodes": [{"series": "D", "key": "k1", "date": TODAY.isoformat()}]}
+        self.assertEqual(yojana.pick(self.items, TODAY, s)["id"], "k1")
+
+
+class FormatTest(unittest.TestCase):
+    def test_every_weekday_has_items(self):
+        fmts = {i["format"] for i in yojana.load_queue()}
+        self.assertEqual(fmts, set(yojana.WEEKDAY_FORMAT))
+
+    def test_sach_shows_claim_then_verdict(self):
+        it = next(i for i in yojana.load_queue() if i["format"] == "sach")
+        ep = yojana.build_y(TODAY, {"episodes": []}, [it])
+        self.assertEqual([s["kind"] for s in ep["scenes"][:2]], ["claim", "stamp"])
+        self.assertEqual(ep["badge"], "सच या झूठ")
+
+    def test_deadline_counts_down_and_expires(self):
+        it = next(i for i in yojana.load_queue() if i["id"] == "rabi-buvai")
+        ep = yojana.build_y(date(2026, 11, 10), {"episodes": []}, [it])
+        self.assertEqual(ep["scenes"][1]["big"], "10 दिन बाकी")
+        self.assertIsNone(yojana.build_y(date(2026, 11, 21), {"episodes": []}, [it]))
 
 
 class ModeTest(unittest.TestCase):

@@ -269,7 +269,9 @@ const Captions: React.FC<{ words: Word[]; from: number; frames: number }> = ({ w
 export const Desk: React.FC<DeskProps> = (p) => {
   const frame = useCurrentFrame();
   const { durationInFrames } = useVideoConfig();
-  const ser = SERIES[p.series] ?? SERIES.A;
+  const base = SERIES[p.series] ?? SERIES.A;
+  // Series Y gives each weekday format its own name and colour (9 Nov 2026).
+  const ser = { name: p.badge || base.name, color: p.color || base.color };
   const zoom = 1.0 + 0.06 * (frame / durationInFrames);
   return (
     <AbsoluteFill style={{ background: D.bg, overflow: "hidden" }}>
