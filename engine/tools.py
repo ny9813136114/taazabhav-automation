@@ -84,12 +84,15 @@ def pick_d(today, recent):
             key = f"{tool['id']}|{ci}"
             if key not in recent:
                 return tool, ci
-    tool = TOOLS[today.toordinal() % n]
-    return tool, 0
+    # 9 Nov 2026: every case was used recently. Skip the day; never repost an
+    # old video (the old fallback reposted case 0: "धान MSP" on 3, 5, 9 Nov).
+    return None, None
 
 
 def build_d(today, recent):
     tool, ci = pick_d(today, recent)
+    if tool is None:
+        return None
     c = tool["cases"][ci]
     hook = tool["hook"](c)
     res = tool["result"](c)

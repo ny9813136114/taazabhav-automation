@@ -102,15 +102,13 @@ class PickTest(unittest.TestCase):
 
 
 class ModeTest(unittest.TestCase):
-    def test_y_is_preview_until_yojana_live(self):
+    def test_y_posts_unless_yojana_live_0(self):
         from engine.run import mode
         with mock.patch.dict(os.environ, {"ENGINE_MODE": "auto", "ENGINE_LIVE": "1", "YOJANA_LIVE": ""}):
+            self.assertEqual(mode("Y"), "publish")
+        with mock.patch.dict(os.environ, {"ENGINE_MODE": "auto", "ENGINE_LIVE": "1", "YOJANA_LIVE": "0"}):
             self.assertEqual(mode("Y"), "preview")
             self.assertEqual(mode("B"), "publish")
-        with mock.patch.dict(os.environ, {"ENGINE_MODE": "auto", "ENGINE_LIVE": "1", "YOJANA_LIVE": "1"}):
-            self.assertEqual(mode("Y"), "publish")
-        with mock.patch.dict(os.environ, {"ENGINE_MODE": "publish", "YOJANA_LIVE": ""}):
-            self.assertEqual(mode("Y"), "publish")
 
     def test_y_has_slot_playlist_and_meta(self):
         import meta_publish

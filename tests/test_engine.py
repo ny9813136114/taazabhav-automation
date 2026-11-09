@@ -3,6 +3,7 @@
 fixed copy of the /api/yt-feed response. No network, no rendering."""
 import os
 import unittest
+from unittest import mock
 from datetime import date
 from pathlib import Path
 
@@ -117,19 +118,37 @@ class BhavV2Test(unittest.TestCase):
 
 
 class BOnlyNewsTest(unittest.TestCase):
-    def test_daily_status_video_by_default(self):
-        self.assertIsNotNone(stories.build_b(load(), TODAY, set()))
+    """9 Nov 2026: owner saw the same "कब आएगी?" video daily on FB. B now posts
+    only news, each once; B_DAILY=1 brings the daily video back."""
 
-    def test_only_news_switch(self):
-        os.environ["B_ONLY_NEWS"] = "1"
-        try:
+    def test_no_news_no_video(self):
+        with mock.patch.dict(os.environ, {"B_DAILY": ""}):
             self.assertIsNone(stories.build_b(load(), TODAY, set()))
-        finally:
-            del os.environ["B_ONLY_NEWS"]
 
-    def test_claim_still_checked(self):
-        ep = stories.build_b(load(), TODAY, set(), claim={"date": "2026-10-20", "count": 5})
-        self.assertIsNotNone(ep)
+    def test_daily_switch(self):
+        with mock.patch.dict(os.environ, {"B_DAILY": "1"}):
+            self.assertIsNotNone(stories.build_b(load(), TODAY, set()))
+
+    def test_fake_date_claim_posts_once(self):
+        claim = {"date": "2026-10-20", "count": 5}
+        with mock.patch.dict(os.environ, {"B_DAILY": ""}):
+            ep = stories.build_b(load(), TODAY, set(), claim=claim)
+            self.assertEqual(ep["key"], "pmkisan|claim|2026-10-20")
+            self.assertIsNone(stories.build_b(load(), TODAY, {ep["key"]}, claim=claim))
+
+    def test_official_date_posts_once(self):
+        feed = load()
+        feed["kist"][0]["next"]["officialDate"] = "2026-10-25"
+        with mock.patch.dict(os.environ, {"B_DAILY": ""}):
+            ep = stories.build_b(feed, TODAY, set())
+            self.assertIn("|announced|", ep["key"])
+            self.assertIsNone(stories.build_b(feed, TODAY, {ep["key"]}))
+
+
+class DNoRepeatTest(unittest.TestCase):
+    def test_skips_when_every_case_was_used(self):
+        used = {f"{t['id']}|{i}" for t in tools.TOOLS for i in range(len(t["cases"]))}
+        self.assertIsNone(tools.build_d(TODAY, used))
 
 
 class YtSeriesTest(unittest.TestCase):
@@ -162,6 +181,7 @@ class YtSeriesTest(unittest.TestCase):
             os.environ.pop("BHAV_V2_LIVE", None)
 
 
+@mock.patch.dict(os.environ, {"B_DAILY": "1"})
 class SeriesBTest(unittest.TestCase):
 
     def test_no_date_without_official_date(self):
@@ -251,6 +271,7 @@ def fitted(ep):
     return ep
 
 
+@mock.patch.dict(os.environ, {"B_DAILY": "1"})
 class LengthTest(unittest.TestCase):
     """19 Oct 2026: A (30.7 s) and then B (31.9 s) were skipped for running over
     their limit. Every series and variant must fit at normal voice speed, so the
