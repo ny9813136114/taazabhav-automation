@@ -374,11 +374,17 @@ def build_b(feed, today, recent, claim=None):
         if od and f"{k['key']}|announced|{od}" not in recent and od >= today.isoformat():
             chosen, announced = k, True
             break
-    if not chosen and os.environ.get("B_ONLY_NEWS") == "1":
-        # Optional: B posts only an official date or a widely spread claim.
-        # Off by default: on 3 Nov 2026 the owner's Studio grid showed the daily
-        # PM Kisan "25वीं किस्त कब?" Shorts at 58K and 69K views, the channel's best.
-        return None
+    # 9 Nov 2026 (owner: same video every day on FB): B posts only real news,
+    # an official date or a fake date spreading on YouTube, each once. Repo
+    # variable B_DAILY=1 brings back the daily "कब आएगी?" status video.
+    claim_key = None
+    if not chosen and os.environ.get("B_DAILY") != "1":
+        if not (claim and "pmkisan" in kist):
+            return None
+        claim_key = f"pmkisan|claim|{claim['date']}"
+        if claim_key in recent:
+            return None
+        chosen = kist["pmkisan"]
     if not chosen:
         # Day's scheme first, then PM Kisan, then any other; never one already
         # posted today (20 Oct: a post-midnight run had used Tuesday's MP slot).
@@ -417,7 +423,7 @@ def build_b(feed, today, recent, claim=None):
         say = f"पिछली किस्त {day_hi(last['date'])} को आई थी"
         # optional: dropped first if the voice runs too long (engine.run).
         scenes.append({"kind": "timeline", "label": "अब तक का हाल", "items": items, "say": say, "optional": True})
-        key = f"{k['key']}|status|{today.isoformat()}"
+        key = claim_key or f"{k['key']}|status|{today.isoformat()}"
     scenes.append({"kind": "cta", "label": "तारीख आते ही 🔔", "big": "किस्त घंटी लगाएँ", "sub": f"taazabhav.com{k['path']}",
                    "say": "तारीख आते ही किस्त घंटी फ़ोन पर बताएगी"})
 
