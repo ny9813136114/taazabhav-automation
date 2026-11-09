@@ -181,7 +181,7 @@ def build_props(ep, voice, clip=None, rec_secs=None):
     return {
         "series": ep["series"], "clip": "clip.mp4" if clip else None,
         "clipFrames": (clip or {}).get("frames") or (clip_frames(clip["path"]) if clip else None), "credit": (clip or {}).get("credit"),
-        "stamp": ep.get("stamp"), "stampTop": ep.get("stampTop"), "scenes": scenes, "frames": frame,
+        "stamp": ep.get("stamp"), "stampTop": ep.get("stampTop"), "badge": ep.get("badge"), "color": ep.get("color"), "scenes": scenes, "frames": frame,
     }
 
 

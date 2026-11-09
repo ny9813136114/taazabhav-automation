@@ -1,10 +1,12 @@
 {
- "_note": "Series Y yojana queue. Facts copied from taazabhav.com scheme pages (official sources). Owner reviews before going live; one item per day, a scheme at most twice a week, no repeat within 15 days.",
+ "_note": "Series Y yojana queue v2 (formats per weekday, all-India). Facts copied from taazabhav.com scheme pages (official sources). Owner reviews before going live; one item per day, a scheme at most twice a week, no repeat within 15 days.",
  "items": [
   {
    "id": "pmkisan-paisa-nahi",
    "scheme": "pmkisan",
    "scope": "central",
+   "format": "reject",
+   "state": "all",
    "hook": {
     "label": "PM किसान",
     "big": "पैसा नहीं आया?",
@@ -53,6 +55,8 @@
    "id": "pmkisan-ekyc",
    "scheme": "pmkisan",
    "scope": "central",
+   "format": "portal",
+   "state": "all",
    "hook": {
     "label": "PM किसान",
     "big": "eKYC कैसे करें?",
@@ -101,6 +105,8 @@
    "id": "pmkisan-status-words",
    "scheme": "pmkisan",
    "scope": "central",
+   "format": "portal",
+   "state": "all",
    "hook": {
     "label": "PM किसान स्टेटस",
     "big": "FTO का मतलब?",
@@ -149,6 +155,8 @@
    "id": "pmkisan-reg-number",
    "scheme": "pmkisan",
    "scope": "central",
+   "format": "portal",
+   "state": "all",
    "hook": {
     "label": "PM किसान",
     "big": "नंबर भूल गए?",
@@ -196,6 +204,8 @@
    "id": "pmkisan-gaon-list",
    "scheme": "pmkisan",
    "scope": "central",
+   "format": "portal",
+   "state": "all",
    "hook": {
     "label": "PM किसान",
     "big": "गांव की लिस्ट",
@@ -243,6 +253,8 @@
    "id": "farmer-id-kaise",
    "scheme": "farmerid",
    "scope": "central",
+   "format": "portal",
+   "state": "all",
    "hook": {
     "label": "फार्मर आईडी",
     "big": "कैसे बनाएं?",
@@ -291,6 +303,8 @@
    "id": "farmer-id-atki",
    "scheme": "farmerid",
    "scope": "central",
+   "format": "reject",
+   "state": "all",
    "hook": {
     "label": "फार्मर आईडी",
     "big": "क्यों अटकी?",
@@ -338,6 +352,8 @@
    "id": "kcc-byaj",
    "scheme": "kcc",
    "scope": "central",
+   "format": "kitna",
+   "state": "all",
    "hook": {
     "label": "किसान क्रेडिट कार्ड",
     "big": "ब्याज सिर्फ़ 4%?",
@@ -386,6 +402,8 @@
    "id": "kcc-guarantee",
    "scheme": "kcc",
    "scope": "central",
+   "format": "kitna",
+   "state": "all",
    "hook": {
     "label": "किसान क्रेडिट कार्ड",
     "big": "बिना गारंटी लोन",
@@ -433,11 +451,13 @@
    "id": "kcc-5-lakh",
    "scheme": "kcc",
    "scope": "central",
+   "format": "sach",
+   "state": "all",
    "hook": {
-    "label": "KCC की लिमिट",
-    "big": "₹5 लाख हो गई?",
-    "sub": "सच जानिए",
-    "say": "किसान क्रेडिट कार्ड की लिमिट पांच लाख हो गई? सच जानिए"
+    "label": "वायरल दावा",
+    "big": "KCC ₹5 लाख तक 4%",
+    "sub": "सस्ते ब्याज वाली सीमा",
+    "say": "वायरल दावा: किसान क्रेडिट कार्ड पर पांच लाख तक चार प्रतिशत ब्याज"
    },
    "facts": [
     {
@@ -445,12 +465,6 @@
      "big": "घोषणा हुई",
      "sub": "₹3 लाख से ₹5 लाख",
      "say": "बजट में तीन से पांच लाख की घोषणा हुई थी"
-    },
-    {
-     "label": "ताज़ा सरकारी आदेश",
-     "big": "अब भी ₹3 लाख",
-     "sub": "सस्ती दर वाली सीमा",
-     "say": "पर ताज़ा आदेश में सस्ती दर अब भी तीन लाख तक"
     },
     {
      "label": "क्या करें",
@@ -474,12 +488,20 @@
    "validFrom": null,
    "validUntil": "2027-03-31",
    "checked": "2026-11-03",
-   "basis": "FAQ #35"
+   "basis": "FAQ #35",
+   "verdict": {
+    "big": "अभी नहीं ⚠",
+    "sub": "आदेश नहीं मिला",
+    "say": "सच: बजट में घोषणा हुई, पर सस्ती दर का आदेश अब भी तीन लाख तक",
+    "tone": "low"
+   }
   },
   {
    "id": "bima-rabi-premium",
    "scheme": "pmfby",
    "scope": "central",
+   "format": "kitna",
+   "state": "all",
    "hook": {
     "label": "रबी फसल बीमा",
     "big": "प्रीमियम कितना?",
@@ -527,6 +549,8 @@
    "id": "bima-claim-72",
    "scheme": "pmfby",
    "scope": "central",
+   "format": "portal",
+   "state": "all",
    "hook": {
     "label": "फसल खराब हुई?",
     "big": "72 घंटे",
@@ -575,19 +599,15 @@
    "id": "bima-kcc-auto",
    "scheme": "pmfby",
    "scope": "central",
+   "format": "sach",
+   "state": "all",
    "hook": {
-    "label": "KCC वाले किसान",
-    "big": "बीमा अपने आप?",
-    "sub": "प्रीमियम कट जाएगा",
-    "say": "केसीसी लोन है तो फसल बीमा अपने आप हो जाता है, पर मना भी कर सकते हैं"
+    "label": "आम धारणा",
+    "big": "KCC = बीमा ज़रूरी",
+    "sub": "बैंक प्रीमियम काटेगा ही",
+    "say": "कहते हैं, केसीसी लोन है तो फसल बीमा ज़रूरी है"
    },
    "facts": [
-    {
-     "label": "नियम",
-     "big": "बीमा स्वैच्छिक",
-     "sub": "2020 से सबके लिए",
-     "say": "दो हज़ार बीस से बीमा सबके लिए स्वैच्छिक है"
-    },
     {
      "label": "मना करना है?",
      "big": "7 दिन पहले",
@@ -616,12 +636,20 @@
    "validFrom": null,
    "validUntil": "2026-12-24",
    "checked": "2026-11-03",
-   "basis": "FAQ #21"
+   "basis": "FAQ #21",
+   "verdict": {
+    "big": "गलत ❌",
+    "sub": "2020 से स्वैच्छिक",
+    "say": "गलत, दो हज़ार बीस से बीमा स्वैच्छिक है",
+    "tone": "low"
+   }
   },
   {
    "id": "bima-batai",
    "scheme": "pmfby",
    "scope": "central",
+   "format": "news",
+   "state": "all",
    "hook": {
     "label": "बटाईदार किसान",
     "big": "बीमा मिलेगा?",
@@ -669,6 +697,8 @@
    "id": "khad-rate",
    "scheme": "khad",
    "scope": "central",
+   "format": "kitna",
+   "state": "all",
    "hook": {
     "label": "खाद का सरकारी रेट",
     "big": "DAP ₹1,350",
@@ -717,6 +747,8 @@
    "id": "mp-khad-etoken",
    "scheme": "mpkhad",
    "scope": "state",
+   "format": "state",
+   "state": "MP",
    "hook": {
     "label": "मध्य प्रदेश",
     "big": "खाद ई-टोकन",
@@ -764,6 +796,8 @@
    "id": "tractor-subsidy",
    "scheme": "smam",
    "scope": "central",
+   "format": "kitna",
+   "state": "all",
    "hook": {
     "label": "ट्रैक्टर सब्सिडी",
     "big": "कितनी मिलती है?",
@@ -812,19 +846,15 @@
    "id": "pm-tractor-fake",
    "scheme": "smam",
    "scope": "central",
+   "format": "sach",
+   "state": "all",
    "hook": {
-    "label": "वायरल योजना",
-    "big": "PM ट्रैक्टर योजना?",
-    "sub": "सच जानिए",
-    "say": "पीएम किसान ट्रैक्टर योजना, सच या झूठ?"
+    "label": "वायरल मैसेज",
+    "big": "PM ट्रैक्टर योजना",
+    "sub": "50% सब्सिडी का दावा",
+    "say": "वायरल मैसेज: पीएम किसान ट्रैक्टर योजना में आधी कीमत पर ट्रैक्टर"
    },
    "facts": [
-    {
-     "label": "PIB फैक्ट चेक",
-     "big": "ऐसी योजना नहीं",
-     "sub": "यह नाम फ़र्ज़ी है",
-     "say": "पीआईबी फैक्ट चेक के मुताबिक ऐसी कोई योजना नहीं"
-    },
     {
      "label": "ऐसी वेबसाइटें",
      "big": "फीस ठगती हैं",
@@ -853,12 +883,20 @@
    "validFrom": null,
    "validUntil": "2027-03-31",
    "checked": "2026-11-03",
-   "basis": "FAQ #46"
+   "basis": "FAQ #46",
+   "verdict": {
+    "big": "फ़र्ज़ी ❌",
+    "sub": "PIB फैक्ट चेक",
+    "say": "पीआईबी फैक्ट चेक: ऐसी कोई योजना नहीं, यह फ़र्ज़ी है",
+    "tone": "low"
+   }
   },
   {
    "id": "drone-subsidy",
    "scheme": "smam",
    "scope": "central",
+   "format": "kitna",
+   "state": "all",
    "hook": {
     "label": "किसान ड्रोन",
     "big": "₹5 लाख तक",
@@ -906,6 +944,8 @@
    "id": "pm-kusum",
    "scheme": "kusum",
    "scope": "central",
+   "format": "kitna",
+   "state": "all",
    "hook": {
     "label": "PM-KUSUM",
     "big": "सोलर पंप",
@@ -954,11 +994,13 @@
    "id": "bhavantar",
    "scheme": "bhavantar",
    "scope": "state",
+   "format": "deadline",
+   "state": "MP",
    "hook": {
     "label": "MP भावांतर",
     "big": "सोयाबीन ₹5,708",
     "sub": "MSP से कम बिका?",
-    "say": "मध्य प्रदेश भावांतर, सोयाबीन एमएसपी से कम बिका तो फ़र्क मिलेगा"
+    "say": "मध्य प्रदेश भावांतर, सोयाबीन बेचने की आखिरी तारीख"
    },
    "facts": [
     {
@@ -968,10 +1010,10 @@
      "say": "सोयाबीन का एमएसपी सत्तावन सौ आठ रुपये"
     },
     {
-     "label": "बिक्री की अवधि",
-     "big": "15 जनवरी 2027",
-     "sub": "तक मंडी में बेचें",
-     "say": "पंद्रह जनवरी दो हज़ार सत्ताईस तक मंडी में बिक्री"
+     "label": "तब तक",
+     "big": "मंडी में बेचें",
+     "sub": "पंजीकृत किसान",
+     "say": "तब तक पंजीकृत किसान मंडी में बेचें"
     },
     {
      "label": "कितना फ़र्क",
@@ -996,12 +1038,15 @@
    "validFrom": null,
    "validUntil": "2027-01-15",
    "checked": "2026-11-03",
-   "basis": "lib/bhavantar.ts"
+   "basis": "lib/bhavantar.ts",
+   "deadline": "2027-01-15"
   },
   {
    "id": "gehu-msp-2027",
    "scheme": "gehu",
    "scope": "central",
+   "format": "kitna",
+   "state": "all",
    "hook": {
     "label": "गेहूं MSP",
     "big": "₹2,610",
@@ -1050,6 +1095,8 @@
    "id": "gehu-bonus",
    "scheme": "gehu",
    "scope": "state",
+   "format": "kitna",
+   "state": "all",
    "hook": {
     "label": "गेहूं बोनस",
     "big": "किस राज्य में?",
@@ -1098,6 +1145,8 @@
    "id": "dhan-msp",
    "scheme": "dhan",
    "scope": "central",
+   "format": "kitna",
+   "state": "all",
    "hook": {
     "label": "धान MSP 2026-27",
     "big": "₹2,441",
@@ -1146,6 +1195,8 @@
    "id": "mitti-jaanch",
    "scheme": "shc",
    "scope": "central",
+   "format": "reject",
+   "state": "all",
    "hook": {
     "label": "मिट्टी जांच",
     "big": "सही नमूना कैसे?",
@@ -1194,6 +1245,8 @@
    "id": "rabi-buvai",
    "scheme": "rabi",
    "scope": "central",
+   "format": "deadline",
+   "state": "all",
    "hook": {
     "label": "गेहूं बुवाई",
     "big": "सही समय?",
@@ -1235,12 +1288,15 @@
    "validFrom": null,
    "validUntil": "2026-12-15",
    "checked": "2026-11-03",
-   "basis": "FAQ #80"
+   "basis": "FAQ #80",
+   "deadline": "2026-11-20"
   },
   {
    "id": "pala-bachav",
    "scheme": "pala",
    "scope": "central",
+   "format": "news",
+   "state": "all",
    "hook": {
     "label": "पाला अलर्ट",
     "big": "फसल कैसे बचाएं?",
@@ -1288,6 +1344,8 @@
    "id": "bihar-input",
    "scheme": "bihardbt",
    "scope": "state",
+   "format": "state",
+   "state": "BR",
    "hook": {
     "label": "बिहार इनपुट अनुदान",
     "big": "कितना मिलेगा?",
@@ -1335,6 +1393,8 @@
    "id": "mahadbt-drip",
    "scheme": "mahadbt",
    "scope": "state",
+   "format": "state",
+   "state": "MH",
    "hook": {
     "label": "महाराष्ट्र ठिबक",
     "big": "55% अनुदान",
@@ -1382,6 +1442,8 @@
    "id": "mfmb-haryana",
    "scheme": "mfmb",
    "scope": "state",
+   "format": "state",
+   "state": "HR",
    "hook": {
     "label": "हरियाणा किसान",
     "big": "MFMB ज़रूरी",
@@ -1424,6 +1486,507 @@
    "validUntil": "2027-03-31",
    "checked": "2026-11-03",
    "basis": "FAQ #24, #60"
+  },
+  {
+   "id": "telangana-rythu-bharosa",
+   "scheme": "rythubharosa",
+   "scope": "state",
+   "format": "state",
+   "state": "TG",
+   "hook": {
+    "label": "तेलंगाना",
+    "big": "रैतु भरोसा",
+    "sub": "एकड़ पर कितना पैसा?",
+    "say": "तेलंगाना रैतु भरोसा, एक एकड़ पर कितना पैसा मिलता है?"
+   },
+   "facts": [
+    {
+     "label": "हर साल, प्रति एकड़",
+     "big": "₹12,000",
+     "sub": "दो सीज़न में",
+     "say": "हर साल बारह हज़ार रुपये प्रति एकड़"
+    },
+    {
+     "label": "हर सीज़न",
+     "big": "₹6,000/एकड़",
+     "sub": "खरीफ और रबी",
+     "say": "हर सीज़न छह हज़ार रुपये प्रति एकड़"
+    },
+    {
+     "label": "शर्त",
+     "big": "खेती वाली ज़मीन",
+     "sub": "बंजर ज़मीन पर नहीं",
+     "say": "सिर्फ़ खेती वाली ज़मीन पर मिलता है"
+    }
+   ],
+   "source": "newsonair.gov.in",
+   "tool": {
+    "path": "/bigha-to-acre",
+    "label": "अपना हिसाब 10 सेकंड में",
+    "big": "बीघा → एकड़",
+    "say": "अपनी ज़मीन एकड़ में ताज़ा भाव पर बदलें"
+   },
+   "title": "तेलंगाना रैतु भरोसा: ₹12,000 प्रति एकड़ | Rythu Bharosa Amount 2026",
+   "tags": [
+    "rythu bharosa",
+    "telangana farmer scheme"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-09",
+   "basis": "AIR newsonair.gov.in 5 Jan 2025 (cabinet decision)"
+  },
+  {
+   "id": "ap-annadatha-sukhibhava",
+   "scheme": "annadatha",
+   "scope": "state",
+   "format": "state",
+   "state": "AP",
+   "hook": {
+    "label": "आंध्र प्रदेश",
+    "big": "₹20,000 साल",
+    "sub": "अन्नदाता सुखीभव",
+    "say": "आंध्र प्रदेश के किसान को साल में बीस हज़ार रुपये, कैसे?"
+   },
+   "facts": [
+    {
+     "kind": "timeline",
+     "label": "पैसा कहां से",
+     "say": "छह हज़ार केंद्र के पीएम किसान से, चौदह हज़ार राज्य से",
+     "items": [
+      {
+       "label": "केंद्र, PM किसान",
+       "value": "₹6,000",
+       "tone": "good"
+      },
+      {
+       "label": "राज्य सरकार",
+       "value": "₹14,000",
+       "tone": "good"
+      }
+     ]
+    },
+    {
+     "label": "कितनी किस्त",
+     "big": "3 किस्त",
+     "sub": "साल भर में",
+     "say": "पैसा साल में तीन किस्तों में"
+    },
+    {
+     "label": "पहली किस्त 2025",
+     "big": "₹7,000",
+     "sub": "₹5,000 राज्य + ₹2,000 केंद्र",
+     "say": "पहली किस्त सात हज़ार रुपये आई थी"
+    }
+   ],
+   "source": "newsonair.gov.in",
+   "tool": {
+    "path": "/pm-kisan-kist",
+    "label": "किस्त का पूरा हाल",
+    "big": "किस्त स्टेटस",
+    "say": "पीएम किसान किस्त का हाल ताज़ा भाव पर"
+   },
+   "title": "आंध्र प्रदेश अन्नदाता सुखीभव: साल में ₹20,000 | Annadatha Sukhibhava",
+   "tags": [
+    "annadatha sukhibhava",
+    "ap farmer scheme"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-09",
+   "basis": "AIR newsonair.gov.in (3,125 cr to 46.85 lakh farmers); Aug 2025 first instalment 7,000"
+  },
+  {
+   "id": "wb-krishak-bandhu",
+   "scheme": "krishakbandhu",
+   "scope": "state",
+   "format": "state",
+   "state": "WB",
+   "hook": {
+    "label": "पश्चिम बंगाल",
+    "big": "कृषक बंधु",
+    "sub": "एकड़ पर ₹10,000",
+    "say": "पश्चिम बंगाल कृषक बंधु, किसान को कितना पैसा?"
+   },
+   "facts": [
+    {
+     "label": "1 एकड़ या ज़्यादा",
+     "big": "₹10,000/साल",
+     "sub": "खरीफ + रबी, 2 किस्त",
+     "say": "एक एकड़ या ज़्यादा पर दस हज़ार रुपये साल"
+    },
+    {
+     "label": "1 एकड़ से कम",
+     "big": "कम से कम ₹4,000",
+     "sub": "ज़मीन के हिसाब से",
+     "say": "एक एकड़ से कम पर कम से कम चार हज़ार"
+    },
+    {
+     "label": "पैसा कैसे",
+     "big": "सीधे खाते में",
+     "sub": "DBT से",
+     "say": "पैसा सीधे बैंक खाते में आता है"
+    }
+   ],
+   "source": "krishakbandhu.wb.gov.in",
+   "tool": {
+    "path": "/bigha-to-acre",
+    "label": "अपना हिसाब 10 सेकंड में",
+    "big": "बीघा → एकड़",
+    "say": "अपनी ज़मीन एकड़ में ताज़ा भाव पर बदलें"
+   },
+   "title": "कृषक बंधु: एकड़ पर ₹10,000, कम ज़मीन पर ₹4,000 | Krishak Bandhu Natun",
+   "tags": [
+    "krishak bandhu",
+    "west bengal farmer scheme"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-09",
+   "basis": "krishakbandhu.wb.gov.in/about_kb (Natun, 17 Jun 2021)"
+  },
+  {
+   "id": "mh-namo-shetkari",
+   "scheme": "namoshetkari",
+   "scope": "state",
+   "format": "state",
+   "state": "MH",
+   "hook": {
+    "label": "महाराष्ट्र",
+    "big": "नमो शेतकरी",
+    "sub": "PM किसान के ऊपर",
+    "say": "महाराष्ट्र के किसान को पीएम किसान के ऊपर और पैसा, नमो शेतकरी"
+   },
+   "facts": [
+    {
+     "label": "राज्य का पैसा",
+     "big": "₹6,000/साल",
+     "sub": "3 किस्त, ₹2,000 हर बार",
+     "say": "राज्य देता है छह हज़ार रुपये साल"
+    },
+    {
+     "label": "PM किसान मिलाकर",
+     "big": "₹12,000/साल",
+     "sub": "केंद्र ₹6,000 + राज्य ₹6,000",
+     "say": "पीएम किसान मिलाकर बारह हज़ार रुपये साल"
+    },
+    {
+     "label": "शर्त",
+     "big": "PM किसान लाभार्थी",
+     "sub": "वही किसान, अलग से आवेदन नहीं",
+     "say": "पीएम किसान वाले किसान को ही मिलता है"
+    }
+   ],
+   "source": "nsmny.mahait.org",
+   "tool": {
+    "path": "/pm-kisan-kist",
+    "label": "किस्त का पूरा हाल",
+    "big": "किस्त स्टेटस",
+    "say": "किस्त का हाल ताज़ा भाव पर"
+   },
+   "title": "नमो शेतकरी महासम्मान निधि: PM किसान मिलाकर ₹12,000 | Namo Shetkari Yojana",
+   "tags": [
+    "namo shetkari yojana",
+    "maharashtra farmer 6000"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-09",
+   "basis": "Maharashtra GR 15 Jun 2023; portal nsmny.mahait.org"
+  },
+  {
+   "id": "up-krishak-durghatna",
+   "scheme": "updurghatna",
+   "scope": "state",
+   "format": "state",
+   "state": "UP",
+   "hook": {
+    "label": "उत्तर प्रदेश",
+    "big": "₹5 लाख तक",
+    "sub": "किसान दुर्घटना पर",
+    "say": "उत्तर प्रदेश में खेती करते दुर्घटना हो जाए तो परिवार को पांच लाख रुपये तक"
+   },
+   "facts": [
+    {
+     "label": "दुर्घटना में मौत",
+     "big": "₹5 लाख तक",
+     "sub": "परिवार को सहायता",
+     "say": "दुर्घटना में मौत पर परिवार को पांच लाख रुपये तक"
+    },
+    {
+     "label": "किसकी उम्र",
+     "big": "18 से 70 साल",
+     "sub": "किसान और परिवार",
+     "say": "अठारह से सत्तर साल उम्र वाले"
+    },
+    {
+     "label": "विकलांगता पर भी",
+     "big": "सहायता",
+     "sub": "चोट के हिसाब से रकम",
+     "say": "दुर्घटना से विकलांगता पर भी सहायता"
+    }
+   ],
+   "source": "myscheme.gov.in",
+   "tool": {
+    "path": "/sarkari-paisa",
+    "label": "पूरी जानकारी",
+    "big": "सरकारी पैसा",
+    "say": "सारी सरकारी सहायता ताज़ा भाव पर"
+   },
+   "title": "UP मुख्यमंत्री कृषक दुर्घटना कल्याण योजना: ₹5 लाख तक | Krishak Durghatna Yojana",
+   "tags": [
+    "krishak durghatna kalyan yojana",
+    "up farmer accident"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-09",
+   "basis": "myscheme.gov.in/schemes/kdky"
+  },
+  {
+   "id": "cg-dhan-3100",
+   "scheme": "cgdhan",
+   "scope": "state",
+   "format": "state",
+   "state": "CG",
+   "hook": {
+    "label": "छत्तीसगढ़",
+    "big": "धान ₹3,100",
+    "sub": "प्रति क्विंटल",
+    "say": "छत्तीसगढ़ में धान इकतीस सौ रुपये क्विंटल, कैसे?"
+   },
+   "facts": [
+    {
+     "label": "कितना धान",
+     "big": "21 क्विंटल/एकड़",
+     "sub": "तक सरकारी खरीद",
+     "say": "एक एकड़ से इक्कीस क्विंटल तक"
+    },
+    {
+     "label": "MSP के ऊपर",
+     "big": "अंतर राज्य देगा",
+     "sub": "कृषक उन्नति योजना",
+     "say": "एमएसपी के ऊपर का अंतर कृषक उन्नति योजना से"
+    },
+    {
+     "label": "ज़रूरी",
+     "big": "टोकन लेकर बेचें",
+     "sub": "समिति पर पंजीकरण",
+     "say": "समिति में पंजीकरण और टोकन लेकर बेचें"
+    }
+   ],
+   "source": "khadya.cg.nic.in",
+   "tool": {
+    "path": "/msp-vs-mandi",
+    "label": "अपना हिसाब 10 सेकंड में",
+    "big": "MSP या मंडी?",
+    "say": "मंडी से तुलना ताज़ा भाव पर"
+   },
+   "title": "छत्तीसगढ़ धान ₹3,100 क्विंटल: 21 क्विंटल प्रति एकड़ | CG Dhan Kharidi 2026",
+   "tags": [
+    "cg dhan kharidi",
+    "krishak unnati yojana"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-01-31",
+   "checked": "2026-11-09",
+   "basis": "CG cabinet/food dept; kharif procurement from 15 Nov"
+  },
+  {
+   "id": "pm-kisan-maandhan",
+   "scheme": "pmkmy",
+   "scope": "central",
+   "format": "kitna",
+   "state": "all",
+   "hook": {
+    "label": "PM किसान मानधन",
+    "big": "₹3,000 पेंशन",
+    "sub": "हर महीने, 60 के बाद",
+    "say": "साठ साल के बाद हर महीने तीन हज़ार रुपये पेंशन, किसान को कैसे?"
+   },
+   "facts": [
+    {
+     "label": "उम्र",
+     "big": "18 से 40 साल",
+     "sub": "अभी जुड़ें",
+     "say": "अठारह से चालीस साल के किसान जुड़ सकते हैं"
+    },
+    {
+     "label": "हर महीने जमा",
+     "big": "₹55 से ₹200",
+     "sub": "जितना आप, उतना सरकार",
+     "say": "हर महीने पचपन से दो सौ रुपये, उतना ही सरकार जोड़ती है"
+    },
+    {
+     "label": "शर्त",
+     "big": "2 हेक्टेयर तक",
+     "sub": "छोटे-सीमांत किसान",
+     "say": "दो हेक्टेयर तक ज़मीन वाले किसान"
+    }
+   ],
+   "source": "pmkmy.gov.in",
+   "tool": {
+    "path": "/sarkari-paisa",
+    "label": "पूरी जानकारी",
+    "big": "सरकारी पैसा",
+    "say": "सारी सरकारी सहायता ताज़ा भाव पर"
+   },
+   "title": "PM किसान मानधन: 60 के बाद ₹3,000 महीना पेंशन | PM Kisan Maandhan Yojana",
+   "tags": [
+    "pm kisan maandhan",
+    "kisan pension yojana"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-09",
+   "basis": "PIB 2024 doc; pmkmy.gov.in"
+  },
+  {
+   "id": "agri-infra-fund",
+   "scheme": "aif",
+   "scope": "central",
+   "format": "kitna",
+   "state": "all",
+   "hook": {
+    "label": "कृषि इंफ्रा फंड",
+    "big": "₹2 करोड़ लोन",
+    "sub": "गोदाम, कोल्ड स्टोर",
+    "say": "गोदाम या कोल्ड स्टोर बनाना है? दो करोड़ तक लोन पर ब्याज छूट"
+   },
+   "facts": [
+    {
+     "label": "ब्याज छूट",
+     "big": "3% हर साल",
+     "sub": "₹2 करोड़ तक के लोन पर",
+     "say": "दो करोड़ तक के लोन पर तीन प्रतिशत ब्याज छूट"
+    },
+    {
+     "label": "कितने साल",
+     "big": "7 साल तक",
+     "sub": "छूट मिलती रहेगी",
+     "say": "सात साल तक"
+    },
+    {
+     "label": "गारंटी फीस",
+     "big": "सरकार देगी",
+     "sub": "CGTMSE गारंटी",
+     "say": "क्रेडिट गारंटी की फीस सरकार देती है"
+    }
+   ],
+   "source": "agriinfra.dac.gov.in",
+   "tool": {
+    "path": "/kheti-lagat-munafa",
+    "label": "अपना हिसाब 10 सेकंड में",
+    "big": "लागत-मुनाफ़ा",
+    "say": "अपनी लागत और मुनाफ़ा ताज़ा भाव पर"
+   },
+   "title": "गोदाम के लिए ₹2 करोड़ लोन, 3% ब्याज छूट | Agriculture Infrastructure Fund",
+   "tags": [
+    "agriculture infrastructure fund",
+    "aif loan"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-09",
+   "basis": "PIB doc Aug 2024; myscheme.gov.in/schemes/aif"
+  },
+  {
+   "id": "pm-dhan-dhaanya",
+   "scheme": "pmddky",
+   "scope": "central",
+   "format": "news",
+   "state": "all",
+   "hook": {
+    "label": "नई योजना",
+    "big": "धन-धान्य कृषि",
+    "sub": "100 ज़िलों के लिए",
+    "say": "प्रधानमंत्री धन-धान्य कृषि योजना, किन ज़िलों को फ़ायदा?"
+   },
+   "facts": [
+    {
+     "label": "कितने ज़िले",
+     "big": "100 ज़िले",
+     "sub": "हर राज्य से कम से कम 1",
+     "say": "सौ ज़िले, हर राज्य से कम से कम एक"
+    },
+    {
+     "label": "कौन से ज़िले",
+     "big": "कम उपज वाले",
+     "sub": "कम फसल चक्र, कम लोन",
+     "say": "कम उपज, कम फसल चक्र और कम लोन वाले ज़िले"
+    },
+    {
+     "label": "कितने साल",
+     "big": "6 साल",
+     "sub": "2025-26 से",
+     "say": "दो हज़ार पच्चीस छब्बीस से छह साल"
+    }
+   ],
+   "source": "pib.gov.in",
+   "tool": {
+    "path": "/sarkari-paisa",
+    "label": "पूरी जानकारी",
+    "big": "सरकारी पैसा",
+    "say": "सारी सरकारी योजनाएं ताज़ा भाव पर"
+   },
+   "title": "PM धन-धान्य कृषि योजना: 100 ज़िले, किसे फ़ायदा? | PM Dhan Dhaanya Krishi Yojana",
+   "tags": [
+    "pm dhan dhaanya krishi yojana",
+    "100 districts"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-09",
+   "basis": "Cabinet 16 Jul 2025 (pmindia.gov.in)"
+  },
+  {
+   "id": "pmkisan-4000-fake",
+   "scheme": "pmkisan",
+   "scope": "central",
+   "format": "sach",
+   "state": "all",
+   "hook": {
+    "label": "वायरल वीडियो",
+    "big": "PM किसान ₹4,000",
+    "sub": "एक किस्त में?",
+    "say": "वायरल वीडियो: पीएम किसान की किस्त में चार हज़ार रुपये"
+   },
+   "facts": [
+    {
+     "label": "असली किस्त",
+     "big": "₹2,000",
+     "sub": "साल में 3 बार",
+     "say": "असली किस्त दो हज़ार रुपये, साल में तीन बार"
+    },
+    {
+     "label": "सालाना",
+     "big": "₹6,000",
+     "sub": "कोई बदलाव नहीं",
+     "say": "साल का कुल छह हज़ार, कोई बदलाव नहीं"
+    }
+   ],
+   "source": "pib.gov.in",
+   "tool": {
+    "path": "/pm-kisan-kist",
+    "label": "किस्त का पूरा हाल",
+    "big": "किस्त स्टेटस",
+    "say": "असली तारीख ताज़ा भाव पर"
+   },
+   "title": "PM किसान ₹4,000 किस्त का वीडियो सच या झूठ? | PIB Fact Check",
+   "tags": [
+    "pm kisan 4000",
+    "pm kisan fact check"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-03-31",
+   "checked": "2026-11-09",
+   "basis": "PIB Fact Check 20 Aug 2026 (AI video)",
+   "verdict": {
+    "big": "फ़र्ज़ी ❌",
+    "sub": "PIB फैक्ट चेक, AI वीडियो",
+    "say": "पीआईबी फैक्ट चेक: वीडियो फ़र्ज़ी है, एआई से बना",
+    "tone": "low"
+   }
   }
  ]
 }

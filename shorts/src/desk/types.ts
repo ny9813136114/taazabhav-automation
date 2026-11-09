@@ -23,13 +23,15 @@ export type DeskScene = {
 };
 
 export type DeskProps = {
-  series: "A" | "B" | "C" | "D";
+  series: string;
   clip?: string | null;
   clipFrames?: number | null;
   photo?: string | null;
   credit?: string | null;
   stamp?: string | null;
   stampTop?: string | null;
+  badge?: string | null;
+  color?: string | null;
   scenes: DeskScene[];
   frames: number;
 };
