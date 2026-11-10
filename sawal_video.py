@@ -252,7 +252,7 @@ def main():
         c = credit_for(clip)
         credit = f"Video: {c['author']} / {c['source']}" if c else None
         voice = make_voice(segments(item), Path("shorts/public/voice"))
-        render(build_props(item, voice, today, str(clip) if clip else None, credit), out)
+        render(build_props(item, voice, today, str(clip) if clip else None, None), out)  # no on-screen credit (owner, 10 Nov 2026)
         title, desc, tags, comment = metadata(item, today)
         if credit:
             desc = desc.replace("\n\nरोज़ का", f"\n{credit}\n\nरोज़ का", 1)

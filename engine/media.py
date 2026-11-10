@@ -180,7 +180,7 @@ def build_props(ep, voice, clip=None, rec_secs=None):
     frame += 15
     return {
         "series": ep["series"], "clip": "clip.mp4" if clip else None,
-        "clipFrames": (clip or {}).get("frames") or (clip_frames(clip["path"]) if clip else None), "credit": (clip or {}).get("credit"),
+        "clipFrames": (clip or {}).get("frames") or (clip_frames(clip["path"]) if clip else None), "credit": None,  # owner 10 Nov 2026: no on-screen Pexels credit (Pexels licence does not require it)
         "stamp": ep.get("stamp"), "stampTop": ep.get("stampTop"), "badge": ep.get("badge"), "color": ep.get("color"), "scenes": scenes, "frames": frame,
     }
 
