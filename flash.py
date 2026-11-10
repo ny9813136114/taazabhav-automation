@@ -128,7 +128,7 @@ def make_flash(records, state, commodity, run_date, story=None, slot=1, out_path
     clip = pick_clip(_clip_folder(commodity), run_date, slot)
     c = credit_for(clip)
     credit = f"Video: {c['author']} / {c['source']}" if c else None
-    props = build_props(records, state, commodity, run_date, story, slot, credit=credit)
+    props = build_props(records, state, commodity, run_date, story, slot, credit=None)  # no on-screen credit (owner, 10 Nov 2026); description keeps it
     render(props, out_path, clip_path=clip)
     title, description = flash_metadata(props, commodity, state, run_date, len(records), credit_line=credit)
     return out_path, title, description

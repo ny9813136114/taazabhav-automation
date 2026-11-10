@@ -237,7 +237,7 @@ def main():
             clip = pick_clip("generic", today, 10 + i)
             c = credit_for(clip)
             credit = f"Video: {c['author']} / {c['source']}" if c else None
-            render(build_props(ev, days, str(clip) if clip else None, credit), out)
+            render(build_props(ev, days, str(clip) if clip else None, None), out)  # no on-screen credit (owner, 10 Nov 2026)
             title, desc, tags, comment = metadata(ev, days)
             if credit:
                 desc = desc.replace("\n\nTelegram", f"\n{credit}\n\nTelegram", 1)
