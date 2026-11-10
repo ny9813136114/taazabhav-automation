@@ -70,6 +70,8 @@ def recent_keys(state, series, today, days):
     return out
 
 
-def mark(state, series, key, today, video_id=None, title=None):
-    state.setdefault("episodes", []).append(
-        {"series": series, "key": key, "date": today.isoformat(), "video": video_id, "title": title})
+def mark(state, series, key, today, video_id=None, title=None, scheme=None, look=None):
+    e = {"series": series, "key": key, "date": today.isoformat(), "video": video_id, "title": title}
+    if scheme and look:
+        e["scheme"], e["look"] = scheme, look
+    state.setdefault("episodes", []).append(e)

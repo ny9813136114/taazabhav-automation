@@ -51,3 +51,30 @@ class LookTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SameSchemeNewLook(unittest.TestCase):
+    def ep(self, scheme, day, look):
+        return {"scheme": scheme, "look": look, "date": day.isoformat()}
+
+    def test_pm_kisan_five_times_five_different_looks(self):
+        eps, seen = [], []
+        for n in range(5):
+            d = date(2026, 11, 11) + timedelta(days=3 * n)
+            lk = look.pick_look("pmkisan", d, eps, "pmkisan")
+            eps.append(self.ep("pmkisan", d, lk))
+            seen.append(lk)
+        self.assertEqual(len({x["theme"] for x in seen}), 5)
+        self.assertEqual(len({x["clip"] for x in seen}), 5)
+        for a, b in zip(seen, seen[1:]):
+            self.assertNotEqual(a["voice"], b["voice"])
+
+    def test_never_the_theme_of_the_last_video_of_any_scheme(self):
+        eps = [self.ep("kcc", date(2026, 11, 10), {"theme": 2, "clip": "bank", "voice": "male"})]
+        for _ in range(10):
+            lk = look.pick_look("other", date(2026, 11, 11), eps, "")
+            self.assertNotEqual(lk["theme"], 2)
+
+    def test_old_log_entries_without_a_look_are_ignored(self):
+        lk = look.pick_look("kcc", date(2026, 11, 11), [{"series": "Y", "key": "kcc"}], "kcc")
+        self.assertIn(lk["theme"], range(look.THEME_COUNT))

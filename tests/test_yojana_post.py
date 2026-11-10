@@ -82,5 +82,30 @@ class BhavPosts(unittest.TestCase):
         self.assertEqual(e["angle"], "msp")
 
 
+class Designs(unittest.TestCase):
+    def test_same_scheme_never_repeats_a_design_until_all_used(self):
+        from datetime import timedelta
+        from posts.render import THEMES
+        state = {"history": [], "preview": []}
+        seen = []
+        for n in range(len(THEMES)):
+            d = TODAY + timedelta(days=n * 15)
+            t = yp.theme_of(d, "pmkisan", state)
+            state["history"].append({"date": d.isoformat(), "slot": "am", "id": f"x{n}", "scheme": "pmkisan", "theme": t})
+            seen.append(t)
+        self.assertEqual(sorted(seen), list(range(len(THEMES))))
+
+    def test_next_post_never_matches_the_previous_design(self):
+        state = {"history": [{"date": "2026-11-11", "slot": "am", "id": "a", "scheme": "kcc", "theme": 3}], "preview": []}
+        for scheme in ("kcc", "other", "bhav-msp"):
+            self.assertNotEqual(yp.theme_of(date(2026, 11, 11), scheme, state), 3)
+
+    def test_theme_css_recolours_and_default_is_unchanged(self):
+        from posts import render
+        self.assertEqual(render.theme_css(None), render.CSS)
+        self.assertNotIn("#0F6B3E", render.theme_css(1))
+        self.assertIn("#1D4E89", render.theme_css(1))
+
+
 if __name__ == "__main__":
     unittest.main()

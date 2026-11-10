@@ -93,6 +93,16 @@ def build(item, today, slot):
             "link": link, "link_label": f"{tool['label']}, मुफ़्त टूल", "lead": title}
 
 
+def theme_of(today, scheme, state):
+    """Carousel design 0-5. The same scheme never repeats a design until all
+    have been used, and it is never the design of the previous post."""
+    from engine import look
+    from posts.render import THEMES
+    recs = sorted(state.get("history", []) + state.get("preview", []), key=lambda r: (r["date"], r["slot"]))
+    past = [(r.get("scheme"), r["theme"]) for r in recs if "theme" in r]
+    return look.pick_theme(scheme, today, past, n=len(THEMES))
+
+
 def ledger_entry(post, today, slot, item, res=None):
     from posts.ledger import entry
     res = res or {}
@@ -217,6 +227,8 @@ def main():
         if not post:
             print(f"[yojana_post] {item['id']} cannot be built today, skipped")
             return 0
+    scheme = item["scheme"] if item else f"bhav-{post['kind']}"
+    post["theme"] = theme_of(today, scheme, state)
     from posts import ledger
     entry = ledger_entry(post, today, slot, item)
     bad = ledger.problems(entry, ledger.load(), today, skip)
@@ -232,7 +244,8 @@ def main():
         if run_mode == "dry":
             print("\n".join(map(str, slides)))
             return 0
-        rec = {"date": today.isoformat(), "slot": slot, "id": item["id"] if item else post["id"], "lead": post["lead"]}
+        rec = {"date": today.isoformat(), "slot": slot, "id": item["id"] if item else post["id"], "lead": post["lead"],
+               "scheme": scheme, "theme": post["theme"]}
         if run_mode == "preview":
             send_preview(post, slides)
             state.setdefault("preview", []).append(rec)

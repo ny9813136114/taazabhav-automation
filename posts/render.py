@@ -58,6 +58,28 @@ li:before {{ content: '✓'; position: absolute; left: 0; top: 26px; width: 52px
 """
 
 
+# Carousel designs (owner, 10 Nov 2026: different photos/designs so the Page
+# does not look the same every day). Index 0 is the original brand look.
+# (green, dark green, accent, cream, extra css)
+THEMES = [
+    ("#0F6B3E", "#0B4A2C", "#E09A12", "#FBF6E8", ""),
+    ("#1D4E89", "#12325A", "#F2B134", "#F3F7FC", ".big{letter-spacing:-1px}.s{border-top:28px solid #F2B134}"),
+    ("#B5541B", "#7A3410", "#FFD166", "#FFF4E6", ".label{text-transform:none}.s{border-left:30px solid #FFD166}"),
+    ("#6B1F3A", "#4A1226", "#F4B860", "#FDF3F0", ".s{border-bottom:28px solid #F4B860}.big{font-size:116px}"),
+    ("#22303C", "#141E27", "#6FCF97", "#F2F5F4", ".s{border:18px solid #6FCF97}.label{letter-spacing:2px}"),
+    ("#0B7A75", "#075552", "#FF9F68", "#F1FAF9", ".s{border-top:28px solid #FF9F68;border-bottom:28px solid #FF9F68}"),
+]
+
+
+def theme_css(i):
+    g, d, a, c, extra = THEMES[(i or 0) % len(THEMES)]
+    css = CSS
+    if (i or 0) % len(THEMES):
+        for old, new in (("#0F6B3E", g), ("#0B4A2C", d), ("#E09A12", a), ("#FBF6E8", c)):
+            css = css.replace(old, new)
+    return css + extra
+
+
 def _e(s):
     return html.escape(str(s))
 
@@ -121,11 +143,12 @@ def render(post, out_dir):
     import meta_publish as mp
     comment = bool(post.get("comment_mode") or mp.comments_live())
     paths = []
+    css = theme_css(post.get("theme"))
     with sync_playwright() as p:
         b = p.chromium.launch()
         pg = b.new_page(viewport={"width": W, "height": H})
         for i, s in enumerate(slides, 1):
-            pg.set_content(f"<!doctype html><meta charset=utf-8><style>{CSS}</style>{_slide(s, i, len(slides), post.get('trust', ''), comment)}")
+            pg.set_content(f"<!doctype html><meta charset=utf-8><style>{css}</style>{_slide(s, i, len(slides), post.get('trust', ''), comment)}")
             pg.evaluate("document.fonts.ready")
             pg.evaluate(FIT_JS)
             path = out_dir / f"{post['id']}-{i}.png"
