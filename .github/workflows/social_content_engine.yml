@@ -1,8 +1,9 @@
 name: TaazaBhav Social Content Engine
 
+# Paused 10 Nov 2026 (owner): no daily schedule. Photo posts reach 0-2 people and
+# the generic tool captions repeat, so only the manual run below stays.
+# To bring it back, restore: schedule: - cron: "30 12 * * *"  (18:00 IST).
 on:
-  schedule:
-    - cron: "30 12 * * *" # 18:00 IST; fills remaining daily photo slots
   workflow_dispatch:
     inputs:
       mode:
