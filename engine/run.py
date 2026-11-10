@@ -108,6 +108,12 @@ def main(series):
         print(f"[engine] {series} {run_mode}: {ep['key']} | {ep['title']}")
         series = ep["series"]
         ep.setdefault("theme", look.theme_for(today))
+        # Same scheme again = a new theme, clip and voice (never the last ones used for it).
+        scheme = ep.get("scheme") or ("pmkisan" if series == "B" else None)
+        lk = look.pick_look(scheme, today, state.get("episodes", []), scheme) if scheme else None
+        if lk:
+            ep["theme"], ep["clip"] = lk["theme"], lk["clip"]
+            print(f"[engine] look for {scheme}: theme {lk['theme']}, clip {lk['clip']}, {lk['voice']} voice")
         qa.check_episode(ep)
         rec = None
         rec_secs = None
@@ -117,7 +123,7 @@ def main(series):
         clip = media.fetch_clip(ep["clip"], f"{today}-{series}", work / "clip.mp4")
         rates = list(SPEEDS)
         while True:
-            voice = media.synth([s["say"] for s in ep["scenes"]], media.PUBLIC / "voice", rate=rates[0], voice=media.voice_for(today, ep["key"]))
+            voice = media.synth([s["say"] for s in ep["scenes"]], media.PUBLIC / "voice", rate=rates[0], voice=media.VOICES[lk["voice"]] if lk and not os.environ.get("ENGINE_VOICE") else media.voice_for(today, ep["key"]))
             props = media.build_props(ep, voice, clip, rec_secs)
             seconds = props["frames"] / media.FPS
             if seconds <= qa.BOUNDS[series][1]:
@@ -144,7 +150,7 @@ def main(series):
             return 0
         from engine.publish import publish
         vid = publish(out, ep, alert)
-        F.mark(state, ep["series"], ep["key"], today, vid, ep["title"])
+        F.mark(state, ep["series"], ep["key"], today, vid, ep["title"], scheme, lk)
         F.save_state(state)
         print(f"[engine] published {'https://youtu.be/' + vid if vid else '(FB/IG only, not on YouTube)'}")
         return 0

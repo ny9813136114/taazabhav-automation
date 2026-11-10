@@ -34,3 +34,38 @@ def clip_for(item_id, today, scheme=""):
         if any(w in text for w in words):
             return folder
     return ROTATE[today.toordinal() % len(ROTATE)]
+
+
+# --- the same scheme never looks the same twice (owner, 10 Nov 2026) --------
+# "PM Kisan gets posted three or four times: each time the transition, design
+# and UI must be different." Every published video records its scheme and
+# look; the next video of that scheme takes a theme, clip and voice it has
+# used least recently, and never the theme of the previous video of the day.
+
+def _least_recent(options, used):
+    """First option never used, else the one used longest ago. `used` is oldest first."""
+    for o in options:
+        if o not in used:
+            return o
+    return min(options, key=lambda o: max(i for i, u in enumerate(used) if u == o))
+
+
+def pick_theme(scheme, today, past, n=THEME_COUNT, avoid=None):
+    """past: [(scheme, theme)] oldest first. Theme for `scheme` today."""
+    order = [(today.toordinal() + k) % n for k in range(n)]
+    used = [t for s, t in past if s == scheme]
+    last = past[-1][1] if past else None
+    options = [t for t in order if t != last and t != avoid] or order
+    return _least_recent(options, used)
+
+
+def pick_look(scheme, today, episodes, scheme_hint=""):
+    """-> {"theme", "clip", "voice"} for a video of `scheme`; episodes = the
+    engine log (entries with a "look" count, older ones are ignored)."""
+    seen = [e for e in episodes if e.get("look")]
+    mine = [e["look"] for e in seen if e.get("scheme") == scheme]
+    first = clip_for(scheme, today, scheme_hint)
+    clips = [first] + [c for c in ROTATE if c != first]
+    clip = _least_recent(clips, [m["clip"] for m in mine])
+    voice = "female" if mine and mine[-1]["voice"] == "male" else "male" if mine else ("male" if today.toordinal() % 2 == 0 else "female")
+    return {"theme": pick_theme(scheme, today, [(e["scheme"], e["look"]["theme"]) for e in seen]), "clip": clip, "voice": voice}
