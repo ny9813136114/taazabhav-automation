@@ -360,3 +360,23 @@ class MetaReelsTest(unittest.TestCase):
                 mock.patch.object(meta_publish, "publish_all") as pa:
             self.assertIsNone(meta_reels("x.mp4", self.EP, print))
         pa.assert_not_called()
+
+
+class MetaVariantsTest(unittest.TestCase):
+    EP = {"series": "Y", "key": "k", "title": "T", "description": "D", "comment": "c"}
+
+    def test_each_platform_gets_its_own_video(self):
+        from unittest import mock
+        import meta_publish
+        from engine.publish import meta_reels
+        calls = []
+
+        def fake(path, caption, **kw):
+            calls.append((path, kw.get("facebook", True), kw.get("instagram", True)))
+            return {"facebook": "f1" if kw.get("facebook", True) else None, "instagram": "i1" if kw.get("instagram", True) else None,
+                    "errors": []}
+        with mock.patch.object(meta_publish, "enabled", return_value=True), mock.patch.object(meta_publish, "on_meta", return_value=True), \
+                mock.patch.object(meta_publish, "publish_all", side_effect=fake), mock.patch("engine.publish.ledger_record"):
+            res = meta_reels("main.mp4", self.EP, print, {"fb": "fb.mp4", "ig": "ig.mp4"})
+        self.assertEqual(calls, [("fb.mp4", True, False), ("ig.mp4", False, True)])
+        self.assertEqual((res["facebook"], res["instagram"]), ("f1", "i1"))

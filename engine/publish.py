@@ -120,10 +120,10 @@ def on_youtube(series):
     return raw.lower() == "all" or series.upper() in {x.strip().upper() for x in raw.split(",")}
 
 
-def publish(path, ep, alert):
+def publish(path, ep, alert, variants=None):
     if not on_youtube(ep["series"]):
         print(f"[engine] series {ep['series']} is off YouTube (YT_SERIES), FB/IG only")
-        meta_reels(path, ep, alert)
+        meta_reels(path, ep, alert, variants)
         return None
     from upload_youtube import upload_video
     vid = upload_video(path, ep["title"], ep["description"], ep["tags"], thumbnail_path=None, comment_text=ep["comment"])
@@ -133,7 +133,7 @@ def publish(path, ep, alert):
                             "disable_web_page_preview": "false"})
     except Exception as e:
         alert(f"TaazaBhav engine: Telegram channel post failed: {e}")
-    meta_reels(path, ep, alert)
+    meta_reels(path, ep, alert, variants)
     return vid
 
 
@@ -144,7 +144,7 @@ def meta_caption(ep):
     return f"{title}\n\n{ep['description']}"[:2200]
 
 
-def meta_reels(path, ep, alert):
+def meta_reels(path, ep, alert, variants=None):
     """Never changes the YouTube result: any Meta error is only alerted."""
     import meta_publish
     if not meta_publish.enabled():
@@ -153,7 +153,15 @@ def meta_reels(path, ep, alert):
         print(f"[engine] Meta Reel: series {ep['series']} is off (META_ON), YouTube only")
         return None
     try:
-        res = meta_publish.publish_all(path, meta_caption(ep), comment=ep.get("comment"), what=f"Reel {ep['series']}")
+        caption, what = meta_caption(ep), f"Reel {ep['series']}"
+        if variants and variants.get("fb") and variants.get("ig"):
+            # Same scheme, a different look on each platform (owner, 10 Nov 2026).
+            fb = meta_publish.publish_all(variants["fb"], caption, comment=ep.get("comment"), what=what, instagram=False)
+            ig = meta_publish.publish_all(variants["ig"], caption, comment=ep.get("comment"), what=what, facebook=False)
+            res = {"facebook": fb.get("facebook"), "instagram": ig.get("instagram"), "comment": fb.get("comment"),
+                   "errors": fb["errors"] + ig["errors"]}
+        else:
+            res = meta_publish.publish_all(path, caption, comment=ep.get("comment"), what=what)
     except Exception as e:
         res = {"errors": [str(e)]}
     print(f"[engine] Meta Reel: FB {res.get('facebook')} IG {res.get('instagram')}")

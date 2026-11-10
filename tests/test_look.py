@@ -51,3 +51,19 @@ class LookTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class Variants(unittest.TestCase):
+    def test_platform_looks_differ(self):
+        from datetime import date
+        from engine import look, media
+        for n in range(20):
+            d = date(2026, 11, 11 + n // 2 if n < 40 else 11)
+            themes = {look.theme_for(d), look.theme_for(d, look.VARIANTS["fb"]["theme"]), look.theme_for(d, look.VARIANTS["ig"]["theme"])}
+            self.assertEqual(len(themes), 3)
+            self.assertNotEqual(media.voice_for(d), media.voice_for(d, "", "flip"))
+            self.assertEqual(media.voice_for(d), media.voice_for(d, "", "same"))
+            main = look.clip_for("pm-kusum", d, "kusum")
+            fb, ig = look.clip_alt(main, d, 3), look.clip_alt(main, d, 5)
+            self.assertNotEqual(fb, main)
+            self.assertNotEqual(ig, main)

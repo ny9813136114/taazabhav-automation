@@ -277,7 +277,7 @@ def build_caption(title, description, commodity, state):
     )[:2200]
 
 
-def publish_all(video_path, caption, s=requests, sleep=time.sleep, comment=None, what="Reel"):
+def publish_all(video_path, caption, s=requests, sleep=time.sleep, comment=None, what="Reel", facebook=True, instagram=True):
     """Posts to Facebook and Instagram independently. Returns
     {"facebook": id|None, "instagram": id|None, "errors": [str]}.
 
@@ -289,10 +289,13 @@ def publish_all(video_path, caption, s=requests, sleep=time.sleep, comment=None,
     live = comment and comments_live()
     page_token, ig = page_credentials(s)
     try:
-        out["facebook"] = post_facebook_reel(video_path, fb_caption(caption) if live else caption, page_token, s)
+        if facebook:
+            out["facebook"] = post_facebook_reel(video_path, fb_caption(caption) if live else caption, page_token, s)
     except Exception as e:
         out["errors"].append(f"Facebook: {e}")
-    if ig:
+    if not instagram:
+        pass
+    elif ig:
         for i in range(IG_TRIES):
             try:
                 out["instagram"] = post_instagram_reel(video_path, caption, ig, page_token, s, sleep)

@@ -82,6 +82,55 @@ def build(series, today, state):
     return stories.build_b(feed, today, recent, claim=claim)
 
 
+def fit_video(ep, series, clip, rec_secs, voice_name):
+    """Speaks the scenes and returns (seconds, props) for the render. A video
+    over its length limit first drops optional scenes, then speaks faster."""
+    rates = list(SPEEDS)
+    while True:
+        voice = media.synth([s["say"] for s in ep["scenes"]], media.PUBLIC / "voice", rate=rates[0], voice=voice_name)
+        props = media.build_props(ep, voice, clip, rec_secs)
+        seconds = props["frames"] / media.FPS
+        if seconds <= qa.BOUNDS[series][1]:
+            return seconds, props
+        spare = next((s for s in ep["scenes"] if s.get("optional")), None)
+        if spare:
+            print(f"[engine] {seconds:.1f}s too long, dropping the {spare['kind']} scene")
+            ep["scenes"].remove(spare)
+        elif len(rates) > 1:
+            rates.pop(0)
+            print(f"[engine] {seconds:.1f}s too long, voice speed {rates[0]}")
+        else:
+            return seconds, props
+
+
+def variant_series():
+    raw = (os.environ.get("ENGINE_VARIANTS") or "Y,B").strip()
+    return {x.strip().upper() for x in raw.split(",") if x.strip()}
+
+
+def render_variants(ep, series, today, work, rec_secs=None):
+    """Owner, 10 Nov 2026: the same scheme must not look the same on YouTube,
+    Facebook and Instagram. The YouTube video keeps the day's look; Facebook
+    and Instagram each get their own theme, clip and (Facebook) voice."""
+    out = {}
+    for name, spec in look.VARIANTS.items():
+        v = dict(ep)
+        v["scenes"] = [dict(x) for x in ep["scenes"]]
+        v["theme"] = look.theme_for(today, spec["theme"])
+        v["clip"] = look.clip_alt(ep["clip"], today, spec["clip"])
+        path = work / f"{series}-{today.isoformat()}-{name}.mp4"
+        try:
+            clip = media.fetch_clip(v["clip"], f"{today}-{series}-{name}", work / f"clip-{name}.mp4")
+            seconds, props = fit_video(v, series, clip, rec_secs, media.voice_for(today, ep["key"], spec["voice"]))
+            qa.check_length(v, seconds)
+            media.render(props, path, clip, None)
+            out[name] = path
+            print(f"[engine] {name} variant: theme {v['theme']}, clip {v['clip']}, {seconds:.1f}s")
+        except Exception as e:  # a variant failing must never lose the day's video
+            print(f"[engine] {name} variant failed, the main video is used there: {e}")
+    return out
+
+
 def main(series):
     today = datetime.now(IST).date()
     state = F.load_state()
@@ -115,35 +164,22 @@ def main(series):
             rec = tools.record(ep["tool"], ep["case"], work / "rec.mp4")
             rec_secs = media._duration(rec)
         clip = media.fetch_clip(ep["clip"], f"{today}-{series}", work / "clip.mp4")
-        rates = list(SPEEDS)
-        while True:
-            voice = media.synth([s["say"] for s in ep["scenes"]], media.PUBLIC / "voice", rate=rates[0], voice=media.voice_for(today, ep["key"]))
-            props = media.build_props(ep, voice, clip, rec_secs)
-            seconds = props["frames"] / media.FPS
-            if seconds <= qa.BOUNDS[series][1]:
-                break
-            # Too long: drop optional scenes first, then speak faster, rather than skip the slot.
-            spare = next((s for s in ep["scenes"] if s.get("optional")), None)
-            if spare:
-                print(f"[engine] {seconds:.1f}s too long, dropping the {spare['kind']} scene")
-                ep["scenes"].remove(spare)
-            elif len(rates) > 1:
-                rates.pop(0)
-                print(f"[engine] {seconds:.1f}s too long, voice speed {rates[0]}")
-            else:
-                break
+        seconds, props = fit_video(ep, series, clip, rec_secs, media.voice_for(today, ep["key"]))
         qa.check_length(ep, seconds)
         media.render(props, out, clip, rec)
+        variants = render_variants(ep, series, today, work, rec_secs) if series in variant_series() and rec is None else {}
         if run_mode == "dry":
             print(f"[engine] rendered {out} ({seconds:.1f}s)")
             return 0
         if run_mode == "preview":
             from engine.publish import send_preview
             send_preview(out, ep, seconds)
+            for name, path in variants.items():
+                send_preview(path, {**ep, "title": f"{ep['title']} [{name.upper()} version]"}, seconds)
             print("[engine] preview sent")
             return 0
         from engine.publish import publish
-        vid = publish(out, ep, alert)
+        vid = publish(out, ep, alert, variants)
         F.mark(state, ep["series"], ep["key"], today, vid, ep["title"])
         F.save_state(state)
         print(f"[engine] published {'https://youtu.be/' + vid if vid else '(FB/IG only, not on YouTube)'}")

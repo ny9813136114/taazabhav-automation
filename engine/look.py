@@ -24,8 +24,19 @@ CLIP_HINTS = (
 ROTATE = ("village", "tractor", "farmer", "market", "rain", "harvest", "generic")
 
 
-def theme_for(today):
-    return today.toordinal() % THEME_COUNT
+# Same scheme, three looks (YouTube keeps the day's own): Facebook and
+# Instagram shift the theme and clip, Facebook also flips the voice.
+VARIANTS = {"fb": {"theme": 2, "clip": 3, "voice": "flip"}, "ig": {"theme": 4, "clip": 5, "voice": "same"}}
+
+
+def theme_for(today, shift=0):
+    return (today.toordinal() + shift) % THEME_COUNT
+
+
+def clip_alt(primary, today, shift):
+    """A different stock-video topic than `primary`."""
+    pool = [c for c in ROTATE if c != primary]
+    return pool[(today.toordinal() + shift) % len(pool)]
 
 
 def clip_for(item_id, today, scheme=""):

@@ -20,11 +20,15 @@ VOICE = os.environ.get("ENGINE_VOICE", "hi-IN-MadhurNeural")
 VOICES = {"male": "hi-IN-MadhurNeural", "female": "hi-IN-SwaraNeural"}
 
 
-def voice_for(day, key=""):
-    """Voice name for a video: alternates by date, so two days in a row never sound the same."""
+def voice_for(day, key="", variant="same"):
+    """Voice name for a video: alternates by date, so two days in a row never sound the same.
+    variant "flip" is the other voice (the Facebook version of the same video)."""
     if os.environ.get("ENGINE_VOICE"):
         return os.environ["ENGINE_VOICE"]
-    return VOICES["male" if day.toordinal() % 2 == 0 else "female"]
+    male = day.toordinal() % 2 == 0
+    if variant == "flip":
+        male = not male
+    return VOICES["male" if male else "female"]
 SHORTS = Path("shorts")
 PUBLIC = SHORTS / "public"
 

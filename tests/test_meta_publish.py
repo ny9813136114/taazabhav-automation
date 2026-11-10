@@ -29,6 +29,19 @@ class MetaTest(unittest.TestCase):
         self.assertEqual(up.kwargs["headers"]["Authorization"], "OAuth pt")
         self.assertEqual(up.kwargs["headers"]["file_size"], "10")
 
+    def test_instagram_only_and_facebook_only(self):
+        s = mock.Mock()
+        s.get.side_effect = [resp({"access_token": "pt", "instagram_business_account": {"id": "ig1"}}),
+                             resp({"status_code": "FINISHED"})]
+        s.post.side_effect = [resp({"id": "c1"}), resp({"success": True}), resp({"id": "m1"})]
+        out = mp.publish_all(self.video, "cap", s, sleep=lambda _: None, facebook=False)
+        self.assertEqual(out, {"facebook": None, "instagram": "m1", "errors": []})
+        s2 = mock.Mock()
+        s2.get.side_effect = [resp({"access_token": "pt", "instagram_business_account": {"id": "ig1"}})]
+        s2.post.side_effect = [resp({"video_id": "v1", "upload_url": "https://up/v1"}), resp({"success": True}), resp({"success": True})]
+        out = mp.publish_all(self.video, "cap", s2, sleep=lambda _: None, instagram=False)
+        self.assertEqual(out, {"facebook": "v1", "instagram": None, "errors": []})
+
     def test_facebook_error_does_not_stop_instagram(self):
         s = mock.Mock()
         s.get.side_effect = [resp({"access_token": "pt", "instagram_business_account": {"id": "ig1"}}),
