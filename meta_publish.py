@@ -164,8 +164,8 @@ def enabled():
 # zero with 4 Page followers, so only the 3 Reels with the most reach post
 # (A 07:30 Bhav Dhamaka, D 12:30 Tool se hal, B 20:30 Kist ka Sach); photo
 # posts reached 0-2 people. Repo variable META_ON overrides it: a comma list
-# of A,B,C,D,Y,mela,tool,bhav, or "all". YouTube and Telegram are not affected.
-META_ON_DEFAULT = "A,D,B,Y"
+# of A,B,C,D,Y,mela,tool,bhav, or "all". 10 Nov 2026: owner asked for mela (Kisan Mela alert video) on FB/IG again. YouTube and Telegram are not affected.
+META_ON_DEFAULT = "A,D,B,Y,mela"
 META_KINDS = ("A", "B", "C", "D", "Y", "mela", "tool", "bhav")
 
 
