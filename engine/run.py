@@ -13,7 +13,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from engine import feed as F
-from engine import media, qa, stories, tools, yojana
+from engine import look, media, qa, stories, tools, yojana
 
 IST = timezone(timedelta(hours=5, minutes=30))
 RECENT_DAYS = {"A": 7, "B": 60, "C": 1, "D": 21, "Y": 15}
@@ -107,6 +107,7 @@ def main(series):
             return 0
         print(f"[engine] {series} {run_mode}: {ep['key']} | {ep['title']}")
         series = ep["series"]
+        ep.setdefault("theme", look.theme_for(today))
         qa.check_episode(ep)
         rec = None
         rec_secs = None
@@ -116,7 +117,7 @@ def main(series):
         clip = media.fetch_clip(ep["clip"], f"{today}-{series}", work / "clip.mp4")
         rates = list(SPEEDS)
         while True:
-            voice = media.synth([s["say"] for s in ep["scenes"]], media.PUBLIC / "voice", rate=rates[0])
+            voice = media.synth([s["say"] for s in ep["scenes"]], media.PUBLIC / "voice", rate=rates[0], voice=media.voice_for(today, ep["key"]))
             props = media.build_props(ep, voice, clip, rec_secs)
             seconds = props["frames"] / media.FPS
             if seconds <= qa.BOUNDS[series][1]:

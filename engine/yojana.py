@@ -25,6 +25,7 @@ import json
 from datetime import date
 from pathlib import Path
 
+from engine import look
 from engine.text import day_hi, link
 
 QUEUE = Path("content/yojana/queue.json")
@@ -131,7 +132,7 @@ def build_y(today, state, items=None):
         "#kisan #yojana #sarkariyojana #किसान #taazabhav",
     ])
     return {
-        "series": "Y", "key": it["id"], "clip": "generic", "stamp": day_hi(today), "stampTop": "योजना की बात", "badge": FORMATS.get(fmt), "color": FORMAT_COLOR.get(fmt),
+        "series": "Y", "key": it["id"], "clip": look.clip_for(it["id"], today, it.get("scheme", "")), "theme": look.theme_for(today), "stamp": day_hi(today), "stampTop": "योजना की बात", "badge": FORMATS.get(fmt), "color": FORMAT_COLOR.get(fmt),
         "scenes": scenes, "title": _fit(it["title"]), "description": desc,
         "tags": [*it.get("tags", []), "sarkari yojana", "kisan yojana", "taazabhav"],
         "comment": f"🔗 पूरी जानकारी: {url}\nकिस योजना पर अगला वीडियो चाहिए? कमेंट करें 👇",
