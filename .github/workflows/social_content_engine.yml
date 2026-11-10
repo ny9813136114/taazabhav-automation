@@ -1,0 +1,55 @@
+name: TaazaBhav Social Content Engine
+
+on:
+  schedule:
+    - cron: "30 12 * * *" # 18:00 IST; fills remaining daily photo slots
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "preview or publish"
+        required: true
+        default: preview
+        type: choice
+        options: [preview, publish, dry]
+
+concurrency:
+  group: taazabhav-posts
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  social:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - run: git pull --ff-only origin ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests==2.* playwright==1.56.0 && python -m playwright install --with-deps chromium
+      - name: Generate and publish (or preview)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          META_TOKEN: ${{ secrets.META_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          COMMENTS_LIVE: ${{ vars.COMMENTS_LIVE }}
+          CONTENT_ENGINE_LIVE: ${{ vars.CONTENT_ENGINE_LIVE }}
+        run: |
+          MODE="${{ inputs.mode }}"
+          if [ -z "$MODE" ]; then
+            if [ "$CONTENT_ENGINE_LIVE" = "1" ]; then MODE=publish; else MODE=preview; fi
+          fi
+          python -m posts.content_engine "$MODE"
+      - name: Save unique-post ledger
+        if: always()
+        run: |
+          git config user.name "TaazaBhav Bot"
+          git config user.email "bot@taazabhav.com"
+          git add data/posts
+          git diff --cached --quiet || git commit -m "Social engine: persist unique post history"
+          git pull --rebase
+          git push
