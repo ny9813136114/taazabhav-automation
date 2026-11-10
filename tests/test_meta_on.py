@@ -12,7 +12,7 @@ class MetaOnTest(unittest.TestCase):
     def test_default_reels(self):
         with mock.patch.dict(os.environ, {"META_ON": ""}):
             on = [k for k in mp.META_KINDS if mp.on_meta(k)]
-        self.assertEqual(sorted(on), ["A", "B", "D", "Y"])
+        self.assertEqual(sorted(on), ["A", "B", "D", "Y", "mela"])
 
     def test_variable_overrides(self):
         with mock.patch.dict(os.environ, {"META_ON": "all"}):
