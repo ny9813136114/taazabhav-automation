@@ -48,5 +48,39 @@ class YojanaPost(unittest.TestCase):
         self.assertIn(it["format"], yp.SLOTS["pm"]["formats"])
 
 
+def _rep(slug, name, typical, pct, msp=None, top=3):
+    d = {"slug": slug, "nameHi": name, "typical": typical, "markets": 9, "pct": pct, "msp": msp, "states": [],
+         "top": [{"marketHi": f"मंडी{i}", "stateHi": "राज्य", "modal": typical + 100 * (top - i)} for i in range(top)]}
+    return {"kind": "crop", "date": TODAY.isoformat(), "data": d}
+
+
+FEED = {"reports": [_rep("wheat", "गेहूं", 2600, 2.5, 2585), _rep("soybean", "सोयाबीन", 4200, -3, 5328),
+                    _rep("onion", "प्याज़", 1500, 55), _rep("chana", "चना", 6000, -1.5, 5875)]}
+
+
+class BhavPosts(unittest.TestCase):
+    def test_chaal_drops_glitch_moves(self):
+        p = yp.build_bhav("chaal", FEED, TODAY)
+        text = json.dumps(p["slides"], ensure_ascii=False)
+        self.assertIn("गेहूं", text)
+        self.assertNotIn("प्याज़", text)  # +55% in one report: data glitch, not news
+
+    def test_msp_marks_below_msp(self):
+        p = yp.build_bhav("msp", FEED, TODAY)
+        self.assertIn("सोयाबीन", p["slides"][0]["big"])
+        self.assertEqual(p["slides"][-1]["kind"], "cta")
+
+    def test_oonchi_and_thin_data(self):
+        self.assertTrue(yp.build_bhav("oonchi", FEED, TODAY))
+        self.assertIsNone(yp.build_bhav("oonchi", {"reports": FEED["reports"][:2]}, TODAY))
+        self.assertIsNone(yp.build_bhav("msp", {"reports": []}, TODAY))
+
+    def test_price_post_ledger_entry(self):
+        p = yp.build_bhav("msp", FEED, TODAY)
+        e = yp.ledger_entry(p, TODAY, "pm", None)
+        self.assertEqual(e["pillar"], "bhav2")
+        self.assertEqual(e["angle"], "msp")
+
+
 if __name__ == "__main__":
     unittest.main()
