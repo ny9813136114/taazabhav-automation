@@ -1,0 +1,280 @@
+{
+ "_note": "FB/IG yojana carousel pool, separate from the video queue (content/yojana/queue.json). Facts from official sources; owner reviews before YOJANA_POSTS_LIVE=1.",
+ "items": [
+  {
+   "id": "kcc-pashu-matsya",
+   "scheme": "kcc-pashu",
+   "scope": "central",
+   "format": "kitna",
+   "state": "all",
+   "hook": {
+    "label": "पशु और मछली पालक",
+    "big": "अलग KCC मिलता है",
+    "sub": "ब्याज छूट ₹2 लाख तक",
+    "say": "अलग KCC मिलता है"
+   },
+   "facts": [
+    {
+     "label": "कौन",
+     "big": "पशुपालक, मछली पालक",
+     "sub": "खेती की KCC से अलग कार्ड",
+     "say": ""
+    },
+    {
+     "label": "ब्याज छूट",
+     "big": "₹2 लाख तक",
+     "sub": "छोटी अवधि के कर्ज पर",
+     "say": ""
+    },
+    {
+     "label": "कुल सीमा",
+     "big": "₹3 लाख के अंदर",
+     "sub": "खेती वाली सीमा समेत",
+     "say": ""
+    },
+    {
+     "label": "कहां",
+     "big": "अपना बैंक",
+     "sub": "शर्तें बैंक के हिसाब से",
+     "say": ""
+    }
+   ],
+   "source": "dahd.gov.in",
+   "tool": {
+    "path": "/kisan-credit-card",
+    "label": "KCC की पूरी जानकारी",
+    "big": "KCC जानकारी",
+    "say": ""
+   },
+   "title": "पशु और मछली पालकों के लिए अलग किसान क्रेडिट कार्ड | Pashu KCC",
+   "tags": [
+    "pashu kcc",
+    "kcc animal husbandry"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-06-30",
+   "checked": "2026-11-10",
+   "basis": "DAHD KCC guidelines"
+  },
+  {
+   "id": "kisan-call-centre",
+   "scheme": "kcc-call",
+   "scope": "central",
+   "format": "portal",
+   "state": "all",
+   "hook": {
+    "label": "मुफ़्त हेल्पलाइन",
+    "big": "1800-180-1551",
+    "sub": "खेती का सवाल, सीधे फ़ोन पर",
+    "say": "1800-180-1551"
+   },
+   "facts": [
+    {
+     "label": "नंबर",
+     "big": "1800-180-1551",
+     "sub": "टोल फ्री",
+     "say": ""
+    },
+    {
+     "label": "समय",
+     "big": "सुबह 6 से रात 10",
+     "sub": "हफ़्ते के सातों दिन",
+     "say": ""
+    },
+    {
+     "label": "क्या पूछें",
+     "big": "खेती के सवाल",
+     "sub": "फसल, बीज, रोग, कीट",
+     "say": ""
+    },
+    {
+     "label": "ध्यान",
+     "big": "अपनी भाषा में पूछें",
+     "sub": "पूरी जानकारी साथ रखें",
+     "say": ""
+    }
+   ],
+   "source": "pib.gov.in",
+   "tool": {
+    "path": "/sarkari-paisa",
+    "label": "सारी सरकारी योजनाएं",
+    "big": "योजनाएं देखें",
+    "say": ""
+   },
+   "title": "किसान कॉल सेंटर 1800-180-1551: खेती का सवाल मुफ़्त पूछें | Kisan Call Centre",
+   "tags": [
+    "kisan call centre",
+    "1800 180 1551"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-06-30",
+   "checked": "2026-11-10",
+   "basis": "PIB KCC release"
+  },
+  {
+   "id": "enam-kaise",
+   "scheme": "enam",
+   "scope": "central",
+   "format": "portal",
+   "state": "all",
+   "hook": {
+    "label": "ई-नाम (e-NAM)",
+    "big": "देशभर की मंडी, एक पोर्टल",
+    "sub": "अपनी फसल ऑनलाइन बेचें",
+    "say": "देशभर की मंडी, एक पोर्टल"
+   },
+   "facts": [
+    {
+     "label": "मंडियां",
+     "big": "1,656 मंडी जुड़ीं",
+     "sub": "मार्च 2026 तक",
+     "say": ""
+    },
+    {
+     "label": "किसान",
+     "big": "1.79 करोड़ किसान",
+     "sub": "30 जून 2025 तक पंजीकृत",
+     "say": ""
+    },
+    {
+     "label": "तरीका",
+     "big": "पोर्टल, ऐप या मंडी",
+     "sub": "तीनों से पंजीकरण",
+     "say": ""
+    },
+    {
+     "label": "ध्यान",
+     "big": "मंडी से जांच ज़रूरी",
+     "sub": "अपनी मंडी का नियम देखें",
+     "say": ""
+    }
+   ],
+   "source": "pib.gov.in",
+   "tool": {
+    "path": "/msp-vs-mandi",
+    "label": "MSP या मंडी भाव?",
+    "big": "भाव तुलना",
+    "say": ""
+   },
+   "title": "e-NAM पर फसल कैसे बेचें | e-NAM Registration",
+   "tags": [
+    "enam",
+    "enam registration"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-06-30",
+   "checked": "2026-11-10",
+   "basis": "PIB e-NAM factsheet and release"
+  },
+  {
+   "id": "pkvy-jaivik",
+   "scheme": "pkvy",
+   "scope": "central",
+   "format": "kitna",
+   "state": "all",
+   "hook": {
+    "label": "जैविक खेती",
+    "big": "₹31,500 प्रति हेक्टेयर",
+    "sub": "3 साल में, परंपरागत कृषि विकास योजना",
+    "say": "₹31,500 प्रति हेक्टेयर"
+   },
+   "facts": [
+    {
+     "label": "कुल मदद",
+     "big": "₹31,500/हेक्टेयर",
+     "sub": "3 साल के लिए, क्लस्टर में",
+     "say": ""
+    },
+    {
+     "label": "सीधे खाते में",
+     "big": "₹15,000/हेक्टेयर",
+     "sub": "जैविक खाद, बीज जैसे खर्च के लिए",
+     "say": ""
+    },
+    {
+     "label": "बाकी",
+     "big": "बिक्री, प्रमाणन, ट्रेनिंग",
+     "sub": "राज्य के ज़रिए",
+     "say": ""
+    },
+    {
+     "label": "कैसे",
+     "big": "क्लस्टर में जुड़ें",
+     "sub": "कृषि विभाग से पूछें",
+     "say": ""
+    }
+   ],
+   "source": "pib.gov.in",
+   "tool": {
+    "path": "/kheti-lagat-munafa",
+    "label": "खेती का लागत-मुनाफ़ा",
+    "big": "लागत-मुनाफ़ा",
+    "say": ""
+   },
+   "title": "जैविक खेती पर ₹31,500 प्रति हेक्टेयर की मदद | PKVY",
+   "tags": [
+    "pkvy",
+    "jaivik kheti yojana"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-06-30",
+   "checked": "2026-11-10",
+   "basis": "PIB PKVY release Feb 2025"
+  },
+  {
+   "id": "pmmsy-machhli",
+   "scheme": "pmmsy",
+   "scope": "central",
+   "format": "kitna",
+   "state": "all",
+   "hook": {
+    "label": "मछली पालन",
+    "big": "60% तक अनुदान",
+    "sub": "महिला और SC/ST को",
+    "say": "60% तक अनुदान"
+   },
+   "facts": [
+    {
+     "label": "सामान्य वर्ग",
+     "big": "40% तक",
+     "sub": "इकाई की लागत पर",
+     "say": ""
+    },
+    {
+     "label": "महिला, SC, ST",
+     "big": "60% तक",
+     "sub": "इकाई की लागत पर",
+     "say": ""
+    },
+    {
+     "label": "योजना",
+     "big": "प्रधानमंत्री मत्स्य संपदा",
+     "sub": "2020 में मंज़ूर",
+     "say": ""
+    },
+    {
+     "label": "कहां",
+     "big": "मत्स्य विभाग",
+     "sub": "राज्य के ज़रिए आवेदन",
+     "say": ""
+    }
+   ],
+   "source": "pib.gov.in",
+   "tool": {
+    "path": "/sarkari-paisa",
+    "label": "सारी सरकारी योजनाएं",
+    "big": "योजनाएं देखें",
+    "say": ""
+   },
+   "title": "मछली पालन पर 40-60% अनुदान | PM Matsya Sampada Yojana",
+   "tags": [
+    "pmmsy",
+    "matsya sampada yojana"
+   ],
+   "validFrom": null,
+   "validUntil": "2027-06-30",
+   "checked": "2026-11-10",
+   "basis": "PIB cabinet release PRID 1625314"
+  }
+ ]
+}

@@ -1,0 +1,61 @@
+name: Yojana Posts (FB + IG carousels)
+
+# Two scheme carousels a day on the Facebook Page + Instagram, from their own
+# pool (content/posts/yojana_posts.json), never from the video queue.
+# PREVIEW (owner's Telegram only) until the repo variable YOJANA_POSTS_LIVE is "1".
+on:
+  schedule:
+    - cron: "0 2 * * *"    # 07:30 IST  am
+    - cron: "0 13 * * *"   # 18:30 IST  pm
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: "am (07:30) or pm (18:30)"
+        default: am
+        type: choice
+        options: [am, pm]
+      mode:
+        description: "auto = follow YOJANA_POSTS_LIVE; preview = owner's Telegram only; publish = post it"
+        default: auto
+        type: choice
+        options: [auto, preview, publish]
+
+concurrency:
+  group: taazabhav-posts
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  post:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Latest state
+        run: git pull --ff-only origin ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests==2.* playwright==1.56.0 && python -m playwright install --with-deps chromium
+      - name: Post
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          META_TOKEN: ${{ secrets.META_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          COMMENTS_LIVE: ${{ vars.COMMENTS_LIVE }}
+          META_ON: ${{ vars.META_ON }}
+          YOJANA_POSTS_LIVE: ${{ vars.YOJANA_POSTS_LIVE }}
+          SLOT: ${{ inputs.slot || (github.event.schedule == '0 2 * * *' && 'am' || 'pm') }}
+        run: python -m posts.yojana_post "$SLOT" ${{ (inputs.mode && inputs.mode != 'auto') && inputs.mode || '' }}
+      - name: Commit state
+        if: always()
+        run: |
+          git config user.name "TaazaBhav Bot"
+          git config user.email "bot@taazabhav.com"
+          git add data/posts 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "Yojana posts: update state"
+          git pull --rebase
+          git push
