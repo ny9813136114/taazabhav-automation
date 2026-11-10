@@ -15,6 +15,16 @@ from engine.text import spoken
 
 FPS = 30
 VOICE = os.environ.get("ENGINE_VOICE", "hi-IN-MadhurNeural")
+# 10 Nov 2026 (owner): a man's voice one day, a woman's the next. ENGINE_VOICE,
+# if set, still forces one voice for every video.
+VOICES = {"male": "hi-IN-MadhurNeural", "female": "hi-IN-SwaraNeural"}
+
+
+def voice_for(day, key=""):
+    """Voice name for a video: alternates by date, so two days in a row never sound the same."""
+    if os.environ.get("ENGINE_VOICE"):
+        return os.environ["ENGINE_VOICE"]
+    return VOICES["male" if day.toordinal() % 2 == 0 else "female"]
 SHORTS = Path("shorts")
 PUBLIC = SHORTS / "public"
 
@@ -28,6 +38,11 @@ CLIP_QUERIES = {
     "mustard": ["mustard field yellow", "mustard flowers"], "bajra": ["millet field", "pearl millet"],
     "chana": ["chickpeas", "chickpea field"], "moong": ["green gram", "mung beans"], "jeera": ["cumin seeds", "spices market"],
     "generic": ["indian farmer field", "farm field sunrise", "vegetable market india"],
+    "solar": ["solar panels farm", "solar water pump"], "irrigation": ["drip irrigation farm", "farm irrigation water"],
+    "bank": ["indian farmer holding money", "farmer talking phone"], "tractor": ["tractor ploughing field", "tractor farm india"],
+    "dairy": ["cow dairy farm india", "milking cow"], "village": ["indian village morning", "village farmland india"],
+    "farmer": ["indian farmer", "farmer walking field"], "market": ["vegetable market india", "grain market"],
+    "rain": ["rain on farm field", "monsoon farm"], "harvest": ["harvest crops india", "farmer harvesting"],
 }
 MIN_SCENE_S = {"phone": 6.0, "meter": 2.2, "compare": 2.2, "stamp": 2.0}
 
@@ -90,7 +105,7 @@ def _speed(rate):
     return 1 + int(rate.strip("%")) / 100
 
 
-def synth(texts, out_dir, rate="+8%"):
+def synth(texts, out_dir, rate="+8%", voice=None):
     """One mp3 per scene. Returns [{"audio", "secs", "words": [{"w", "t"}]}]
     with word start times from edge-tts (WordBoundary). ENGINE_SILENT=1
     writes silent clips of estimated length (local previews only). `rate` is
@@ -109,7 +124,7 @@ def synth(texts, out_dir, rate="+8%"):
 
     async def one(i, text):
         say = spoken(text)
-        comm = edge_tts.Communicate(say, VOICE, rate=rate, boundary="WordBoundary")
+        comm = edge_tts.Communicate(say, voice or VOICE, rate=rate, boundary="WordBoundary")
         audio, words = bytearray(), []
         async for ch in comm.stream():
             if ch["type"] == "audio":
@@ -181,7 +196,7 @@ def build_props(ep, voice, clip=None, rec_secs=None):
     return {
         "series": ep["series"], "clip": "clip.mp4" if clip else None,
         "clipFrames": (clip or {}).get("frames") or (clip_frames(clip["path"]) if clip else None), "credit": None,  # owner 10 Nov 2026: no on-screen Pexels credit (Pexels licence does not require it)
-        "stamp": ep.get("stamp"), "stampTop": ep.get("stampTop"), "badge": ep.get("badge"), "color": ep.get("color"), "scenes": scenes, "frames": frame,
+        "stamp": ep.get("stamp"), "stampTop": ep.get("stampTop"), "theme": ep.get("theme"), "badge": ep.get("badge"), "color": ep.get("color"), "scenes": scenes, "frames": frame,
     }
 
 

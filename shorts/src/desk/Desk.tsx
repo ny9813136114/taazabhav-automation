@@ -3,7 +3,7 @@ import {
   AbsoluteFill, Audio, OffthreadVideo, Img, Loop, Sequence, staticFile, useCurrentFrame, useVideoConfig, interpolate, spring, Easing,
 } from "remotion";
 import { loadFont } from "@remotion/fonts";
-import { D, SERIES, SAFE_D, toneColor } from "./theme";
+import { D, SERIES, SAFE_D, THEMES, toneColor, type Enter } from "./theme";
 import type { DeskProps, DeskScene, Word } from "./types";
 
 // "Mandi Board 2.0" (17 Oct 2026): one composition for all four series of
@@ -244,6 +244,25 @@ const SceneBody: React.FC<{ s: DeskScene }> = ({ s }) => {
   }
 };
 
+// One scene's box. Each theme brings its scenes in a different way (slide,
+// zoom, wipe, rise, fade), so two videos never move the same.
+const SceneBox: React.FC<{ s: DeskScene; enter: Enter; children: React.ReactNode }> = ({ s, enter, children }) => {
+  const a = useSpring(0, 14);
+  const t = Math.min(1, Math.max(0, a));
+  const motion: React.CSSProperties =
+    enter === "slide" ? { transform: `translateX(${(1 - t) * 160}px)`, opacity: t } :
+    enter === "zoom" ? { transform: `scale(${1.3 - 0.3 * t})`, opacity: t } :
+    enter === "rise" ? { transform: `translateY(${(1 - t) * 170}px)`, opacity: t } :
+    enter === "wipe" ? { clipPath: `inset(0 ${(1 - t) * 100}% 0 0)` } :
+    { opacity: t };
+  return (
+    <AbsoluteFill style={{ top: SAFE_D.top + (s.kind === "phone" ? 200 : 260), bottom: 1920 - SAFE_D.bottom + (s.kind === "phone" ? 210 : 230), left: SAFE_D.left, right: 1080 - SAFE_D.right,
+      height: "auto", width: "auto", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start", ...motion }}>
+      {children}
+    </AbsoluteFill>
+  );
+};
+
 const Captions: React.FC<{ words: Word[]; from: number; frames: number }> = ({ words, from, frames }) => {
   const frame = useCurrentFrame();
   const t = frame + from; // absolute frame
@@ -272,20 +291,24 @@ export const Desk: React.FC<DeskProps> = (p) => {
   const base = SERIES[p.series] ?? SERIES.A;
   // Series Y gives each weekday format its own name and colour (9 Nov 2026).
   const ser = { name: p.badge || base.name, color: p.color || base.color };
-  const zoom = 1.0 + 0.06 * (frame / durationInFrames);
+  const th = THEMES[(p.theme ?? 0) % THEMES.length];
+  const prog = frame / durationInFrames;
+  const zoom = th.pan === "out" ? 1.08 - 0.06 * prog : 1.0 + 0.06 * prog;
+  const shift = th.pan === "left" ? -30 * prog : th.pan === "right" ? 30 * prog : 0;
+  const bgMove = `translateX(${shift}px) scale(${zoom})`;
   return (
     <AbsoluteFill style={{ background: D.bg, overflow: "hidden" }}>
       {p.clip ? (
         // OffthreadVideo ignores `loop` when rendering; <Loop> repeats the ~8 s clip.
         <Loop durationInFrames={p.clipFrames ?? 8 * 30 - 1}>
-          <OffthreadVideo src={staticFile(p.clip)} muted style={{ position: "absolute", width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})` }} />
+          <OffthreadVideo src={staticFile(p.clip)} muted style={{ position: "absolute", width: "100%", height: "100%", objectFit: "cover", transform: bgMove }} />
         </Loop>
       ) : p.photo ? (
-        <Img src={staticFile(p.photo)} style={{ position: "absolute", width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})` }} />
+        <Img src={staticFile(p.photo)} style={{ position: "absolute", width: "100%", height: "100%", objectFit: "cover", transform: bgMove }} />
       ) : (
         <AbsoluteFill style={{ background: `radial-gradient(circle at 30% 20%, ${ser.color}55, ${D.bg} 65%)` }} />
       )}
-      <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.70) 0%, rgba(0,0,0,0.45) 40%, rgba(0,0,0,0.60) 75%, rgba(0,0,0,0.85) 100%)" }} />
+      <AbsoluteFill style={{ background: `linear-gradient(180deg, ${th.tint}${th.alpha[0]} 0%, ${th.tint}${th.alpha[1]} 40%, ${th.tint}${th.alpha[2]} 75%, ${th.tint}${th.alpha[3]} 100%)` }} />
 
       {/* Series band */}
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 210, background: `linear-gradient(180deg, ${ser.color} 0%, ${ser.color}00 100%)` }} />
@@ -307,10 +330,9 @@ export const Desk: React.FC<DeskProps> = (p) => {
 
       {p.scenes.map((s, i) => (
         <Sequence key={i} from={s.from} durationInFrames={s.frames}>
-          <AbsoluteFill style={{ top: SAFE_D.top + (s.kind === "phone" ? 200 : 260), bottom: 1920 - SAFE_D.bottom + (s.kind === "phone" ? 210 : 230), left: SAFE_D.left, right: 1080 - SAFE_D.right,
-            height: "auto", width: "auto", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start" }}>
+          <SceneBox s={s} enter={th.enter}>
             <SceneBody s={s} />
-          </AbsoluteFill>
+          </SceneBox>
           <Captions words={s.words ?? []} from={s.from} frames={s.frames} />
           {s.audio ? <Audio src={staticFile(s.audio)} /> : null}
           {i > 0 ? <Audio src={staticFile("sfx/whoosh.wav")} volume={0.35} /> : null}

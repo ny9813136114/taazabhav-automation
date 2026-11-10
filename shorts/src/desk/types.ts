@@ -32,6 +32,7 @@ export type DeskProps = {
   stampTop?: string | null;
   badge?: string | null;
   color?: string | null;
+  theme?: number | null;
   scenes: DeskScene[];
   frames: number;
 };
