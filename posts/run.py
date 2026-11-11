@@ -198,6 +198,16 @@ def publish(post, slides):
             out["errors"].append(f"Instagram: {e}")
     else:
         out["errors"].append("Instagram: no account linked to the Page")
+    # 11 Nov 2026: every feed post also goes to the FB + IG Story (meta_stories).
+    if out["facebook"] or out["instagram"]:
+        try:
+            import meta_stories
+            st = meta_stories.share_post(post["id"], slides, token, ig)
+            if st["facebook"] or st["instagram"]:
+                out["story"] = {"facebook": st["facebook"], "instagram": st["instagram"]}
+            out["errors"] += st["errors"]
+        except Exception as e:
+            out["errors"].append(f"Story: {e}")
     return out
 
 

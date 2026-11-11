@@ -37,6 +37,9 @@ TOP_ROWS = 2
 HI_MONTHS = ["जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"]
 
 
+EXTRA_DAYS = (3, 4, 5)  # Thu, Fri, Sat: 14 yojana/price cards + these 3 = 17 feed posts a week
+
+
 def mode():
     m = (sys.argv[1] if len(sys.argv) > 1 else "").strip()
     if m:
@@ -146,10 +149,17 @@ def save_state(state):
 def main():
     from engine.feed import load_feed
     run_mode = mode()
-    from posts.run import meta_off_skip
-    if run_mode == "publish" and not meta_off_skip("bhav"):
-        return 0
     today = datetime.now(IST).date()
+    import meta_publish as mp
+    if run_mode == "publish" and not mp.on_meta("bhav"):
+        # 11 Nov 2026 (owner: 17 different posts a week): the round-up goes to
+        # FB + IG on Thu/Fri/Sat, the days the 18:30 slot has no price post.
+        # Preview on Telegram until the repo variable BHAV_EXTRA_LIVE is "1".
+        if today.weekday() not in EXTRA_DAYS:
+            print("[bhav] bhav is off on FB + IG (META_ON) and today is not a Thu/Fri/Sat extra day, nothing posted")
+            return 0
+        if os.environ.get("BHAV_EXTRA_LIVE", "").strip() != "1":
+            run_mode = "preview"
     state = load_state()
     key = "history" if run_mode == "publish" else "preview"
     if run_mode != "dry" and any(h["date"] == today.isoformat() for h in state.get(key, [])):
