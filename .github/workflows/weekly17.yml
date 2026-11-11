@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   review:
@@ -27,6 +27,15 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python -m posts.weekly17
+      - name: Persist no-repeat history
+        if: always()
+        run: |
+          git config user.name "TaazaBhav Bot"
+          git config user.email "bot@taazabhav.com"
+          git add data/posts/weekly17/used.json
+          git diff --cached --quiet || git commit -m "Weekly17: record reviewed concepts"
+          git pull --rebase
+          git push
       - name: Save review package
         if: always()
         uses: actions/upload-artifact@v4
