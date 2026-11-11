@@ -104,7 +104,12 @@ def main():
     week = today.isocalendar()
     key = f"{week.year}-W{week.week:02d}"
     existing = ledger.load()
-    used = {e.get("id") for e in existing}
+    history_file = ROOT / "used.json"
+    try:
+        prior = json.loads(history_file.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        prior = []
+    used = {e.get("id") for e in existing} | set(prior)
     hooks = {e.get("hook_hash") for e in existing}
     out = ROOT / key
     out.mkdir(parents=True, exist_ok=True)
@@ -137,6 +142,9 @@ def main():
         prepared.append(candidate["id"])
         used.add(candidate["id"])
         hooks.add(ledger.hook_hash(ledger.hook_of(candidate["caption"])))
+    if prepared:
+        history_file.parent.mkdir(parents=True, exist_ok=True)
+        history_file.write_text(json.dumps(sorted(used),ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
     print(json.dumps({"date":today.isoformat(),"prepared":prepared,"review_only":True},ensure_ascii=False))
     return 0
 
