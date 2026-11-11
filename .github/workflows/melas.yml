@@ -52,6 +52,7 @@ jobs:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           COMMENTS_LIVE: ${{ vars.COMMENTS_LIVE }}
           META_ON: ${{ vars.META_ON }}
+          STORIES_LIVE: ${{ vars.STORIES_LIVE }}
         run: python mela_video.py
       - name: Commit published list
         if: always()

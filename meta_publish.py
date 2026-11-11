@@ -310,4 +310,14 @@ def publish_all(video_path, caption, s=requests, sleep=time.sleep, comment=None,
             out["errors"].append(err)
     elif comment and out["facebook"]:
         preview_comment(what, caption, comment)
+    # 11 Nov 2026: every Reel also goes to the FB + IG Story (meta_stories).
+    if out["facebook"] or out["instagram"]:
+        try:
+            import meta_stories
+            st = meta_stories.share_reel(what, video_path, page_token, ig, s, sleep)
+            if st["facebook"] or st["instagram"]:
+                out["story"] = {"facebook": st["facebook"], "instagram": st["instagram"]}
+            out["errors"] += st["errors"]
+        except Exception as e:
+            out["errors"].append(f"Story: {e}")
     return out

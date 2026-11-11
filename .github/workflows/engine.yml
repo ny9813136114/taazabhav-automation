@@ -125,6 +125,7 @@ jobs:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           COMMENTS_LIVE: ${{ vars.COMMENTS_LIVE }}
           META_ON: ${{ vars.META_ON }}
+          STORIES_LIVE: ${{ vars.STORIES_LIVE }}
           ENGINE_MODE: ${{ inputs.mode }}
           ENGINE_LIVE: ${{ vars.ENGINE_LIVE }}
           YOJANA_LIVE: ${{ vars.YOJANA_LIVE }}

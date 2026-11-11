@@ -47,6 +47,7 @@ jobs:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           COMMENTS_LIVE: ${{ vars.COMMENTS_LIVE }}
           META_ON: ${{ vars.META_ON }}
+          STORIES_LIVE: ${{ vars.STORIES_LIVE }}
           YOJANA_POSTS_LIVE: ${{ vars.YOJANA_POSTS_LIVE }}
           SLOT: ${{ inputs.slot || (github.event.schedule == '0 2 * * *' && 'am' || 'pm') }}
         run: python -m posts.yojana_post "$SLOT" ${{ (inputs.mode && inputs.mode != 'auto') && inputs.mode || '' }}
