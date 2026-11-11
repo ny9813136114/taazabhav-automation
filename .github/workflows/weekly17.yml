@@ -1,0 +1,45 @@
+name: Weekly 17 Posts and Stories (Review)
+
+on:
+  schedule:
+    - cron: "30 2 * * *" # 08:00 IST, daily portion of 17/week
+  workflow_dispatch:
+
+concurrency:
+  group: taazabhav-weekly17
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests==2.* playwright==1.56.0 && python -m playwright install --with-deps chromium
+      - name: Generate feed, group copy and 9:16 Story previews
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -m posts.weekly17
+      - name: Persist no-repeat history
+        if: always()
+        run: |
+          git config user.name "TaazaBhav Bot"
+          git config user.email "bot@taazabhav.com"
+          git add data/posts/weekly17/used.json
+          git diff --cached --quiet || git commit -m "Weekly17: record reviewed concepts"
+          git pull --rebase
+          git push
+      - name: Save review package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly17-${{ github.run_id }}
+          path: data/posts/weekly17/
+          retention-days: 30
