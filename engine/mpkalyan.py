@@ -63,6 +63,11 @@ def _angle(n):
 
 
 def build_m(today):
+    """None on the days the 20:30 kist video (B) is already about MP Kisan Kalyan: one MP video a day at most."""
+    from engine import stories
+    import os
+    if os.environ.get("B_ALT") != "0" and stories.alt_scheme(today) == SCHEME:
+        return None
     n = today.toordinal() % 3
     a = _angle(n)
     it = {**a, "scheme": SCHEME, "scope": "state", "state": "MP", "tool": TOOL,

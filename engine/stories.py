@@ -354,11 +354,75 @@ def build_bhav(feed, today, history):
 
 # ====================================================================== B
 SCHEME_DAY = {1: "mpkalyan", 4: "rajsamman"}  # Tue = MP, Fri = Rajasthan, other days PM Kisan
+# 12 Nov 2026 (owner, from FB views: MP Kisan Kalyan 314K, PM Kisan 25th 69-178K, Rajasthan 145K):
+# until an official date comes, the "कब आएगी?" status video goes out every OTHER day, the three
+# schemes in turn (each time with a new look, engine/look.py). B_ALT=0 turns this off.
+ALT_START = date(2026, 11, 12)
+ALT_SCHEMES = ["mpkalyan", "pmkisan", "mpkalyan", "rajsamman"]  # MP Kisan Kalyan (314K views) twice as often
+
+
+def alt_scheme(today):
+    """Scheme for today's status video, or None on the off days."""
+    days = (today - ALT_START).days
+    if days < 0 or days % 2:
+        return None
+    return ALT_SCHEMES[(days // 2) % len(ALT_SCHEMES)]
 
 
 def _kist_label(k):
     last = k["last"]
     return str(last.get("n") or last.get("label"))
+
+
+def _not_yet_timeline(k, last_label, last, n):
+    window = k["next"].get("windowHi")
+    items = [{"label": f"{last_label}वीं किस्त आई", "value": day_hi(last["date"], True), "tone": "good"},
+             {"label": f"{n}वीं किस्त", "value": f"{window} (संभावित)" if window else "तारीख घोषित नहीं", "tone": "steady"}]
+    # optional: dropped first if the voice runs too long (engine.run).
+    return {"kind": "timeline", "label": "अब तक का हाल", "items": items,
+            "say": f"पिछली किस्त {day_hi(last['date'])} को आई थी", "optional": True}
+
+
+def story_index(today):
+    """12 Nov 2026 (owner: tell the 'not yet' video as a story): four tellings, one per posting day,
+    shifted every fourth post so the same scheme meets each one in turn."""
+    idx = max(0, (today - ALT_START).days) // 2
+    return (idx + idx // 4) % 4
+
+
+def _not_yet_story(k, today, stamp, hook, last_label, last, n):
+    """Scenes of the 'no official date yet' video: [hook, ...middle]. Only facts the site tracker
+    already holds: no official date, the last paid date, days since it, the kist-bell, official source."""
+    name = k["nameHi"]
+    since = (today - date.fromisoformat(last["date"])).days
+    i = story_index(today)
+    if i == 1:  # intezaar ka hisaab
+        hook = {"kind": "headline", "label": name, "big": f"{n}वीं का इंतज़ार", "sub": "कितने दिन हुए?", "tone": "white",
+                "say": f"{name}। {n}वीं किस्त का इंतज़ार कितने दिन से है?"}
+        return [hook,
+                {"kind": "number", "label": f"{last_label}वीं किस्त को हुए", "big": f"{since} दिन", "count": since, "sub": f"आख़िरी किस्त: {day_hi(last['date'], True)}",
+                 "tone": "steady", "say": f"पिछली किस्त को आए {since} दिन हो गए"},
+                stamp]
+    if i == 2:  # teen sawal
+        hook = {"kind": "headline", "label": name, "big": "तीन सवाल, जवाब", "sub": f"{n}वीं किस्त", "tone": "white",
+                "say": f"{name} की {n}वीं किस्त पर तीन सवाल, तीन सच्चे जवाब"}
+        return [hook, stamp,
+                {"kind": "timeline", "label": "किसान के तीन सवाल", "items": [
+                    {"label": "कब आएगी?", "value": "सरकारी तारीख नहीं", "tone": "low"},
+                    {"label": "कैसे पता चलेगा?", "value": "सरकारी घोषणा से", "tone": "good"},
+                    {"label": "किस पर भरोसा?", "value": "सिर्फ़ सरकारी स्रोत", "tone": "good"}],
+                 "say": "कब आएगी, सरकार ने नहीं बताया। पता सरकारी घोषणा से चलेगा। भरोसा सिर्फ़ सरकारी स्रोत पर", "optional": True}]
+    if i == 3:  # afwah ya sach
+        hook = {"kind": "headline", "label": name, "big": "अफ़वाह या सच?", "sub": f"{n}वीं किस्त की तारीख", "tone": "white",
+                "say": f"{name}। {n}वीं किस्त की तारीख, अफ़वाह या सच?"}
+        return [hook,
+                {"kind": "claim", "label": "सोशल मीडिया पर", "big": "तारीख पक्की?", "sub": "सरकार ने नहीं बताई", "say": "सोशल मीडिया पर तारीखें चल रही हैं, पर सरकार ने कोई तारीख नहीं बताई"},
+                stamp,
+                {"kind": "timeline", "label": "आप क्या करें", "items": [
+                    {"label": "1", "value": "बैंक-आधार लिंक देखें", "tone": "good"},
+                    {"label": "2", "value": "स्टेटस चेक करें", "tone": "good"}],
+                 "say": "तारीख का इंतज़ार करते हुए बैंक-आधार लिंक और स्टेटस जाँच लें", "optional": True}]
+    return [hook, stamp, _not_yet_timeline(k, last_label, last, n)]
 
 
 def build_b(feed, today, recent, claim=None):
@@ -378,17 +442,21 @@ def build_b(feed, today, recent, claim=None):
     # an official date or a fake date spreading on YouTube, each once. Repo
     # variable B_DAILY=1 brings back the daily "कब आएगी?" status video.
     claim_key = None
+    alt = None if os.environ.get("B_ALT") == "0" else alt_scheme(today)
     if not chosen and os.environ.get("B_DAILY") != "1":
-        if not (claim and "pmkisan" in kist):
+        claim_key = f"pmkisan|claim|{claim['date']}" if claim and "pmkisan" in kist else None
+        if claim_key and claim_key not in recent:
+            chosen = kist["pmkisan"]
+        elif alt and alt in kist:
+            claim_key = None
+        else:
             return None
-        claim_key = f"pmkisan|claim|{claim['date']}"
-        if claim_key in recent:
-            return None
-        chosen = kist["pmkisan"]
     if not chosen:
         # Day's scheme first, then PM Kisan, then any other; never one already
         # posted today (20 Oct: a post-midnight run had used Tuesday's MP slot).
-        order = [SCHEME_DAY.get(today.weekday(), "pmkisan"), "pmkisan", *kist]
+        order = [alt or SCHEME_DAY.get(today.weekday(), "pmkisan"), "pmkisan", *kist]
+        if alt:
+            order = [alt]  # alternate-day rotation: that scheme or nothing
         fresh = [kist[s] for s in order if s in kist and f"{s}|status|{today.isoformat()}" not in recent]
         if not fresh:
             return None
@@ -415,14 +483,16 @@ def build_b(feed, today, recent, claim=None):
         if claim and k["key"] == "pmkisan":
             scenes.append({"kind": "claim", "label": "यूट्यूब पर चल रहा है", "big": f"{day_hi(claim['date'])}?", "sub": f"{claim['count']} वीडियो में यही तारीख",
                            "say": f"यूट्यूब पर {day_hi(claim['date'])} बताई जा रही है"})
-        scenes.append({"kind": "stamp", "label": "सरकारी घोषणा", "big": "अभी नहीं ❌", "sub": f"{today_hi} तक कोई तारीख घोषित नहीं", "tone": "low",
-                       "say": f"{today_hi} तक सरकार ने तारीख घोषित नहीं की"})
-        window = k["next"].get("windowHi")
-        items = [{"label": f"{last_label}वीं किस्त आई", "value": day_hi(last["date"], True), "tone": "good"},
-                 {"label": f"{n}वीं किस्त", "value": f"{window} (संभावित)" if window else "तारीख घोषित नहीं", "tone": "steady"}]
-        say = f"पिछली किस्त {day_hi(last['date'])} को आई थी"
-        # optional: dropped first if the voice runs too long (engine.run).
-        scenes.append({"kind": "timeline", "label": "अब तक का हाल", "items": items, "say": say, "optional": True})
+        stamp = {"kind": "stamp", "label": "सरकारी घोषणा", "big": "अभी नहीं ❌", "sub": f"{today_hi} तक कोई तारीख घोषित नहीं", "tone": "low",
+                 "say": f"{today_hi} तक सरकार ने तारीख घोषित नहीं की"}
+        if claim and k["key"] == "pmkisan":
+            scenes.append({"kind": "claim", "label": "यूट्यूब पर चल रहा है", "big": f"{day_hi(claim['date'])}?", "sub": f"{claim['count']} वीडियो में यही तारीख",
+                           "say": f"यूट्यूब पर {day_hi(claim['date'])} बताई जा रही है"})
+            scenes.append(stamp)
+            scenes.append(_not_yet_timeline(k, last_label, last, n))
+        else:
+            scenes[0], *rest = _not_yet_story(k, today, stamp, scenes[0], last_label, last, n)
+            scenes += rest
         key = claim_key or f"{k['key']}|status|{today.isoformat()}"
     scenes.append({"kind": "cta", "label": "तारीख आते ही 🔔", "big": "किस्त घंटी लगाएँ", "sub": f"taazabhav.com{k['path']}",
                    "say": "तारीख आते ही किस्त घंटी फ़ोन पर बताएगी"})
@@ -451,7 +521,7 @@ def build_b(feed, today, recent, claim=None):
         "scenes": scenes, "title": title, "description": desc,
         "tags": [f"{en_name} {n}th installment", f"{en_name} installment date", "pm kisan", "kist kab aayegi", name, "taazabhav"],
         "comment": f"🔔 तारीख घोषित होते ही अलर्ट: {link(k['path'])}\nआपकी पिछली किस्त आई थी? कमेंट करें 👇",
-        "playlist": "B", "link": link(k["path"]),
+        "playlist": "B", "link": link(k["path"]), "scheme": k["key"],
     }
 
 

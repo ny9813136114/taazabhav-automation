@@ -163,11 +163,19 @@ if __name__ == "__main__":
 class MpKalyanDailyTest(unittest.TestCase):
     """12 Nov 2026: MP Kisan Kalyan daily Meta Reel (engine/mpkalyan.py)."""
 
+    def test_skips_days_b_is_mp(self):
+        from engine import mpkalyan
+        self.assertIsNone(mpkalyan.build_m(date(2026, 11, 12)))   # B posts MP tonight
+        self.assertIsNotNone(mpkalyan.build_m(date(2026, 11, 13)))  # off day for B
+        self.assertIsNotNone(mpkalyan.build_m(date(2026, 11, 14)))  # B is PM Kisan
+
     def test_three_angles_pass_qa_and_fit(self):
         from engine import mpkalyan
         seen = set()
-        for n in range(6):
+        for n in range(9):
             ep = mpkalyan.build_m(date(2026, 11, 13) + timedelta(days=n))
+            if ep is None:
+                continue
             qa.check_episode(ep)
             seen.add(ep["title"])
             self.assertTrue(ep["meta_only"])
