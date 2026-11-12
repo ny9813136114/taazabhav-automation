@@ -8,6 +8,7 @@
 --
 --   Content engine   D/Y 12:30 IST, B 20:30  (mode "auto"; A and C stopped 3 Nov 2026)
 --   Telegram channel 13:00 IST, again 16:00 IST (posts once a day)
+--   FB/IG posts 07:30 / 09:30 / 14:30 / 18:30 IST and the 17:00 MP Kisan Kalyan Reel (12 Nov 2026)
 --
 -- The workflows' own GitHub schedules stay as late backups; each one runs
 -- once per slot (engine/slot_gate.py, data/telegram_history/_last_post.json)
@@ -64,6 +65,20 @@ select cron.schedule('taazabhav-auto-engine-b', '0 15 * * *',
   $$select public.dispatch_automation('engine.yml', '{"series":"B","mode":"auto"}')$$);
 select cron.schedule('taazabhav-auto-telegram', '30 7,10 * * *',
   $$select public.dispatch_automation('telegram_daily.yml')$$);
+
+-- 12 Nov 2026: GitHub's own schedule ran the 09:30 tool post at 17:00 IST and the 18:30 yojana
+-- carousel at 01:25 IST the day before. These start the FB/IG posts on time; each workflow runs
+-- once per slot (engine/slot_gate.py), so GitHub's late backup cannot post them twice.
+select cron.schedule('taazabhav-auto-engine-m', '30 11 * * *',
+  $$select public.dispatch_automation('engine.yml', '{"series":"M","mode":"auto"}')$$);   -- 17:00 IST MP Kisan Kalyan Reel
+select cron.schedule('taazabhav-auto-yojana-am', '0 2 * * *',
+  $$select public.dispatch_automation('yojana_posts.yml', '{"slot":"am","mode":"auto"}')$$);  -- 07:30 IST
+select cron.schedule('taazabhav-auto-tool-post', '0 4 * * *',
+  $$select public.dispatch_automation('posts.yml', '{"mode":"auto"}')$$);                      -- 09:30 IST
+select cron.schedule('taazabhav-auto-bhav-post', '0 9 * * *',
+  $$select public.dispatch_automation('bhav_post.yml', '{"mode":"auto"}')$$);                  -- 14:30 IST
+select cron.schedule('taazabhav-auto-yojana-pm', '0 13 * * *',
+  $$select public.dispatch_automation('yojana_posts.yml', '{"slot":"pm","mode":"auto"}')$$);  -- 18:30 IST
 
 -- Test now: starts the Telegram broadcast once (it posts at most once a day).
 select public.dispatch_automation('telegram_daily.yml');
