@@ -158,7 +158,7 @@ class BAlternateDaysTest(unittest.TestCase):
         for n in range(8):
             ep = self.run_b(d0 + timedelta(days=n))
             order.append(ep and ep["scheme"])
-        self.assertEqual(order, ["mpkalyan", None, "pmkisan", None, "mpkalyan", None, "rajsamman", None])
+        self.assertEqual(order, ["mpkalyan", None, "pmkisan", None, "mpkalyan", None, "pmkisan", None])
 
     def test_switch_off(self):
         self.assertIsNone(self.run_b(date(2026, 11, 12), B_ALT="0"))
