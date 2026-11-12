@@ -4,7 +4,7 @@ fixed copy of the /api/yt-feed response. No network, no rendering."""
 import os
 import unittest
 from unittest import mock
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 from engine import feed as F
@@ -143,6 +143,37 @@ class BOnlyNewsTest(unittest.TestCase):
             ep = stories.build_b(feed, TODAY, set())
             self.assertIn("|announced|", ep["key"])
             self.assertIsNone(stories.build_b(feed, TODAY, {ep["key"]}))
+
+
+class BAlternateDaysTest(unittest.TestCase):
+    """12 Nov 2026: owner wants the kist status video every other day, MP, PM Kisan, Rajasthan in turn."""
+
+    def run_b(self, day, **env):
+        with mock.patch.dict(os.environ, {"B_DAILY": "", "B_ALT": "", **env}):
+            return stories.build_b(load(), day, set())
+
+    def test_rotation_and_off_days(self):
+        d0 = date(2026, 11, 12)
+        order = []
+        for n in range(8):
+            ep = self.run_b(d0 + timedelta(days=n))
+            order.append(ep and ep["scheme"])
+        self.assertEqual(order, ["mpkalyan", None, "pmkisan", None, "rajsamman", None, "mpkalyan", None])
+
+    def test_switch_off(self):
+        self.assertIsNone(self.run_b(date(2026, 11, 12), B_ALT="0"))
+
+    def test_official_date_beats_off_day(self):
+        feed = load()
+        feed["kist"][0]["next"]["officialDate"] = "2026-11-20"
+        with mock.patch.dict(os.environ, {"B_DAILY": "", "B_ALT": ""}):
+            ep = stories.build_b(feed, date(2026, 11, 13), set())
+        self.assertIn("|announced|", ep["key"])
+
+    def test_each_video_has_its_own_scheme_and_passes_qa(self):
+        for n in (0, 2, 4):
+            ep = self.run_b(date(2026, 11, 12) + timedelta(days=n))
+            qa.check_episode(ep)
 
 
 class DNoRepeatTest(unittest.TestCase):

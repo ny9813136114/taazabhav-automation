@@ -354,6 +354,19 @@ def build_bhav(feed, today, history):
 
 # ====================================================================== B
 SCHEME_DAY = {1: "mpkalyan", 4: "rajsamman"}  # Tue = MP, Fri = Rajasthan, other days PM Kisan
+# 12 Nov 2026 (owner, from FB views: MP Kisan Kalyan 314K, PM Kisan 25th 69-178K, Rajasthan 145K):
+# until an official date comes, the "कब आएगी?" status video goes out every OTHER day, the three
+# schemes in turn (each time with a new look, engine/look.py). B_ALT=0 turns this off.
+ALT_START = date(2026, 11, 12)
+ALT_SCHEMES = ["mpkalyan", "pmkisan", "rajsamman"]
+
+
+def alt_scheme(today):
+    """Scheme for today's status video, or None on the off days."""
+    days = (today - ALT_START).days
+    if days < 0 or days % 2:
+        return None
+    return ALT_SCHEMES[(days // 2) % len(ALT_SCHEMES)]
 
 
 def _kist_label(k):
@@ -378,17 +391,21 @@ def build_b(feed, today, recent, claim=None):
     # an official date or a fake date spreading on YouTube, each once. Repo
     # variable B_DAILY=1 brings back the daily "कब आएगी?" status video.
     claim_key = None
+    alt = None if os.environ.get("B_ALT") == "0" else alt_scheme(today)
     if not chosen and os.environ.get("B_DAILY") != "1":
-        if not (claim and "pmkisan" in kist):
+        claim_key = f"pmkisan|claim|{claim['date']}" if claim and "pmkisan" in kist else None
+        if claim_key and claim_key not in recent:
+            chosen = kist["pmkisan"]
+        elif alt and alt in kist:
+            claim_key = None
+        else:
             return None
-        claim_key = f"pmkisan|claim|{claim['date']}"
-        if claim_key in recent:
-            return None
-        chosen = kist["pmkisan"]
     if not chosen:
         # Day's scheme first, then PM Kisan, then any other; never one already
         # posted today (20 Oct: a post-midnight run had used Tuesday's MP slot).
-        order = [SCHEME_DAY.get(today.weekday(), "pmkisan"), "pmkisan", *kist]
+        order = [alt or SCHEME_DAY.get(today.weekday(), "pmkisan"), "pmkisan", *kist]
+        if alt:
+            order = [alt]  # alternate-day rotation: that scheme or nothing
         fresh = [kist[s] for s in order if s in kist and f"{s}|status|{today.isoformat()}" not in recent]
         if not fresh:
             return None
@@ -451,7 +468,7 @@ def build_b(feed, today, recent, claim=None):
         "scenes": scenes, "title": title, "description": desc,
         "tags": [f"{en_name} {n}th installment", f"{en_name} installment date", "pm kisan", "kist kab aayegi", name, "taazabhav"],
         "comment": f"🔔 तारीख घोषित होते ही अलर्ट: {link(k['path'])}\nआपकी पिछली किस्त आई थी? कमेंट करें 👇",
-        "playlist": "B", "link": link(k["path"]),
+        "playlist": "B", "link": link(k["path"]), "scheme": k["key"],
     }
 
 
