@@ -358,7 +358,7 @@ SCHEME_DAY = {1: "mpkalyan", 4: "rajsamman"}  # Tue = MP, Fri = Rajasthan, other
 # until an official date comes, the "कब आएगी?" status video goes out every OTHER day, the three
 # schemes in turn (each time with a new look, engine/look.py). B_ALT=0 turns this off.
 ALT_START = date(2026, 11, 12)
-ALT_SCHEMES = ["mpkalyan", "pmkisan", "rajsamman"]
+ALT_SCHEMES = ["mpkalyan", "pmkisan", "mpkalyan", "rajsamman"]  # MP Kisan Kalyan (314K views) twice as often
 
 
 def alt_scheme(today):
