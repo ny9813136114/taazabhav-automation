@@ -516,6 +516,19 @@
     "clip": "market",
     "voice": "female"
    }
+  },
+  {
+   "series": "Y",
+   "key": "pmkisan-paisa-nahi",
+   "date": "2026-11-12",
+   "video": "cOZRzZ-dNwM",
+   "title": "PM Kisan का पैसा नहीं आया? ये 3 चीज़ें चेक करें | PM Kisan Paisa Nahi Aaya #Shorts",
+   "scheme": "pmkisan",
+   "look": {
+    "theme": 2,
+    "clip": "rain",
+    "voice": "male"
+   }
   }
  ]
 }
