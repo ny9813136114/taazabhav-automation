@@ -121,8 +121,8 @@ def on_youtube(series):
 
 
 def publish(path, ep, alert):
-    if not on_youtube(ep["series"]):
-        print(f"[engine] series {ep['series']} is off YouTube (YT_SERIES), FB/IG only")
+    if ep.get("meta_only") or not on_youtube(ep["series"]):
+        print(f"[engine] series {ep['series']} ({ep['key']}) is off YouTube (YT_SERIES / meta_only), FB/IG only")
         meta_reels(path, ep, alert)
         return None
     from upload_youtube import upload_video

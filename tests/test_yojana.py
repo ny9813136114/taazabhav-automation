@@ -158,3 +158,35 @@ class ModeTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class MpKalyanDailyTest(unittest.TestCase):
+    """12 Nov 2026: MP Kisan Kalyan daily Meta Reel (engine/mpkalyan.py)."""
+
+    def test_three_angles_pass_qa_and_fit(self):
+        from engine import mpkalyan
+        seen = set()
+        for n in range(6):
+            ep = mpkalyan.build_m(date(2026, 11, 13) + timedelta(days=n))
+            qa.check_episode(ep)
+            seen.add(ep["title"])
+            self.assertTrue(ep["meta_only"])
+            self.assertEqual(ep["scheme"], "mpkalyan")
+            self.assertEqual(ep["series"], "Y")
+            self.assertTrue(estimate_secs(fitted(ep)) <= qa.BOUNDS["Y"][1], ep["key"])
+        self.assertEqual(len(seen), 3)
+
+    def test_no_made_up_numbers(self):
+        from engine import mpkalyan
+        for n in range(3):
+            ep = mpkalyan.build_m(date(2026, 11, 13) + timedelta(days=n))
+            blob = " ".join(s.get("big", "") + s.get("say", "") for s in ep["scenes"])
+            self.assertNotRegex(blob, r"₹\s*\d")
+
+    def test_meta_only_skips_youtube(self):
+        from engine import mpkalyan, publish
+        ep = mpkalyan.build_m(date(2026, 11, 13))
+        with mock.patch.object(publish, "meta_reels") as m, mock.patch("upload_youtube.upload_video") as up:
+            self.assertIsNone(publish.publish("x.mp4", ep, lambda *_: None))
+        up.assert_not_called()
+        m.assert_called_once()
