@@ -92,13 +92,13 @@ jobs:
           python-version: "3.11"
           cache: "pip"
           cache-dependency-path: requirements.txt
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: bash ops/retry.sh "sudo apt-get update && sudo apt-get install -y ffmpeg"
         if: steps.g.outputs.run == 'true'
       - run: pip install -r requirements.txt
         if: steps.g.outputs.run == 'true'
       - name: Browser for screen recording
         if: steps.g.outputs.run == 'true' && steps.s.outputs.series == 'D'
-        run: python -m playwright install --with-deps chromium
+        run: bash ops/retry.sh "python -m playwright install --with-deps chromium"
       - uses: actions/setup-node@v4
         if: steps.g.outputs.run == 'true'
         with:
