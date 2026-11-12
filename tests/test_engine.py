@@ -176,6 +176,33 @@ class BAlternateDaysTest(unittest.TestCase):
             qa.check_episode(ep)
 
 
+class BStoryTest(unittest.TestCase):
+    """12 Nov 2026: the 'not announced yet' video is told four ways, all within the kist rules."""
+
+    def test_four_tellings_per_scheme_pass_qa(self):
+        seen = {}
+        with mock.patch.dict(os.environ, {"B_DAILY": "", "B_ALT": ""}):
+            for n in range(0, 48, 2):
+                day = date(2026, 11, 12) + timedelta(days=n)
+                ep = stories.build_b(load(), day, set())
+                qa.check_episode(ep)
+                kinds = "".join(c for c in ep["scenes"][0]["big"] if not c.isdigit())
+                seen.setdefault(ep["scheme"], set()).add(kinds)
+        for scheme, shapes in seen.items():
+            self.assertEqual(len(shapes), 4, scheme)
+
+    def test_days_since_matches_last_kist(self):
+        feed = load()
+        k = feed["kist"][0]
+        day = date(2026, 11, 14)
+        for n in range(0, 8, 2):
+            ep = stories.build_b(feed, date(2026, 11, 12) + timedelta(days=n), set())
+            for sc in ep["scenes"]:
+                if sc["kind"] == "number":
+                    last = date.fromisoformat(ep and next(x for x in feed["kist"] if x["key"] == ep["scheme"])["last"]["date"])
+                    self.assertEqual(sc["count"], (date(2026, 11, 12) + timedelta(days=n) - last).days)
+
+
 class DNoRepeatTest(unittest.TestCase):
     def test_skips_when_every_case_was_used(self):
         used = {f"{t['id']}|{i}" for t in tools.TOOLS for i in range(len(t["cases"]))}
