@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""One video for one series: python -m engine.run A|B|C|D|Y
+"""One video for one series: python -m engine.run A|B|C|D|Y|M
 
 Mode: ENGINE_MODE=preview|publish (manual runs). Scheduled runs publish only
 when the repo variable ENGINE_LIVE is "1"; until then the video goes to the
@@ -35,6 +35,9 @@ def mode(series=None):
     # Series Y posts at 12:30 (owner "haan", 9 Nov 2026); YOJANA_LIVE=0 makes it a preview again.
     if series == "Y" and os.environ.get("YOJANA_LIVE", "").strip() == "0":
         return "preview"
+    # MP Kisan Kalyan daily Reel (M): 2 preview days, then the repo variable MPKK_LIVE=1 makes it live.
+    if series == "M" and os.environ.get("MPKK_LIVE", "").strip() != "1":
+        return "preview"
     return "publish" if os.environ.get("ENGINE_LIVE", "").strip() == "1" else "preview"
 
 
@@ -54,6 +57,9 @@ def a_history(state, today, days=14):
 
 
 def build(series, today, state):
+    if series == "M":
+        from engine import mpkalyan
+        return mpkalyan.build_m(today)
     if series == "Y":
         items = yojana.load_queue()
         left = yojana.fresh_count(items, today, state)

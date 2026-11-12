@@ -97,6 +97,11 @@ def build_y(today, state, items=None):
     it = pick(items, today, state)
     if not it:
         return None
+    return build_item(it, today)
+
+
+def build_item(it, today):
+    """One queue-shaped item -> episode (also used by the MP Kisan Kalyan daily, engine/mpkalyan.py)."""
     from engine.stories import _fit
     h, tool = it["hook"], it["tool"]
     fmt = it.get("format", "kitna")
