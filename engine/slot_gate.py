@@ -22,7 +22,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 IST = timezone(timedelta(hours=5, minutes=30))
-SLOTS = {"A": (7, 30), "D": (12, 30), "Y": (12, 30), "C": (18, 30), "E": (18, 30), "B": (20, 30), "M": (17, 0)}  # M = MP Kisan Kalyan daily Meta Reel, 12 Nov 2026; IST (E = evening bhav, 3 Nov 2026)
+SLOTS = {"A": (7, 30), "D": (12, 30), "Y": (12, 30), "C": (18, 30), "E": (18, 30), "B": (20, 30), "M": (17, 0),
+         "P": (9, 30), "H": (14, 30), "YA": (7, 30), "YP": (18, 30)}  # P tool post, H bhav carousel, YA/YP yojana carousels (12 Nov 2026)  # M = MP Kisan Kalyan daily Meta Reel, 12 Nov 2026; IST (E = evening bhav, 3 Nov 2026)
 MAX_LATE = timedelta(hours=6)
 NIGHT = (23, 6)  # IST hours [23:00, 06:00): no posting
 STATE = Path("data/engine/slots.json")

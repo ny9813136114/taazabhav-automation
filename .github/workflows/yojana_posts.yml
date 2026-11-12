@@ -35,11 +35,31 @@ jobs:
       - uses: actions/checkout@v4
       - name: Latest state
         run: git pull --ff-only origin ${{ github.ref_name }}
+      - name: Once per slot
+        id: g
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SLOT: ${{ inputs.slot || (github.event.schedule == '0 2 * * *' && 'am' || 'pm') }}
+        run: |
+          if [ "$SLOT" = am ]; then S=YA; else S=YP; fi
+          echo "series=$S" >> "$GITHUB_OUTPUT"
+          # The Supabase clock starts this at the exact time (ops/supabase-clock.sql); GitHub's own
+          # schedule is only a late backup and must not post it a second time. Manual preview/publish runs skip the gate.
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ inputs.mode || 'auto' }}" = "auto" ]; then
+            python3 -m engine.slot_gate check "$S"
+            echo "gated=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/setup-python@v5
+        if: steps.g.outputs.run == 'true'
         with:
           python-version: "3.11"
       - run: pip install requests==2.* playwright==1.56.0 && bash ops/retry.sh "python -m playwright install --with-deps chromium"
+        if: steps.g.outputs.run == 'true'
       - name: Post
+        if: steps.g.outputs.run == 'true'
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -51,12 +71,15 @@ jobs:
           YOJANA_POSTS_LIVE: ${{ vars.YOJANA_POSTS_LIVE }}
           SLOT: ${{ inputs.slot || (github.event.schedule == '0 2 * * *' && 'am' || 'pm') }}
         run: python -m posts.yojana_post "$SLOT" ${{ (inputs.mode && inputs.mode != 'auto') && inputs.mode || '' }}
+      - name: Mark slot done
+        if: success() && steps.g.outputs.run == 'true' && steps.g.outputs.gated == 'true'
+        run: python3 -m engine.slot_gate done "${{ steps.g.outputs.series }}"
       - name: Commit state
         if: always()
         run: |
           git config user.name "TaazaBhav Bot"
           git config user.email "bot@taazabhav.com"
-          git add data/posts 2>/dev/null || true
+          git add data/posts data/engine/slots.json 2>/dev/null || true
           git diff --staged --quiet || git commit -m "Yojana posts: update state"
           git pull --rebase
           git push
