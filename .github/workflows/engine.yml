@@ -26,7 +26,7 @@ on:
   schedule:
     - cron: "0 7 * * *"    # 12:30 IST  Y (D only when YOJANA_LIVE=0)
     - cron: "0 15 * * *"   # 20:30 IST  B
-    # M (MP Kisan Kalyan daily Reel) has no schedule since 12 Nov 2026: the owner chose the alternate-day B rotation instead; M stays for manual runs.
+    - cron: "30 11 * * *"  # 17:00 IST  M (MP Kisan Kalyan Meta Reel on days B is not MP; live from 12 Nov 2026, MPKK_LIVE=0 = preview)
   workflow_dispatch:
     inputs:
       series:
@@ -62,6 +62,7 @@ jobs:
           case "${{ github.event.schedule }}" in
             "0 7 * * *") S=D ;;
             "0 15 * * *") S=B ;;
+            "30 11 * * *") S=M ;;
             *) S="${{ inputs.series }}" ;;
           esac
           # The 18:30 slot (clock or backup) is the evening bhav Short now.
@@ -134,6 +135,7 @@ jobs:
           YT_SERIES: ${{ vars.YT_SERIES }}
           B_DAILY: ${{ vars.B_DAILY }}
           B_ALT: ${{ vars.B_ALT }}
+          MPKK_LIVE: ${{ vars.MPKK_LIVE }}
           MPKK_LIVE: ${{ vars.MPKK_LIVE }}
         run: python -m engine.run ${{ steps.s.outputs.series }}
       - name: Mark slot done

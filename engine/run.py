@@ -35,8 +35,8 @@ def mode(series=None):
     # Series Y posts at 12:30 (owner "haan", 9 Nov 2026); YOJANA_LIVE=0 makes it a preview again.
     if series == "Y" and os.environ.get("YOJANA_LIVE", "").strip() == "0":
         return "preview"
-    # MP Kisan Kalyan daily Reel (M): 2 preview days, then the repo variable MPKK_LIVE=1 makes it live.
-    if series == "M" and os.environ.get("MPKK_LIVE", "").strip() != "1":
+    # MP Kisan Kalyan Reel (M): live at once (owner, 12 Nov 2026: "dono upload kar do"); MPKK_LIVE=0 = preview.
+    if series == "M" and os.environ.get("MPKK_LIVE", "").strip() == "0":
         return "preview"
     return "publish" if os.environ.get("ENGINE_LIVE", "").strip() == "1" else "preview"
 
@@ -108,7 +108,7 @@ def main(series):
         ep = build(series, today, state)
         if not ep:
             print(f"[engine] {series}: no story today")
-            if series not in ("B", "C"):  # B skips on purpose when B_ONLY_NEWS=1
+            if series not in ("B", "C", "M"):  # B skips on purpose when B_ONLY_NEWS=1; M on the days B posts MP
                 alert(f"TaazaBhav engine: no {series} story today (nothing new in the feed).")
             return 0
         print(f"[engine] {series} {run_mode}: {ep['key']} | {ep['title']}")
