@@ -43,9 +43,7 @@ jobs:
           cache: "pip"
           cache-dependency-path: requirements.txt
       - name: Install system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
+        run: bash ops/retry.sh "sudo apt-get update && sudo apt-get install -y ffmpeg"
       - name: Install Python dependencies
         run: pip install -r requirements.txt
       # Batch 4: Node + Remotion for the 8 s "भाव फ्लैश" Shorts (shorts/).

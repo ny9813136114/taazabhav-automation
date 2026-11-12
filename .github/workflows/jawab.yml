@@ -41,7 +41,7 @@ jobs:
         run: python -m posts.jawab need
       - name: Browser for the slides
         if: steps.need.outputs.need == '1'
-        run: pip install playwright==1.56.0 && python -m playwright install --with-deps chromium
+        run: pip install playwright==1.56.0 && bash ops/retry.sh "python -m playwright install --with-deps chromium"
       - name: Ask the owner
         if: steps.need.outputs.need == '1'
         run: python -m posts.jawab draft

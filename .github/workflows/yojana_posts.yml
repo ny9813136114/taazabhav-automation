@@ -38,7 +38,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: pip install requests==2.* playwright==1.56.0 && python -m playwright install --with-deps chromium
+      - run: pip install requests==2.* playwright==1.56.0 && bash ops/retry.sh "python -m playwright install --with-deps chromium"
       - name: Post
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
