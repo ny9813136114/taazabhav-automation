@@ -69,6 +69,18 @@ class SameSchemeNewLook(unittest.TestCase):
         for a, b in zip(seen, seen[1:]):
             self.assertNotEqual(a["voice"], b["voice"])
 
+    def test_two_videos_one_day_never_share_clip_or_voice(self):
+        # 13 Nov 2026: Y bhavantar and M mpkalyan both got "harvest" + female voice.
+        d = date(2026, 11, 13)
+        eps = []
+        for scheme in ("bhavantar", "mpkalyan", "pmkisan", "kcc", "other", "more"):
+            lk = look.pick_look(scheme, d, eps, scheme)
+            if eps:
+                self.assertNotEqual(lk["clip"], eps[-1]["look"]["clip"])
+                self.assertNotEqual(lk["voice"], eps[-1]["look"]["voice"])
+                self.assertNotEqual(lk["theme"], eps[-1]["look"]["theme"])
+            eps.append(self.ep(scheme, d, lk))
+
     def test_never_the_theme_of_the_last_video_of_any_scheme(self):
         eps = [self.ep("kcc", date(2026, 11, 10), {"theme": 2, "clip": "bank", "voice": "male"})]
         for _ in range(10):

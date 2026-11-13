@@ -9,7 +9,7 @@ sometimes male and sometimes female, the same-same feeling must go").
     there is a match (solar pump -> solar), else it rotates by date.
   * voice: engine.media.voice_for (a man one day, a woman the next).
 """
-THEME_COUNT = 5
+THEME_COUNT = 8
 
 # id/scheme word -> clip folder (see engine.media.CLIP_QUERIES)
 CLIP_HINTS = (
@@ -21,7 +21,10 @@ CLIP_HINTS = (
     (("dhan", "paddy", "kharif", "msp", "kharid", "mandi"), "paddy"),
     (("pashu", "dairy", "gau", "cow", "milk", "murgi"), "dairy"),
 )
-ROTATE = ("village", "tractor", "farmer", "market", "rain", "harvest", "generic")
+ROTATE = ("village", "tractor", "farmer", "market", "rain", "harvest", "sunrise", "hands", "grain", "canal", "generic")
+
+
+RECENT_CLIPS = 4
 
 
 def theme_for(today):
@@ -61,11 +64,20 @@ def pick_theme(scheme, today, past, n=THEME_COUNT, avoid=None):
 
 def pick_look(scheme, today, episodes, scheme_hint=""):
     """-> {"theme", "clip", "voice"} for a video of `scheme`; episodes = the
-    engine log (entries with a "look" count, older ones are ignored)."""
+    engine log (entries with a "look" count, older ones are ignored).
+
+    13 Nov 2026 (owner: two Reels the same day had the same background): the
+    clip also avoids the last RECENT_CLIPS videos of ANY scheme, and the voice
+    flips against the previous video of any scheme."""
     seen = [e for e in episodes if e.get("look")]
     mine = [e["look"] for e in seen if e.get("scheme") == scheme]
+    recent = [e["look"]["clip"] for e in seen[-RECENT_CLIPS:]]
     first = clip_for(scheme, today, scheme_hint)
     clips = [first] + [c for c in ROTATE if c != first]
-    clip = _least_recent(clips, [m["clip"] for m in mine])
-    voice = "female" if mine and mine[-1]["voice"] == "male" else "male" if mine else ("male" if today.toordinal() % 2 == 0 else "female")
+    fresh = [c for c in clips if c not in recent] or clips
+    clip = _least_recent(fresh, [m["clip"] for m in mine])
+    if seen:
+        voice = "female" if seen[-1]["look"]["voice"] == "male" else "male"
+    else:
+        voice = "male" if today.toordinal() % 2 == 0 else "female"
     return {"theme": pick_theme(scheme, today, [(e["scheme"], e["look"]["theme"]) for e in seen]), "clip": clip, "voice": voice}
