@@ -136,7 +136,6 @@ jobs:
           B_DAILY: ${{ vars.B_DAILY }}
           B_ALT: ${{ vars.B_ALT }}
           MPKK_LIVE: ${{ vars.MPKK_LIVE }}
-          MPKK_LIVE: ${{ vars.MPKK_LIVE }}
         run: python -m engine.run ${{ steps.s.outputs.series }}
       - name: Mark slot done
         if: success() && steps.g.outputs.run == 'true' && steps.g.outputs.gated == 'true'
