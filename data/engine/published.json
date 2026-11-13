@@ -542,6 +542,19 @@
     "clip": "harvest",
     "voice": "female"
    }
+  },
+  {
+   "series": "Y",
+   "key": "mpkk|2026-11-13",
+   "date": "2026-11-13",
+   "video": null,
+   "title": "मुख्यमंत्री किसान कल्याण योजना: अपनी किस्त का स्टेटस कहां देखें? | MP Kisan Kalyan Status #Shorts",
+   "scheme": "mpkalyan",
+   "look": {
+    "theme": 4,
+    "clip": "harvest",
+    "voice": "female"
+   }
   }
  ]
 }
