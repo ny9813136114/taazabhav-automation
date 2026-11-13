@@ -529,6 +529,19 @@
     "clip": "rain",
     "voice": "male"
    }
+  },
+  {
+   "series": "Y",
+   "key": "bhavantar",
+   "date": "2026-11-13",
+   "video": "S7s5Cw-q4RU",
+   "title": "भावांतर: सोयाबीन पर कितना पैसा मिलेगा? | MP Bhavantar Yojana Calculator #Shorts",
+   "scheme": "bhavantar",
+   "look": {
+    "theme": 3,
+    "clip": "harvest",
+    "voice": "female"
+   }
   }
  ]
 }
