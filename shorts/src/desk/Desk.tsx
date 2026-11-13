@@ -3,7 +3,7 @@ import {
   AbsoluteFill, Audio, OffthreadVideo, Img, Loop, Sequence, staticFile, useCurrentFrame, useVideoConfig, interpolate, spring, Easing,
 } from "remotion";
 import { loadFont } from "@remotion/fonts";
-import { D, SERIES, SAFE_D, THEMES, toneColor, type Enter } from "./theme";
+import { D, SERIES, SAFE_D, THEMES, toneColor, type Theme } from "./theme";
 import type { DeskProps, DeskScene, Word } from "./types";
 
 // "Mandi Board 2.0" (17 Oct 2026): one composition for all four series of
@@ -244,26 +244,36 @@ const SceneBody: React.FC<{ s: DeskScene }> = ({ s }) => {
   }
 };
 
+const PANEL: Record<Theme["panel"], (c: string) => React.CSSProperties> = {
+  none: () => ({}),
+  glass: () => ({ background: "rgba(0,0,0,0.38)", borderRadius: 40, padding: "30px 38px" }),
+  solid: (c) => ({ background: "rgba(0,0,0,0.6)", borderLeft: `14px solid ${c}`, borderRadius: 30, padding: "30px 38px" }),
+  outline: (c) => ({ border: `5px solid ${c}`, background: "rgba(0,0,0,0.25)", borderRadius: 44, padding: "30px 38px" }),
+};
+
 // One scene's box. Each theme brings its scenes in a different way (slide,
 // zoom, wipe, rise, fade), so two videos never move the same.
-const SceneBox: React.FC<{ s: DeskScene; enter: Enter; children: React.ReactNode }> = ({ s, enter, children }) => {
+const SceneBox: React.FC<{ s: DeskScene; th: Theme; children: React.ReactNode }> = ({ s, th, children }) => {
+  const enter = th.enter;
   const a = useSpring(0, 14);
   const t = Math.min(1, Math.max(0, a));
   const motion: React.CSSProperties =
     enter === "slide" ? { transform: `translateX(${(1 - t) * 160}px)`, opacity: t } :
     enter === "zoom" ? { transform: `scale(${1.3 - 0.3 * t})`, opacity: t } :
     enter === "rise" ? { transform: `translateY(${(1 - t) * 170}px)`, opacity: t } :
+    enter === "drop" ? { transform: `translateY(${-(1 - t) * 170}px)`, opacity: t } :
+    enter === "tilt" ? { transform: `rotate(${(1 - t) * -6}deg) scale(${0.85 + 0.15 * t})`, opacity: t } :
     enter === "wipe" ? { clipPath: `inset(0 ${(1 - t) * 100}% 0 0)` } :
     { opacity: t };
   return (
     <AbsoluteFill style={{ top: SAFE_D.top + (s.kind === "phone" ? 200 : 260), bottom: 1920 - SAFE_D.bottom + (s.kind === "phone" ? 210 : 230), left: SAFE_D.left, right: 1080 - SAFE_D.right,
-      height: "auto", width: "auto", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start", ...motion }}>
-      {children}
+      height: "auto", width: "auto", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: th.align === "center" ? "center" : "flex-start", textAlign: th.align, ...motion }}>
+      <div style={{ ...PANEL[th.panel](th.accent), display: "flex", flexDirection: "column", alignItems: th.align === "center" ? "center" : "flex-start", maxWidth: "100%" }}>{children}</div>
     </AbsoluteFill>
   );
 };
 
-const Captions: React.FC<{ words: Word[]; from: number; frames: number }> = ({ words, from, frames }) => {
+const Captions: React.FC<{ words: Word[]; from: number; frames: number; th: Theme }> = ({ words, from, frames, th }) => {
   const frame = useCurrentFrame();
   const t = frame + from; // absolute frame
   if (!words.length) return null;
@@ -275,10 +285,10 @@ const Captions: React.FC<{ words: Word[]; from: number; frames: number }> = ({ w
   const done = frame > frames;
   return (
     <div style={{ position: "absolute", left: SAFE_D.left, right: 1080 - SAFE_D.right, top: SAFE_D.bottom - 190, textAlign: "center", opacity: done ? 0 : 1 }}>
-      <span style={{ background: "rgba(0,0,0,0.62)", borderRadius: 18, padding: "10px 18px", boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone",
+      <span style={{ background: th.cap === "box" ? "rgba(0,0,0,0.62)" : th.cap === "accent" ? th.accent + "33" : "transparent", textShadow: th.cap === "plain" ? outline : undefined, borderRadius: 18, padding: "10px 18px", boxDecorationBreak: "clone", WebkitBoxDecorationBreak: "clone",
         fontFamily: D.font, fontWeight: 700, fontSize: 60, lineHeight: 1.5 }}>
         {win.map((w, i) => (
-          <span key={i} style={{ color: start + i === cur ? D.gold : D.ink }}>{w.w}{" "}</span>
+          <span key={i} style={{ color: start + i === cur ? (th.cap === "accent" ? th.accent : D.gold) : D.ink }}>{w.w}{" "}</span>
         ))}
       </span>
     </div>
@@ -290,8 +300,10 @@ export const Desk: React.FC<DeskProps> = (p) => {
   const { durationInFrames } = useVideoConfig();
   const base = SERIES[p.series] ?? SERIES.A;
   // Series Y gives each weekday format its own name and colour (9 Nov 2026).
-  const ser = { name: p.badge || base.name, color: p.color || base.color };
   const th = THEMES[(p.theme ?? 0) % THEMES.length];
+  // Yojana, kist and MP videos take the theme's own colour so the feed never repeats one.
+  const own = p.series === "Y" || p.series === "B";
+  const ser = { name: p.badge || base.name, color: own ? th.accent : (p.color || base.color) };
   const prog = frame / durationInFrames;
   const zoom = th.pan === "out" ? 1.08 - 0.06 * prog : 1.0 + 0.06 * prog;
   const shift = th.pan === "left" ? -30 * prog : th.pan === "right" ? 30 * prog : 0;
@@ -313,15 +325,16 @@ export const Desk: React.FC<DeskProps> = (p) => {
       {/* Series band */}
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 210, background: `linear-gradient(180deg, ${ser.color} 0%, ${ser.color}00 100%)` }} />
       <div style={{ position: "absolute", top: 80, left: SAFE_D.left, display: "flex", alignItems: "center", gap: 18 }}>
-        <div style={{ background: "#fff", color: ser.color, borderRadius: 14, padding: "4px 18px", fontFamily: D.font, fontWeight: 700, fontSize: 44 }}>{ser.name}</div>
+        <div style={{ background: th.badge === "outline" ? "rgba(0,0,0,0.45)" : "#fff", color: th.badge === "outline" ? "#fff" : ser.color, border: th.badge === "outline" ? `4px solid ${ser.color}` : "none",
+          borderRadius: th.badge === "pill" ? 999 : th.badge === "square" ? 6 : 14, padding: "4px 22px", fontFamily: D.font, fontWeight: 700, fontSize: 44 }}>{ser.name}</div>
         <div style={{ fontFamily: D.font, fontWeight: 700, fontSize: 38, color: "#fff", textShadow: outline }}>ताज़ा भाव</div>
       </div>
 
       {/* Sach stamp */}
       {p.stamp ? (
-        <div style={{ position: "absolute", top: 200, right: 1080 - SAFE_D.right + 10, transform: "rotate(8deg)", border: `5px solid ${D.green}`, borderRadius: 999,
+        <div style={{ position: "absolute", top: 200, ...(th.stamp === "left" ? { left: SAFE_D.left } : { right: 1080 - SAFE_D.right + 10 }), transform: `rotate(${th.stamp === "left" ? -8 : 8}deg)`, border: `5px solid ${own ? th.accent : D.green}`, borderRadius: 999,
           width: 230, height: 230, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.5)",
-          fontFamily: D.font, fontWeight: 700, color: D.green, textAlign: "center", lineHeight: 1.05 }}>
+          fontFamily: D.font, fontWeight: 700, color: own ? th.accent : D.green, textAlign: "center", lineHeight: 1.05 }}>
           <div style={{ fontSize: 28, maxWidth: 180 }}>{p.stampTop ?? "सरकारी आँकड़ा"}</div>
           <div style={{ fontSize: 52 }}>✓</div>
           <div style={{ fontSize: 30, maxWidth: 190 }}>{p.stamp}</div>
@@ -330,10 +343,10 @@ export const Desk: React.FC<DeskProps> = (p) => {
 
       {p.scenes.map((s, i) => (
         <Sequence key={i} from={s.from} durationInFrames={s.frames}>
-          <SceneBox s={s} enter={th.enter}>
+          <SceneBox s={s} th={th}>
             <SceneBody s={s} />
           </SceneBox>
-          <Captions words={s.words ?? []} from={s.from} frames={s.frames} />
+          <Captions words={s.words ?? []} from={s.from} frames={s.frames} th={th} />
           {s.audio ? <Audio src={staticFile(s.audio)} /> : null}
           {i > 0 ? <Audio src={staticFile("sfx/whoosh.wav")} volume={0.35} /> : null}
         </Sequence>

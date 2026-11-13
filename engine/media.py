@@ -43,6 +43,8 @@ CLIP_QUERIES = {
     "dairy": ["cow dairy farm india", "milking cow"], "village": ["indian village morning", "village farmland india"],
     "farmer": ["indian farmer", "farmer walking field"], "market": ["vegetable market india", "grain market"],
     "rain": ["rain on farm field", "monsoon farm"], "harvest": ["harvest crops india", "farmer harvesting"],
+    "sunrise": ["farm sunrise india", "sunrise over field"], "hands": ["farmer hands soil", "hands holding grain"],
+    "grain": ["grain harvest close up", "wheat grains hand"], "canal": ["canal water field", "village pond india"],
 }
 MIN_SCENE_S = {"phone": 6.0, "meter": 2.2, "compare": 2.2, "stamp": 2.0}
 
