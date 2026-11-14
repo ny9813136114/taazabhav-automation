@@ -568,6 +568,19 @@
     "clip": "grain",
     "voice": "male"
    }
+  },
+  {
+   "series": "Y",
+   "key": "mpkk|2026-11-14",
+   "date": "2026-11-14",
+   "video": null,
+   "title": "किस्त के नाम पर ठगी से बचें: मुख्यमंत्री किसान कल्याण योजना | MP Kisan Kalyan Fraud Alert #Shorts",
+   "scheme": "mpkalyan",
+   "look": {
+    "theme": 7,
+    "clip": "village",
+    "voice": "female"
+   }
   }
  ]
 }
