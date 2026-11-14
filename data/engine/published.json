@@ -555,6 +555,19 @@
     "clip": "harvest",
     "voice": "female"
    }
+  },
+  {
+   "series": "Y",
+   "key": "farmer-id-kaise",
+   "date": "2026-11-14",
+   "video": "APsw2Bq5W2s",
+   "title": "Farmer ID कैसे बनाएं? कागज़ और तरीका | Farmer Registry Online 2026 #Shorts",
+   "scheme": "farmerid",
+   "look": {
+    "theme": 6,
+    "clip": "grain",
+    "voice": "male"
+   }
   }
  ]
 }
