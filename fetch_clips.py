@@ -44,6 +44,13 @@ QUERIES = {
     "maize": ["corn field", "maize harvest", "corn cobs"],
     "groundnut": ["peanuts", "peanut harvest", "groundnut"],
     "generic": ["indian vegetable market", "farmer india field", "vegetable market"],
+    # Problem-solver video clips (gehun peela series), fetched on branch video-clips-gehun
+    "wheat_field": ["wheat field wind", "green wheat crop", "wheat field", "wheat farm india"],
+    "wheat_leaf": ["yellow leaves plant", "wheat leaves close up", "crop leaves close up", "yellowing leaves"],
+    "irrigation": ["irrigation field", "water flowing farm field", "flooded farm field", "farm water channel"],
+    "farmer_hands": ["farmer hands crop", "hand touching wheat", "farmer touching plants", "farmer field india"],
+    "fertilizer": ["fertilizer spreading field", "farmer fertilizer", "fertilizer bag"],
+    "phone_farm": ["farmer using smartphone", "using phone in field", "smartphone farm"],
 }
 
 

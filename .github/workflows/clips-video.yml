@@ -1,0 +1,35 @@
+name: Clips for problem-solver videos
+
+# Runs only on pushes to the video-clips-gehun branch. Fetches stock clips for
+# the "gehun peela" style explainer videos and commits them to this branch.
+# main and the daily pipeline are not touched.
+on:
+  push:
+    branches: [video-clips-gehun]
+
+permissions:
+  contents: write
+
+jobs:
+  clips:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: bash ops/retry.sh "sudo apt-get update && sudo apt-get install -y ffmpeg"
+      - run: pip install requests pillow
+      - name: Fetch clips
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+        run: python fetch_clips.py wheat_field wheat_leaf irrigation farmer_hands fertilizer phone_farm
+      - name: Commit clips
+        run: |
+          git config user.name "TaazaBhav Bot"
+          git config user.email "bot@taazabhav.com"
+          git add -f assets/clips/
+          git diff --staged --quiet || git commit -m "Clips for gehun peela video"
+          git push origin HEAD:video-clips-gehun
