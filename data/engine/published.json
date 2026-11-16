@@ -620,6 +620,19 @@
     "clip": "farmer",
     "voice": "male"
    }
+  },
+  {
+   "series": "Y",
+   "key": "bihar-input",
+   "date": "2026-11-16",
+   "video": "1g56bVl7yWE",
+   "title": "बिहार कृषि इनपुट अनुदान: कितना पैसा मिलेगा? | Bihar Input Anudan 2026 #Shorts",
+   "scheme": "bihardbt",
+   "look": {
+    "theme": 1,
+    "clip": "generic",
+    "voice": "female"
+   }
   }
  ]
 }

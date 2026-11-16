@@ -1,0 +1,12 @@
+{
+ "date": "2026-11-16",
+ "slot": "12:30",
+ "format": "reel",
+ "pillar": "Y",
+ "id": "bihar-input",
+ "hook": "बिहार कृषि इनपुट अनुदान: कितना पैसा मिलेगा? | Bihar Input Anudan 2026",
+ "hook_hash": "e8b65b297896bb07",
+ "tool": "bihar-dbt-agriculture",
+ "facebook": "1748280426260992",
+ "instagram": "18106590383141174"
+}
