@@ -646,6 +646,19 @@
     "clip": "market",
     "voice": "male"
    }
+  },
+  {
+   "series": "Y",
+   "key": "pm-tractor-fake",
+   "date": "2026-11-17",
+   "video": "xlaueA3FpaU",
+   "title": "PM किसान ट्रैक्टर योजना सच या झूठ? | PM Kisan Tractor Yojana Fact Check #Shorts",
+   "scheme": "smam",
+   "look": {
+    "theme": 1,
+    "clip": "village",
+    "voice": "female"
+   }
   }
  ]
 }
