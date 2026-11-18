@@ -685,6 +685,19 @@
     "clip": "rain",
     "voice": "female"
    }
+  },
+  {
+   "series": "B",
+   "key": "pmkisan|status|2026-11-18",
+   "date": "2026-11-18",
+   "video": "Pyi2DPFjpXg",
+   "title": "पीएम किसान 25वीं किस्त कब आएगी? सच – 18 नवंबर | PM Kisan 25th Installment Date #Shorts",
+   "scheme": "pmkisan",
+   "look": {
+    "theme": 3,
+    "clip": "farmer",
+    "voice": "male"
+   }
   }
  ]
 }
