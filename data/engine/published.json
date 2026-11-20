@@ -724,6 +724,19 @@
     "clip": "sunrise",
     "voice": "male"
    }
+  },
+  {
+   "series": "Y",
+   "key": "rabi-buvai",
+   "date": "2026-11-20",
+   "video": "SrTRiYm0z0k",
+   "title": "गेहूं बुवाई का सही समय, देरी से कितना नुकसान | Wheat Sowing Time 2026 #Shorts",
+   "scheme": "rabi",
+   "look": {
+    "theme": 4,
+    "clip": "wheat",
+    "voice": "female"
+   }
   }
  ]
 }
