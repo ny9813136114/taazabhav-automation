@@ -750,6 +750,19 @@
     "clip": "rain",
     "voice": "male"
    }
+  },
+  {
+   "series": "Y",
+   "key": "mpkk|2026-11-21",
+   "date": "2026-11-21",
+   "video": null,
+   "title": "मुख्यमंत्री किसान कल्याण योजना: 16वीं किस्त की तारीख? सच | MP Kisan Kalyan 16th Kist #Shorts",
+   "scheme": "mpkalyan",
+   "look": {
+    "theme": 1,
+    "clip": "hands",
+    "voice": "female"
+   }
   }
  ]
 }
