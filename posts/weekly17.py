@@ -20,7 +20,8 @@ from posts.run import IST, send_preview
 from posts.render import render
 
 ROOT = Path("data/posts/weekly17")
-BRAND = "https://raw.githubusercontent.com/ny9813136114/Taazabhav-website/main/public/brand/taazabhav-logo.svg"
+# Copy of the website logo (public/brand/taazabhav-logo.svg). The website repo is private, so a raw.githubusercontent.com fetch always gave 404.
+BRAND = Path(__file__).resolve().parent.parent / "assets" / "brand" / "taazabhav-logo.svg"
 # Day index, title, website path, key message, question. All paths from the website repo.
 PLAN = [
  (0,"गेहूं का मंडी भाव","/mandi-bhav/wheat","मंडी और भाव की तारीख जरूर जांचें","आपकी मंडी कौन-सी है?"),
@@ -66,11 +67,10 @@ def post_for(index, angle):
 def story(post, dest):
     """Branded 1080x1920 Story PNG; verified original SVG is downloaded."""
     from playwright.sync_api import sync_playwright
-    response = requests.get(BRAND, timeout=20)
-    response.raise_for_status()
-    if "<svg" not in response.text[:1000]:
+    raw = BRAND.read_bytes()
+    if b"<svg" not in raw[:1000]:
         raise ValueError("Original brand logo not available; cannot render story")
-    logo = "data:image/svg+xml;base64," + base64.b64encode(response.content).decode()
+    logo = "data:image/svg+xml;base64," + base64.b64encode(raw).decode()
     title = html.escape(post["title"])
     msg = html.escape(PLAN[int(post["id"].split("-")[1])][3])
     url = html.escape(post["link"])
