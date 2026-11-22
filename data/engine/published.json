@@ -763,6 +763,19 @@
     "clip": "hands",
     "voice": "female"
    }
+  },
+  {
+   "series": "Y",
+   "key": "nmeo-oilseeds",
+   "date": "2026-11-22",
+   "video": "0u8GJL0GYOo",
+   "title": "तिलहन मिशन: ₹10,103 करोड़ की योजना | National Mission on Edible Oils #Shorts",
+   "scheme": "nmeo",
+   "look": {
+    "theme": 6,
+    "clip": "harvest",
+    "voice": "male"
+   }
   }
  ]
 }
