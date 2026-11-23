@@ -58,7 +58,11 @@ def a_history(state, today, days=14):
 
 def build(series, today, state):
     if series == "M":
-        from engine import mpkalyan
+        from engine import demand, mpkalyan
+        if demand.demand_day(today):
+            ep = demand.build_n(today, state)
+            if ep:
+                return ep
         return mpkalyan.build_m(today)
     if series == "Y":
         items = yojana.load_queue()
@@ -113,6 +117,8 @@ def main(series):
             return 0
         print(f"[engine] {series} {run_mode}: {ep['key']} | {ep['title']}")
         series = ep["series"]
+        if ep.get("demand") and run_mode == "publish" and os.environ.get("N_LIVE", "").strip() != "1":
+            run_mode = "preview"  # the demand reel previews on Telegram until N_LIVE=1
         ep.setdefault("theme", look.theme_for(today))
         # Same scheme again = a new theme, clip and voice (never the last ones used for it).
         scheme = ep.get("scheme") or ("pmkisan" if series == "B" else None)
