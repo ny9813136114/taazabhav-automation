@@ -253,7 +253,7 @@ const PANEL: Record<Theme["panel"], (c: string) => React.CSSProperties> = {
 
 // One scene's box. Each theme brings its scenes in a different way (slide,
 // zoom, wipe, rise, fade), so two videos never move the same.
-const SceneBox: React.FC<{ s: DeskScene; th: Theme; children: React.ReactNode }> = ({ s, th, children }) => {
+const SceneBox: React.FC<{ s: DeskScene; th: Theme; story: number; idx: number; children: React.ReactNode }> = ({ s, th, story, idx, children }) => {
   const enter = th.enter;
   const a = useSpring(0, 14);
   const t = Math.min(1, Math.max(0, a));
@@ -265,12 +265,81 @@ const SceneBox: React.FC<{ s: DeskScene; th: Theme; children: React.ReactNode }>
     enter === "tilt" ? { transform: `rotate(${(1 - t) * -6}deg) scale(${0.85 + 0.15 * t})`, opacity: t } :
     enter === "wipe" ? { clipPath: `inset(0 ${(1 - t) * 100}% 0 0)` } :
     { opacity: t };
+  // Story 1 (chat): each scene is a message bubble, left then right.
+  const chat = story === 1;
+  const right = chat && idx % 2 === 1;
+  const bubble: React.CSSProperties = chat
+    ? { background: "rgba(10,10,10,0.72)", border: `4px solid ${th.accent}`, padding: "30px 40px",
+        borderRadius: right ? "56px 56px 10px 56px" : "56px 56px 56px 10px", alignSelf: right ? "flex-end" : "flex-start" }
+    : {};
   return (
     <AbsoluteFill style={{ top: SAFE_D.top + (s.kind === "phone" ? 200 : 260), bottom: 1920 - SAFE_D.bottom + (s.kind === "phone" ? 210 : 230), left: SAFE_D.left, right: 1080 - SAFE_D.right,
-      height: "auto", width: "auto", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: th.align === "center" ? "center" : "flex-start", textAlign: th.align, ...motion }}>
-      <div style={{ ...PANEL[th.panel](th.accent), display: "flex", flexDirection: "column", alignItems: th.align === "center" ? "center" : "flex-start", maxWidth: "100%" }}>{children}</div>
+      height: "auto", width: "auto", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: chat ? (right ? "flex-end" : "flex-start") : th.align === "center" ? "center" : "flex-start", textAlign: th.align, ...motion }}>
+      {story === 5 ? <Ghost n={idx + 1} color={th.accent} /> : null}
+      <div style={{ ...(chat ? bubble : PANEL[th.panel](th.accent)), display: "flex", flexDirection: "column", alignItems: th.align === "center" ? "center" : "flex-start", maxWidth: "100%" }}>{children}</div>
     </AbsoluteFill>
   );
+};
+
+// Story 5 (editorial): a huge faded scene number behind the text.
+const Ghost: React.FC<{ n: number; color: string }> = ({ n, color }) => (
+  <div style={{ position: "absolute", right: -10, top: -40, fontFamily: D.font, fontWeight: 700, fontSize: 620, lineHeight: 1, color, opacity: 0.16, zIndex: -1 }}>{n}</div>
+);
+
+// The whole-screen story layer (23 Nov 2026): six ways to frame the same
+// scenes, so no two Reels feel like the same template.
+//  0 chapters: numbered chapter dots + "भाग n/N"   1 chat: bubbles (SceneBox)
+//  2 newsflash: LIVE tag + scrolling ticker         3 road: a tractor drives the journey
+//  4 film: letterbox bars + "सीन n" title card      5 editorial: ghost numerals + underline
+const StoryLayer: React.FC<{ story: number; th: Theme; idx: number; scenes: DeskScene[]; prog: number }> = ({ story, th, idx, scenes, prog }) => {
+  const frame = useCurrentFrame();
+  const n = scenes.length;
+  const ac = th.accent;
+  if (story === 0) {
+    return (
+      <div style={{ position: "absolute", top: 160, left: SAFE_D.left, right: 1080 - SAFE_D.right, display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ fontFamily: D.font, fontWeight: 700, fontSize: 38, color: "#fff", textShadow: outline, marginRight: 10 }}>भाग {idx + 1}/{n}</div>
+        {scenes.map((_, i) => <div key={i} style={{ flex: 1, height: 12, borderRadius: 99, background: i < idx ? ac : i === idx ? "#fff" : "rgba(255,255,255,0.28)" }} />)}
+      </div>
+    );
+  }
+  if (story === 2) {
+    const labels = scenes.map((x) => x.label).filter(Boolean).join("   •   ");
+    const run = `${labels}   •   ${labels}`;
+    return (
+      <>
+        <div style={{ position: "absolute", top: 160, left: SAFE_D.left, background: "#e01b1b", color: "#fff", fontFamily: D.font, fontWeight: 700, fontSize: 40, padding: "2px 22px", borderRadius: 8, opacity: Math.floor(frame / 15) % 2 ? 0.75 : 1 }}>● ताज़ा खबर</div>
+        <div style={{ position: "absolute", top: SAFE_D.bottom + 14, left: 0, right: 0, height: 62, background: ac, overflow: "hidden", display: "flex", alignItems: "center" }}>
+          <div style={{ whiteSpace: "nowrap", fontFamily: D.font, fontWeight: 700, fontSize: 40, color: "#111", transform: `translateX(${-(frame * 6) % 1400}px)` }}>{run}</div>
+        </div>
+      </>
+    );
+  }
+  if (story === 3) {
+    const x = SAFE_D.left + prog * (SAFE_D.right - SAFE_D.left - 70);
+    return (
+      <div style={{ position: "absolute", top: 172, left: 0, right: 0 }}>
+        <div style={{ position: "absolute", left: SAFE_D.left, right: 1080 - SAFE_D.right, top: 46, height: 8, borderRadius: 4, background: "rgba(255,255,255,0.35)" }} />
+        {scenes.map((_, i) => <div key={i} style={{ position: "absolute", top: 36, left: SAFE_D.left + (i / Math.max(1, n - 1)) * (SAFE_D.right - SAFE_D.left - 8), width: 28, height: 28, borderRadius: 99, background: i <= idx ? ac : "#fff", border: "4px solid #000" }} />)}
+        <div style={{ position: "absolute", top: -4, left: x, fontSize: 64 }}>🚜</div>
+      </div>
+    );
+  }
+  if (story === 4) {
+    const a = interpolate(frame, [0, 8], [0, 1], { extrapolateRight: "clamp" });
+    return (
+      <>
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 56, background: "#000" }} />
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 120, background: "#000" }} />
+        <div style={{ position: "absolute", top: 150, right: 1080 - SAFE_D.right, fontFamily: D.font, fontWeight: 700, fontSize: 42, letterSpacing: 6, color: ac, opacity: a }}>सीन {idx + 1}</div>
+      </>
+    );
+  }
+  if (story === 5) {
+    const w = interpolate(frame, [0, 18], [0, 1], { extrapolateRight: "clamp", easing: Easing.out(Easing.cubic) });
+    return <div style={{ position: "absolute", top: 1216, left: SAFE_D.left, width: (SAFE_D.right - SAFE_D.left) * w, height: 8, background: ac, borderRadius: 4 }} />;
+  }
+  return null;
 };
 
 const Captions: React.FC<{ words: Word[]; from: number; frames: number; th: Theme }> = ({ words, from, frames, th }) => {
@@ -307,6 +376,9 @@ export const Desk: React.FC<DeskProps> = (p) => {
   const prog = frame / durationInFrames;
   const zoom = th.pan === "out" ? 1.08 - 0.06 * prog : 1.0 + 0.06 * prog;
   const shift = th.pan === "left" ? -30 * prog : th.pan === "right" ? 30 * prog : 0;
+  const story = p.story ?? 0;
+  let idx = 0;
+  p.scenes.forEach((x, i) => { if (frame >= x.from) idx = i; });
   const bgMove = `translateX(${shift}px) scale(${zoom})`;
   return (
     <AbsoluteFill style={{ background: D.bg, overflow: "hidden" }}>
@@ -343,7 +415,7 @@ export const Desk: React.FC<DeskProps> = (p) => {
 
       {p.scenes.map((s, i) => (
         <Sequence key={i} from={s.from} durationInFrames={s.frames}>
-          <SceneBox s={s} th={th}>
+          <SceneBox s={s} th={th} story={story} idx={i}>
             <SceneBody s={s} />
           </SceneBox>
           <Captions words={s.words ?? []} from={s.from} frames={s.frames} th={th} />
@@ -352,6 +424,10 @@ export const Desk: React.FC<DeskProps> = (p) => {
         </Sequence>
       ))}
       <Sequence from={0} durationInFrames={20}><Audio src={staticFile("sfx/ding.wav")} volume={0.6} /></Sequence>
+
+      <Sequence from={p.scenes[idx]?.from ?? 0} durationInFrames={p.scenes[idx]?.frames ?? 30}>
+        <StoryLayer story={story} th={th} idx={idx} scenes={p.scenes} prog={prog} />
+      </Sequence>
 
       {p.credit ? (
         <div style={{ position: "absolute", bottom: 1920 - SAFE_D.bottom - 60, left: SAFE_D.left, fontFamily: D.font, fontSize: 24, color: "rgba(255,255,255,0.6)" }}>{p.credit}</div>

@@ -124,8 +124,8 @@ def main(series):
         scheme = ep.get("scheme") or ("pmkisan" if series == "B" else None)
         lk = look.pick_look(scheme, today, state.get("episodes", []), scheme) if scheme else None
         if lk:
-            ep["theme"], ep["clip"] = lk["theme"], lk["clip"]
-            print(f"[engine] look for {scheme}: theme {lk['theme']}, clip {lk['clip']}, {lk['voice']} voice")
+            ep["theme"], ep["clip"], ep["story"] = lk["theme"], lk["clip"], lk["story"]
+            print(f"[engine] look for {scheme}: story {lk['story']}, theme {lk['theme']}, clip {lk['clip']}, {lk['voice']} voice")
         qa.check_episode(ep)
         rec = None
         rec_secs = None
