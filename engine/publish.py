@@ -116,8 +116,8 @@ def add_to_playlists(series, vid, alert, youtube=None):
 def on_youtube(series):
     """3 Nov 2026 (owner OK): only these series go to YouTube; the rest
     (C news, D tool demos: same few topics again and again) post only as
-    FB/IG Reels. Repo variable YT_SERIES, default "A,B,Y" (Y yojana added 3 Nov)."""
-    raw = (os.environ.get("YT_SERIES") or "").strip() or "A,B,Y,V"
+    FB/IG Reels. Repo variable YT_SERIES, default "Y,V" (24 Nov 2026: only non-repeating videos; B kist repeats one scheme, YT_SERIES=Y,V,B restores it)."""
+    raw = (os.environ.get("YT_SERIES") or "").strip() or "Y,V"
     return raw.lower() == "all" or series.upper() in {x.strip().upper() for x in raw.split(",")}
 
 
