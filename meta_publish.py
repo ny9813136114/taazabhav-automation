@@ -284,7 +284,8 @@ def publish_all(video_path, caption, s=requests, sleep=time.sleep, comment=None,
     comment: the Page's first comment on the Facebook Reel (its link). With
     COMMENTS_LIVE=1 the link leaves the Facebook caption and goes there."""
     out = {"facebook": None, "instagram": None, "errors": []}
-    caption = strip_utm(caption)
+    from brand import add_brand_line
+    caption = add_brand_line(strip_utm(caption))
     comment = strip_utm(comment) if comment else default_comment(caption)
     live = comment and comments_live()
     page_token, ig = page_credentials(s)
