@@ -307,7 +307,7 @@ def build_bhav(feed, today, history):
     if wk:
         diff = c["modal"] - wk[1]
         arrow = "▲" if diff > 0 else "▼" if diff < 0 else "•"
-        scenes.append({"kind": "move", "big": f"{arrow} {inr(abs(diff))}", "label": "पिछले हफ़्ते से",
+        scenes.append({"kind": "move", "big": "भाव वही" if diff == 0 else f"{arrow} {inr(abs(diff))}", "label": "पिछले हफ़्ते से",
                        "sub": f"{day_hi(wk[0])} को {inr(wk[1])}", "tone": tone,
                        "say": ("हफ़्ते भर में भाव वही" if diff == 0 else
                                f"हफ़्ते भर में {abs(diff)} रुपये {'बढ़ा' if diff > 0 else 'गिरा'}")})

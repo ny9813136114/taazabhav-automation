@@ -204,7 +204,9 @@ def build_props(ep, voice, clip=None, rec_secs=None):
 
 def render(props, out_path, clip=None, rec=None):
     (PUBLIC / "fonts").mkdir(parents=True, exist_ok=True)
-    for f in ("Baloo2-Bold.ttf", "IBMPlexMono-SemiBold.ttf"):
+    # Baloo2 + Plex for the older compositions; the five Devanagari faces the Desk skins use (PR #66).
+    for f in ("Baloo2-Bold.ttf", "IBMPlexMono-SemiBold.ttf", "Kalam-Bold.ttf", "Khand-Bold.ttf", "RozhaOne-Regular.ttf",
+              "TiroDevanagariHindi-Regular.ttf", "YatraOne-Regular.ttf"):
         shutil.copyfile(Path("assets/fonts") / f, PUBLIC / "fonts" / f)
     if clip:
         shutil.copyfile(clip["path"], PUBLIC / "clip.mp4")

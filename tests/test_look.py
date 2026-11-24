@@ -102,3 +102,27 @@ class StoryStyleTest(unittest.TestCase):
             self.assertTrue(0 <= lk["story"] < look.STORY_COUNT)
             self.assertNotIn(lk["story"], [e["look"]["story"] for e in eps[-look.RECENT_STORIES:]])
             eps.append({"scheme": "yojana-x", "look": lk})
+
+
+class RenderFontsTest(unittest.TestCase):
+    def test_every_skin_font_is_shipped_with_the_repo(self):
+        import re
+        from pathlib import Path
+        src = Path("shorts/src/desk/skins.tsx").read_text(encoding="utf-8")
+        files = re.findall(r'\["\w+", "([\w.-]+\.ttf)"\]', src)
+        self.assertGreaterEqual(len(files), 5)
+        media_src = Path("engine/media.py").read_text(encoding="utf-8")
+        for f in files:
+            self.assertTrue((Path("assets/fonts") / f).exists(), f)
+            self.assertIn(f, media_src, f"{f} is not copied by media.render")
+
+
+class BhavSameWeekTest(unittest.TestCase):
+    def test_unchanged_week_does_not_print_rupee_zero(self):
+        from engine import qa, stories
+        feed = {"latestDate": "2026-11-23", "reports": [], "mandis": [{"state": "MP", "market": "Betul APMC", "marketHi": "बैतूल", "path": "/x",
+                "crops": [{"commodity": "Soyabean", "variety": "x", "date": "2026-11-23", "modal": 4500, "min": 4400, "max": 4600,
+                           "history": [{"date": "2026-11-17", "modal": 4500}]}]}]}
+        ep = stories.build_bhav(feed, date(2026, 11, 24), [])
+        qa.check_episode(ep)
+        self.assertTrue(any(s.get("big") == "भाव वही" for s in ep["scenes"]))
