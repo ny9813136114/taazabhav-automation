@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""One video for one series: python -m engine.run A|B|C|D|Y|M
+"""One video for one series: python -m engine.run A|B|C|D|Y|M|V
 
 Mode: ENGINE_MODE=preview|publish (manual runs). Scheduled runs publish only
 when the repo variable ENGINE_LIVE is "1"; until then the video goes to the
@@ -16,7 +16,7 @@ from engine import feed as F
 from engine import look, media, qa, stories, tools, yojana
 
 IST = timezone(timedelta(hours=5, minutes=30))
-RECENT_DAYS = {"A": 7, "B": 60, "C": 1, "D": 21, "Y": 15}
+RECENT_DAYS = {"A": 7, "B": 60, "C": 1, "D": 21, "Y": 15, "V": 5}
 # 3 Nov 2026: E = the evening bhav Short (18:30 IST, the old C slot). It is
 # an A video (same builder, playlist and log), only its slot differs.
 SLOT_OF = {"E": "A"}
@@ -34,6 +34,9 @@ def mode(series=None):
         return "preview"
     # Series Y posts at 12:30 (owner "haan", 9 Nov 2026); YOJANA_LIVE=0 makes it a preview again.
     if series == "Y" and os.environ.get("YOJANA_LIVE", "").strip() == "0":
+        return "preview"
+    # Series V (mandi samachar, 1-2 min): previews on Telegram until V_LIVE=1 (24 Nov 2026).
+    if series == "V" and os.environ.get("V_LIVE", "").strip() != "1":
         return "preview"
     # MP Kisan Kalyan Reel (M): live at once (owner, 12 Nov 2026: "dono upload kar do"); MPKK_LIVE=0 = preview.
     if series == "M" and os.environ.get("MPKK_LIVE", "").strip() == "0":
@@ -64,6 +67,10 @@ def build(series, today, state):
             if ep:
                 return ep
         return mpkalyan.build_m(today)
+    if series == "V":
+        from engine import samachar
+        feed = F.load_feed(today)
+        return samachar.build_v(feed, today, F.recent_keys(state, "V", today, samachar.MANDI_GAP_DAYS))
     if series == "Y":
         items = yojana.load_queue()
         left = yojana.fresh_count(items, today, state)
