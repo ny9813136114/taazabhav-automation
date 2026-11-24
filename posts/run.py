@@ -132,6 +132,8 @@ def alert(msg):
 def post_facebook(slides, caption, page_token, s=requests):
     import meta_publish as mp
     page = os.environ["FB_PAGE_ID"]
+    from brand import add_brand_line
+    caption = add_brand_line(caption)
     ids = []
     for p in slides:
         with open(p, "rb") as fh:
@@ -149,6 +151,8 @@ def post_instagram(photo_ids, caption, ig, token, s=requests, sleep=time.sleep):
     """IG takes images only by public URL: use the Facebook CDN URL of the
     photos just uploaded to the Page."""
     import meta_publish as mp
+    from brand import add_brand_line
+    caption = add_brand_line(caption)
     children = []
     for pid in photo_ids:
         img = mp._check(s.get(f"{mp.GRAPH}/{pid}", params={"fields": "images", "access_token": token}, timeout=mp.TIMEOUT), "FB photo url")

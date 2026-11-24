@@ -37,6 +37,8 @@ def upload_video(video_path, title, description, tags, thumbnail_path=None, comm
         creds = pickle.load(f)
 
     youtube = build("youtube", "v3", credentials=creds)
+    from brand import add_brand_line
+    description = add_brand_line(description, limit=5000)
 
     body = {
         "snippet": {
