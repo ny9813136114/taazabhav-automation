@@ -17,6 +17,7 @@ PLAYLIST_NAMES = {
     "B": ("किस्त का सच – PM Kisan, MP, Rajasthan | Kist Date", "किस्त की सिर्फ़ सरकारी तारीख। वायरल दावों का सच। ताज़ा भाव किस्त ट्रैकर।"),
     "C": ("किसान खबर – रोज़ की 3 खबर | Kisan News", "रोज़ शाम 6:30 बजे: आज की 3 काम की खबर, 40 सेकंड में।"),
     "D": ("टूल से हल – किसान के मुफ़्त टूल | Free Kisan Tools", "खाद, मंडी पर्ची, MSP बनाम मंडी, फ़सल नुकसान: ताज़ा भाव के मुफ़्त टूल, असली स्क्रीन पर।"),
+    "V": ("मंडी समाचार – आज का मंडी भाव | Mandi Samachar", "रोज़ सुबह 7:30 बजे: एक मंडी के मुख्य फ़सलों के आज के भाव, हफ़्ते का बदलाव और MSP से तुलना। सरकारी आँकड़े।"),
     "Y": ("योजना की बात – किसान की सरकारी योजनाएं | Sarkari Yojana", "रोज़ दोपहर 12:30 बजे: एक सरकारी योजना 20 सेकंड में। सिर्फ़ सरकारी स्रोत की जानकारी, साथ में ताज़ा भाव का मुफ़्त टूल।"),
 }
 CHANNEL = "@taazabhav"
@@ -116,7 +117,7 @@ def on_youtube(series):
     """3 Nov 2026 (owner OK): only these series go to YouTube; the rest
     (C news, D tool demos: same few topics again and again) post only as
     FB/IG Reels. Repo variable YT_SERIES, default "A,B,Y" (Y yojana added 3 Nov)."""
-    raw = (os.environ.get("YT_SERIES") or "").strip() or "A,B,Y"
+    raw = (os.environ.get("YT_SERIES") or "").strip() or "A,B,Y,V"
     return raw.lower() == "all" or series.upper() in {x.strip().upper() for x in raw.split(",")}
 
 
@@ -166,7 +167,7 @@ def meta_reels(path, ep, alert):
     return res
 
 
-SLOTS = {"A": "07:30", "D": "12:30", "Y": "12:30", "C": "18:30", "B": "20:30"}
+SLOTS = {"A": "07:30", "V": "07:30", "D": "12:30", "Y": "12:30", "C": "18:30", "B": "20:30"}
 
 
 def ledger_record(ep, res, today=None):
