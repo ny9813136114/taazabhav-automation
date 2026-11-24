@@ -210,11 +210,13 @@ class DNoRepeatTest(unittest.TestCase):
 
 
 class YtSeriesTest(unittest.TestCase):
-    def test_default_youtube_only_a_b(self):
+    def test_default_youtube_only_y_v(self):
         from engine.publish import on_youtube
         os.environ.pop("YT_SERIES", None)
-        self.assertTrue(on_youtube("A"))
-        self.assertTrue(on_youtube("B"))
+        self.assertTrue(on_youtube("Y"))
+        self.assertTrue(on_youtube("V"))
+        self.assertFalse(on_youtube("A"))
+        self.assertFalse(on_youtube("B"))
         self.assertFalse(on_youtube("C"))
         self.assertFalse(on_youtube("D"))
         os.environ["YT_SERIES"] = "all"
