@@ -35,8 +35,9 @@ def mode(series=None):
     # Series Y posts at 12:30 (owner "haan", 9 Nov 2026); YOJANA_LIVE=0 makes it a preview again.
     if series == "Y" and os.environ.get("YOJANA_LIVE", "").strip() == "0":
         return "preview"
-    # Series V (mandi samachar, 1-2 min): previews on Telegram until V_LIVE=1 (24 Nov 2026).
-    if series == "V" and os.environ.get("V_LIVE", "").strip() != "1":
+    # Series V (mandi samachar, 1-2 min): live from 25 Nov 2026 (owner: "kal se hi start karo");
+    # the repo variable V_LIVE=0 makes it a Telegram preview again.
+    if series == "V" and os.environ.get("V_LIVE", "").strip() == "0":
         return "preview"
     # MP Kisan Kalyan Reel (M): live at once (owner, 12 Nov 2026: "dono upload kar do"); MPKK_LIVE=0 = preview.
     if series == "M" and os.environ.get("MPKK_LIVE", "").strip() == "0":

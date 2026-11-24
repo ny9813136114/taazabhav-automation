@@ -61,6 +61,10 @@ revoke execute on function public.dispatch_automation(text, jsonb) from public, 
 select cron.schedule('taazabhav-auto-engine-d', '0 7 * * *',
   $$select public.dispatch_automation('engine.yml', '{"series":"D","mode":"auto"}')$$);
 -- C (18:30 bhav news) stopped 3 Nov 2026: select cron.unschedule('taazabhav-auto-engine-c');
+-- V (07:30 IST mandi samachar, 1-2 min) from 25 Nov 2026. Run this once in the Supabase SQL editor:
+--   select cron.schedule('taazabhav-auto-engine-v', '0 2 * * *',
+--     $$select public.dispatch_automation('engine.yml', '{"series":"V","mode":"auto"}')$$);
+-- Without it GitHub's own 0 2 cron starts V hours late (slot_gate still posts it, up to 6 h after 07:30 IST).
 select cron.schedule('taazabhav-auto-engine-b', '0 15 * * *',
   $$select public.dispatch_automation('engine.yml', '{"series":"B","mode":"auto"}')$$);
 select cron.schedule('taazabhav-auto-telegram', '30 7,10 * * *',
