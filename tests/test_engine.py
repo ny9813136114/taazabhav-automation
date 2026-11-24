@@ -406,7 +406,7 @@ class MetaReelsTest(unittest.TestCase):
         alerts = []
         with mock.patch.object(meta_publish, "enabled", return_value=True), \
                 mock.patch.object(meta_publish, "publish_all", side_effect=RuntimeError("boom")):
-            meta_reels("x.mp4", self.EP, alerts.append)
+            meta_reels("x.mp4", dict(self.EP, series="Y"), alerts.append)
         self.assertEqual(len(alerts), 1)
         self.assertIn("boom", alerts[0])
 

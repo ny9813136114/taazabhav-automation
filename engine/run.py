@@ -39,8 +39,9 @@ def mode(series=None):
     # the repo variable V_LIVE=0 makes it a Telegram preview again.
     if series == "V" and os.environ.get("V_LIVE", "").strip() == "0":
         return "preview"
-    # MP Kisan Kalyan Reel (M): live at once (owner, 12 Nov 2026: "dono upload kar do"); MPKK_LIVE=0 = preview.
-    if series == "M" and os.environ.get("MPKK_LIVE", "").strip() == "0":
+    # MP Kisan Kalyan Reel (M) repeats one scheme every few days: off (preview only) since 24 Nov 2026
+    # (Facebook original-content rule); MPKK_LIVE=1 makes it live again.
+    if series == "M" and os.environ.get("MPKK_LIVE", "").strip() != "1":
         return "preview"
     return "publish" if os.environ.get("ENGINE_LIVE", "").strip() == "1" else "preview"
 
