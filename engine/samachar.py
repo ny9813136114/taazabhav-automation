@@ -53,7 +53,7 @@ def build_v(feed, today, recent_markets):
             diff = c["modal"] - wk[1]
             movers.append((abs(pct or 0), i))
             arrow = "▲" if diff > 0 else "▼" if diff < 0 else "•"
-            scenes.append({"kind": "move", "big": f"{arrow} {inr(abs(diff))}", "label": f"{crop}, पिछले हफ़्ते से",
+            scenes.append({"kind": "move", "big": "भाव वही" if diff == 0 else f"{arrow} {inr(abs(diff))}", "label": f"{crop}, पिछले हफ़्ते से",
                            "sub": f"{day_hi(wk[0])} को {inr(wk[1])}", "tone": tone,
                            "say": f"{crop} का भाव हफ़्ते भर में " + ("वही रहा।" if diff == 0 else f"{abs(diff)} रुपये {'बढ़ा' if diff > 0 else 'गिरा'}।")})
         msp = nat.get("msp")
