@@ -90,3 +90,15 @@ class SameSchemeNewLook(unittest.TestCase):
     def test_old_log_entries_without_a_look_are_ignored(self):
         lk = look.pick_look("kcc", date(2026, 11, 11), [{"series": "Y", "key": "kcc"}], "kcc")
         self.assertIn(lk["theme"], range(look.THEME_COUNT))
+
+
+class StoryStyleTest(unittest.TestCase):
+    def test_story_style_never_repeats_within_three_videos(self):
+        from datetime import date
+        from engine import look
+        eps, today = [], date(2026, 11, 23)
+        for i in range(20):
+            lk = look.pick_look("yojana-x", date.fromordinal(today.toordinal() + i), eps, "x")
+            self.assertTrue(0 <= lk["story"] < look.STORY_COUNT)
+            self.assertNotIn(lk["story"], [e["look"]["story"] for e in eps[-look.RECENT_STORIES:]])
+            eps.append({"scheme": "yojana-x", "look": lk})

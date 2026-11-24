@@ -33,6 +33,7 @@ export type DeskProps = {
   badge?: string | null;
   color?: string | null;
   theme?: number | null;
+  story?: number | null;
   scenes: DeskScene[];
   frames: number;
 };

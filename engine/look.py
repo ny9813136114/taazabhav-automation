@@ -10,6 +10,11 @@ sometimes male and sometimes female, the same-same feeling must go").
   * voice: engine.media.voice_for (a man one day, a woman the next).
 """
 THEME_COUNT = 8
+# 23 Nov 2026 (owner: every Reel's UI/UX must differ, like story telling): the
+# whole screen layout is one of STORY_COUNT story styles (shorts/src/desk/Desk.tsx
+# STORIES): chapters, chat, newsflash, road, film, editorial.
+STORY_COUNT = 6
+RECENT_STORIES = 3
 
 # id/scheme word -> clip folder (see engine.media.CLIP_QUERIES)
 CLIP_HINTS = (
@@ -80,4 +85,7 @@ def pick_look(scheme, today, episodes, scheme_hint=""):
         voice = "female" if seen[-1]["look"]["voice"] == "male" else "male"
     else:
         voice = "male" if today.toordinal() % 2 == 0 else "female"
-    return {"theme": pick_theme(scheme, today, [(e["scheme"], e["look"]["theme"]) for e in seen]), "clip": clip, "voice": voice}
+    used_story = [e["look"]["story"] for e in seen if e["look"].get("story") is not None]
+    order = [(today.toordinal() + k) % STORY_COUNT for k in range(STORY_COUNT)]
+    story = _least_recent([x for x in order if x not in used_story[-RECENT_STORIES:]] or order, used_story)
+    return {"story": story, "theme": pick_theme(scheme, today, [(e["scheme"], e["look"]["theme"]) for e in seen]), "clip": clip, "voice": voice}
