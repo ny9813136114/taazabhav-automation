@@ -27,7 +27,7 @@ GRAPH = f"https://graph.facebook.com/{GRAPH_VERSION}"
 TIMEOUT = 60
 IG_POLL_SECONDS = 10
 IG_POLL_MAX = 60  # 10 minutes: longer Reels (series C, ~45 s) can take over 5
-IG_TRIES = 2  # a failed IG Reel is tried once more from a new container
+IG_TRIES = 3  # a failed IG Reel is tried again from a new container; try 2 uses an IG-safe re-encode
 IG_PUBLISH_TRIES = 3
 
 
@@ -224,6 +224,23 @@ def post_facebook_reel(video_path, caption, page_token, s=requests):
     return vid
 
 
+def ig_safe_copy(path):
+    """Re-encodes to what Instagram always accepts (H.264 High, yuv420p, 30 fps, AAC 44.1 kHz stereo,
+    faststart). The 75 s mandi samachar Reel of 25 Nov 2026 was refused at upload with
+    ProcessingFailedError; Facebook took the same file. Returns the new path, or the original on any failure."""
+    import subprocess
+    out = os.path.splitext(path)[0] + "_ig.mp4"
+    try:
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", path, "-c:v", "libx264", "-profile:v", "high",
+                        "-pix_fmt", "yuv420p", "-r", "30", "-b:v", "6M", "-maxrate", "8M", "-bufsize", "12M",
+                        "-c:a", "aac", "-ar", "44100", "-ac", "2", "-b:a", "128k", "-movflags", "+faststart", out],
+                       check=True, timeout=600)
+        return out if os.path.getsize(out) > 0 else path
+    except Exception as e:
+        print(f"[meta] IG-safe re-encode failed, using the original file: {e}")
+        return path
+
+
 def post_instagram_reel(video_path, caption, ig_user_id, token, s=requests, sleep=time.sleep):
     b = _check(s.post(f"{GRAPH}/{ig_user_id}/media",
                       params={"media_type": "REELS", "upload_type": "resumable", "caption": caption,
@@ -299,7 +316,8 @@ def publish_all(video_path, caption, s=requests, sleep=time.sleep, comment=None,
     if ig:
         for i in range(IG_TRIES):
             try:
-                out["instagram"] = post_instagram_reel(video_path, caption, ig, page_token, s, sleep)
+                src = ig_safe_copy(video_path) if i > 0 else video_path
+                out["instagram"] = post_instagram_reel(src, caption, ig, page_token, s, sleep)
                 break
             except Exception as e:
                 print(f"[meta] Instagram try {i + 1} failed: {e}")

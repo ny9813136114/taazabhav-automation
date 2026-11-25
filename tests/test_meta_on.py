@@ -51,3 +51,28 @@ class MetaOnTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class IgSafeCopyTest(unittest.TestCase):
+    def test_falls_back_to_original_when_ffmpeg_fails(self):
+        with mock.patch("subprocess.run", side_effect=OSError("no ffmpeg")):
+            self.assertEqual(mp.ig_safe_copy("/tmp/x.mp4"), "/tmp/x.mp4")
+
+    def test_second_try_uses_reencoded_file(self):
+        seen = []
+        def fake_ig(src, *a, **k):
+            seen.append(src)
+            if len(seen) == 1:
+                raise mp.MetaError("boom")
+            return "ig1"
+        with mock.patch.dict(os.environ, {"META_TOKEN": "t", "FB_PAGE_ID": "p"}), \
+                mock.patch.object(mp, "page_credentials", return_value=("tok", "ig")), \
+                mock.patch.object(mp, "post_facebook_reel", return_value="fb1"), \
+                mock.patch.object(mp, "post_instagram_reel", side_effect=fake_ig), \
+                mock.patch.object(mp, "ig_safe_copy", return_value="/tmp/x_ig.mp4"), \
+                mock.patch.object(mp, "link_comment", return_value=(None, None)), \
+                mock.patch.object(mp, "comments_live", return_value=False), \
+                mock.patch.object(mp, "meta_stories", create=True, return_value={}):
+            out = mp.publish_all("/tmp/x.mp4", "cap")
+        self.assertEqual(seen, ["/tmp/x.mp4", "/tmp/x_ig.mp4"])
+        self.assertEqual(out["instagram"], "ig1")
