@@ -855,6 +855,20 @@
     "clip": "generic",
     "voice": "male"
    }
+  },
+  {
+   "series": "V",
+   "key": "Jaora APMC",
+   "date": "2026-11-25",
+   "video": "U_pL_qZnhiA",
+   "title": "जावरा मंडी भाव आज | सोयाबीन, प्याज़, मक्का, मूंगफली का पूरा हाल | 23 नवंबर",
+   "scheme": "samachar",
+   "look": {
+    "story": 1,
+    "theme": 1,
+    "clip": "grain",
+    "voice": "female"
+   }
   }
  ]
 }
