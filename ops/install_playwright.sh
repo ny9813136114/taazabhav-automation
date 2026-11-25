@@ -30,7 +30,13 @@ if [ "${PLAYWRIGHT_SOURCE:-apt}" != "nodeps" ]; then
   sudo dpkg --configure -a || true
 fi
 
-if ! RETRY_TRIES=3 RETRY_MINUTES=4 bash "$here/retry.sh" "python -m playwright install chromium"; then
+log="$(mktemp)"
+RETRY_TRIES=3 RETRY_MINUTES=4 bash "$here/retry.sh" "python -m playwright install chromium" 2>&1 | tee "$log"
+code=${PIPESTATUS[0]}
+if [ "$code" -ne 0 ]; then
+  # Show the reason in the job annotations (raw logs are not always readable).
+  grep -iE "error|failed|denied|403|404|timeout" "$log" | grep -v -e "^retry.sh" -e "^::" | tail -4 \
+    | while IFS= read -r line; do echo "::warning::playwright: ${line:0:300}"; done
   echo "::error::Chromium install failed (with and without apt deps)"
   exit 1
 fi
