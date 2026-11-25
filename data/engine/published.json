@@ -869,6 +869,20 @@
     "clip": "grain",
     "voice": "female"
    }
+  },
+  {
+   "series": "Y",
+   "key": "pm-kusum",
+   "date": "2026-11-25",
+   "video": "z31jEPG4948",
+   "title": "PM Kusum Yojana 2026: सोलर पंप पर कितना पैसा? | PM Kusum Apply Online #Shorts",
+   "scheme": "kusum",
+   "look": {
+    "story": 2,
+    "theme": 2,
+    "clip": "solar",
+    "voice": "male"
+   }
   }
  ]
 }
