@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # ubuntu-latest is moving to Ubuntu 26 (Playwright 1.56 fails there; keep all jobs on one image)
     # Without this, one run that hangs (a stalled network call, an upload
     # that never returns, anything) sits "in progress" indefinitely. Because
     # cancel-in-progress is false above, every SUBSEQUENT scheduled run for
