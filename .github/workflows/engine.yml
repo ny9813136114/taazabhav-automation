@@ -103,7 +103,7 @@ jobs:
         if: steps.g.outputs.run == 'true'
       - name: Browser for screen recording
         if: steps.g.outputs.run == 'true' && steps.s.outputs.series == 'D'
-        run: bash ops/install_playwright.sh
+        run: bash ops/retry.sh "python -m playwright install --with-deps chromium"
       - uses: actions/setup-node@v4
         if: steps.g.outputs.run == 'true'
         with:

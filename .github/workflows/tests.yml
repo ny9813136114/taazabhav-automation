@@ -13,7 +13,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04  # ubuntu-latest is moving to Ubuntu 26 (Playwright 1.56 fails there; keep all jobs on one image)
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -35,10 +35,6 @@ jobs:
           ffprobe -v error -show_entries format=duration -of csv=p=0 /tmp/t.mp4
       - name: Install Python dependencies
         run: pip install -r requirements.txt
-      - name: Playwright fallback (Chromium without apt deps) launches
-        env:
-          PLAYWRIGHT_SOURCE: nodeps
-        run: pip install playwright==1.56.0 && bash ops/install_playwright.sh
       - name: Run tests
         env:
           # Dummy value only -- fetch_prices.py reads this at import time,
