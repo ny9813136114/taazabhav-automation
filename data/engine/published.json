@@ -883,6 +883,20 @@
     "clip": "solar",
     "voice": "male"
    }
+  },
+  {
+   "series": "V",
+   "key": "Mandsaur APMC",
+   "date": "2026-11-26",
+   "video": "uVZgDqGNHNI",
+   "title": "मंदसौर मंडी भाव आज | सोयाबीन, लहसुन, प्याज़, मक्का का पूरा हाल | 23 नवंबर",
+   "scheme": "samachar",
+   "look": {
+    "story": 3,
+    "theme": 3,
+    "clip": "canal",
+    "voice": "female"
+   }
   }
  ]
 }
