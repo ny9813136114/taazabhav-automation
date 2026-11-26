@@ -21,7 +21,6 @@ from hindi_names import (commodity_hi, state_hi, date_hi, spoken_market, price_i
 from fetch_clips import pick_clip, credit_for
 
 SHORTS_DIR = Path("shorts")
-FONTS = ["Baloo2-Bold.ttf", "IBMPlexMono-SemiBold.ttf"]
 RENDER_TIMEOUT = 600
 
 WORD = {
@@ -107,8 +106,9 @@ def render(props, out_path, clip_path=None):
     """Copies fonts + clip into shorts/public, writes props, runs Remotion."""
     public = SHORTS_DIR / "public"
     (public / "fonts").mkdir(parents=True, exist_ok=True)
-    for f in FONTS:
-        shutil.copyfile(Path("assets/fonts") / f, public / "fonts" / f)
+    # Root.tsx loads every font any composition uses, so copy them all (a missing one fails the render).
+    for src in sorted(Path("assets/fonts").glob("*.ttf")):
+        shutil.copyfile(src, public / "fonts" / src.name)
     if clip_path:
         shutil.copyfile(clip_path, public / "clip.mp4")
         props = {**props, "clip": "clip.mp4"}

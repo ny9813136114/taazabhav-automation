@@ -192,8 +192,9 @@ def render(props, out_path):
     shorts = Path("shorts")
     pub = shorts / "public"
     (pub / "fonts").mkdir(parents=True, exist_ok=True)
-    for f in ("Baloo2-Bold.ttf", "IBMPlexMono-SemiBold.ttf"):
-        (pub / "fonts" / f).write_bytes((Path("assets/fonts") / f).read_bytes())
+    # Root.tsx loads every font any composition uses, so copy them all (a missing one fails the render).
+    for src in sorted(Path("assets/fonts").glob("*.ttf")):
+        (pub / "fonts" / src.name).write_bytes(src.read_bytes())
     if props.get("clip"):
         (pub / "clip.mp4").write_bytes(Path(props["clip"]).read_bytes())
         props = {**props, "clip": "clip.mp4"}
