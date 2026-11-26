@@ -231,7 +231,12 @@ def ig_safe_copy(path):
     import subprocess
     out = os.path.splitext(path)[0] + "_ig.mp4"
     try:
-        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", path, "-c:v", "libx264", "-profile:v", "high",
+        # 26 Nov 2026: the re-encode alone did not help; every Reel Instagram took so far was <= 58 s and the
+        # two refused ones (V, 75 s) were longer, so Instagram gets a 59 s cut with a 1 s fade (YouTube + Facebook keep the full video).
+        secs = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path],
+                                    capture_output=True, text=True, check=True, timeout=60).stdout.strip() or 0)
+        trim = ["-t", "59", "-af", "afade=t=out:st=58:d=1", "-vf", "fade=t=out:st=58:d=1"] if secs > 60 else []
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", path] + trim + ["-c:v", "libx264", "-profile:v", "high",
                         "-pix_fmt", "yuv420p", "-r", "30", "-b:v", "6M", "-maxrate", "8M", "-bufsize", "12M",
                         "-c:a", "aac", "-ar", "44100", "-ac", "2", "-b:a", "128k", "-movflags", "+faststart", out],
                        check=True, timeout=600)
