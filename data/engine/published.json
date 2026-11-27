@@ -925,6 +925,20 @@
     "clip": "harvest",
     "voice": "female"
    }
+  },
+  {
+   "series": "V",
+   "key": "Indore APMC",
+   "date": "2026-11-27",
+   "video": "JBhhBEX1zYU",
+   "title": "इंदौर मंडी भाव आज | सोयाबीन, लहसुन, प्याज़, मक्का का पूरा हाल | 25 नवंबर",
+   "scheme": "samachar",
+   "look": {
+    "story": 0,
+    "theme": 4,
+    "clip": "generic",
+    "voice": "male"
+   }
   }
  ]
 }
