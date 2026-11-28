@@ -967,6 +967,20 @@
     "clip": "tractor",
     "voice": "male"
    }
+  },
+  {
+   "series": "Y",
+   "key": "farmer-id-atki",
+   "date": "2026-11-28",
+   "video": "DUvDrPVvuDo",
+   "title": "Farmer ID अटक गई? ये 3 कारण ठीक करो | Farmer ID Status Pending #Shorts",
+   "scheme": "farmerid",
+   "look": {
+    "story": 3,
+    "theme": 4,
+    "clip": "farmer",
+    "voice": "female"
+   }
   }
  ]
 }
