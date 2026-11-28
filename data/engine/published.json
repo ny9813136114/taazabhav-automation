@@ -953,6 +953,20 @@
     "clip": "village",
     "voice": "female"
    }
+  },
+  {
+   "series": "V",
+   "key": "Neemuch APMC",
+   "date": "2026-11-28",
+   "video": "BUPgHLyYggA",
+   "title": "नीमच मंडी भाव आज | सोयाबीन, प्याज़, मक्का, मूंगफली का पूरा हाल | 26 नवंबर",
+   "scheme": "samachar",
+   "look": {
+    "story": 2,
+    "theme": 5,
+    "clip": "tractor",
+    "voice": "male"
+   }
   }
  ]
 }
