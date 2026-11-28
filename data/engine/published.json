@@ -981,6 +981,20 @@
     "clip": "farmer",
     "voice": "female"
    }
+  },
+  {
+   "series": "B",
+   "key": "mpkalyan|status|2026-11-28",
+   "date": "2026-11-28",
+   "video": null,
+   "title": "मुख्यमंत्री किसान कल्याण योजना 16वीं किस्त कब आएगी? सच – 28 नवंबर | MP Kisan Kalyan 16th Ins #Shorts",
+   "scheme": "mpkalyan",
+   "look": {
+    "story": 4,
+    "theme": 0,
+    "clip": "harvest",
+    "voice": "male"
+   }
   }
  ]
 }
